@@ -43,6 +43,11 @@ Route::put('/produk/{id}', [ProdukController::class, 'update']);
 Route::post('/produk/{id}', [ProdukController::class, 'update']); // fallback for multipart/form
 Route::delete('/produk/{id}', [ProdukController::class, 'destroy']);
 Route::get('/pelanggan', [PelangganController::class, 'index']);
+Route::get('/pelanggan/{id}', [PelangganController::class, 'show']);
+Route::post('/pelanggan', [PelangganController::class, 'store']);
+Route::put('/pelanggan/{id}', [PelangganController::class, 'update']);
+Route::post('/pelanggan/{id}', [PelangganController::class, 'update']); // fallback
+Route::delete('/pelanggan/{id}', [PelangganController::class, 'destroy']);
 Route::get('/kategori', [KategoriController::class, 'index']);
 Route::get('/kategori/{id}', [KategoriController::class, 'show']);
 Route::post('/kategori', [KategoriController::class, 'store']);

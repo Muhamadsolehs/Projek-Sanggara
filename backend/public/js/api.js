@@ -135,6 +135,52 @@ const SanggaraAPI = {
     return await res.json();
   },
 
+  async getPelangganDetail(id) {
+    const res = await fetch(`${this.baseUrl}/pelanggan/${id}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error(`Pelanggan #${id} tidak ditemukan`);
+    return await res.json();
+  },
+
+  async tambahPelanggan(payload) {
+    const res = await fetch(`${this.baseUrl}/pelanggan`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menambahkan pelanggan');
+    return data;
+  },
+
+  async updatePelanggan(id, payload) {
+    const res = await fetch(`${this.baseUrl}/pelanggan/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal memperbarui data pelanggan');
+    return data;
+  },
+
+  async deletePelanggan(id) {
+    const res = await fetch(`${this.baseUrl}/pelanggan/${id}`, {
+      method: 'DELETE',
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menghapus pelanggan');
+    return data;
+  },
+
   async getKategori() {
     const res = await fetch(`${this.baseUrl}/kategori`, {
       headers: { 'Accept': 'application/json' }

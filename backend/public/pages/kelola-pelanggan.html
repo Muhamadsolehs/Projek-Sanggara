@@ -154,7 +154,7 @@
                   <th>NOMOR TELEPON</th>
                   <th>ALAMAT LENGKAP</th>
                   <th>TOTAL ORDER</th>
-                  <th style="text-align: right;">AKSI</th>
+                  <th style="text-align: center; width: 140px;">AKSI</th>
                 </tr>
               </thead>
               <tbody id="pelangganTableBody">
@@ -184,6 +184,8 @@
   </div>
 
   <script>
+    let allPelanggan = [];
+
     async function loadPelangganData(params = {}) {
       const tbody = document.getElementById('pelangganTableBody');
       const emptyState = document.getElementById('pelangganEmptyState');
@@ -194,30 +196,8 @@
       try {
         const res = await SanggaraAPI.getPelanggan(params);
         if (res.status === 'success' && res.data && res.data.length > 0) {
-          if (emptyState) emptyState.style.display = 'none';
-          tbody.innerHTML = res.data.map((p, idx) => `
-            <tr>
-              <td style="font-weight: 600; color: #666;">${idx + 1}</td>
-              <td>
-                <div style="font-weight: 600; color: #1e293b;">${p.nama_pelanggan}</div>
-                <div style="font-size: 11.5px; color: #94a3b8;">${p.kode_pelanggan}</div>
-              </td>
-              <td style="font-size: 13px; color: #334155;">${p.no_telepon}</td>
-              <td style="font-size: 12.5px; color: #475569; max-width: 280px;">
-                ${p.alamat_lengkap} <span style="color:#00b87c; font-weight:600;">(${p.kecamatan || '-'})</span>
-              </td>
-              <td>
-                <span class="badge badge-info" style="font-size: 12px; font-weight: 600;">
-                  ${p.total_transaksi} Transaksi
-                </span>
-              </td>
-              <td style="text-align: right;">
-                <button class="action-btn" title="Detail Pelanggan" style="color: #00b87c;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                </button>
-              </td>
-            </tr>
-          `).join('');
+          allPelanggan = res.data;
+          renderPelangganTable(allPelanggan);
         } else {
           tbody.innerHTML = '';
           if (emptyState) emptyState.style.display = 'block';
@@ -225,6 +205,161 @@
       } catch (e) {
         console.error('Gagal memuat pelanggan:', e);
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: #ef4444;">Gagal memuat data dari database. Silakan pastikan server backend berjalan.</td></tr>`;
+      }
+    }
+
+    function renderPelangganTable(list) {
+      const tbody = document.getElementById('pelangganTableBody');
+      const emptyState = document.getElementById('pelangganEmptyState');
+      if (!tbody) return;
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+      }
+
+      if (emptyState) emptyState.style.display = 'none';
+      tbody.innerHTML = list.map((p, idx) => `
+        <tr>
+          <td style="font-weight: 600; color: #666;">${idx + 1}</td>
+          <td>
+            <div style="font-weight: 600; color: #1e293b;">${p.nama_pelanggan}</div>
+            <div style="font-size: 11.5px; color: #94a3b8;">${p.kode_pelanggan}</div>
+          </td>
+          <td style="font-size: 13px; color: #334155;">${p.no_telepon}</td>
+          <td style="font-size: 12.5px; color: #475569; max-width: 280px;">
+            ${p.alamat_lengkap} <span style="color:#00b87c; font-weight:600;">(${p.kecamatan || '-'})</span>
+          </td>
+          <td>
+            <span class="badge badge-info" style="font-size: 12px; font-weight: 600;">
+              ${p.total_transaksi} Transaksi
+            </span>
+          </td>
+          <td style="text-align: center;">
+            <div class="table-action-btns">
+              <!-- Tombol Lihat -->
+              <button type="button" class="btn-action-icon btn-action-view" onclick="viewPelanggan(${p.id_pelanggan})" title="Lihat Detail Pelanggan" aria-label="Lihat">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+              <!-- Tombol Edit -->
+              <button type="button" class="btn-action-icon btn-action-edit" onclick="openEditPelangganModal(${p.id_pelanggan})" title="Edit Pelanggan" aria-label="Edit">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+              <!-- Tombol Hapus -->
+              <button type="button" class="btn-action-icon btn-action-delete" onclick="deletePelangganAction(${p.id_pelanggan}, '${p.nama_pelanggan.replace(/'/g, "\\'")}')" title="Hapus Pelanggan" aria-label="Hapus">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Modal Control Functions
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('active');
+    }
+
+    // 1. LIHAT DETAIL PELANGGAN
+    async function viewPelanggan(id) {
+      try {
+        const p = allPelanggan.find(item => item.id_pelanggan === id) || (await SanggaraAPI.getPelangganDetail(id)).data;
+        if (!p) return;
+
+        document.getElementById('detailNamaPelanggan').textContent = p.nama_pelanggan;
+        document.getElementById('detailKodePelanggan').textContent = `Kode: ${p.kode_pelanggan}`;
+        document.getElementById('detailTotalBadge').textContent = `${p.total_transaksi} Transaksi`;
+        document.getElementById('detailNoTelepon').textContent = p.no_telepon;
+        document.getElementById('detailKecamatan').textContent = p.kecamatan || '-';
+        document.getElementById('detailKelurahan').textContent = p.kelurahan || '-';
+        document.getElementById('detailAlamatLengkap').textContent = p.alamat_lengkap || '-';
+
+        const btnEdit = document.getElementById('btnEditFromDetail');
+        btnEdit.onclick = () => {
+          closeModal('detailPelangganModal');
+          openEditPelangganModal(id);
+        };
+
+        document.getElementById('detailPelangganModal').classList.add('active');
+      } catch (e) {
+        alert('Gagal mengambil rincian pelanggan: ' + e.message);
+      }
+    }
+
+    // 2. BUKA MODAL EDIT PELANGGAN
+    async function openEditPelangganModal(id) {
+      try {
+        const p = allPelanggan.find(item => item.id_pelanggan === id) || (await SanggaraAPI.getPelangganDetail(id)).data;
+        if (!p) return;
+
+        document.getElementById('editPelangganId').value = p.id_pelanggan;
+        document.getElementById('editKodePelanggan').value = p.kode_pelanggan;
+        document.getElementById('editNamaPelanggan').value = p.nama_pelanggan;
+        document.getElementById('editNoTelepon').value = p.no_telepon;
+        
+        const kecVal = p.kecamatan ? p.kecamatan.replace(/^Kec\.\s*/i, '') : 'Purwakarta';
+        const kecSelect = document.getElementById('editKecamatan');
+        if (kecSelect) kecSelect.value = kecVal;
+
+        document.getElementById('editKelurahanDesa').value = p.kelurahan || '';
+        document.getElementById('editAlamatLengkap').value = p.alamat_lengkap || '';
+
+        document.getElementById('editPelangganModal').classList.add('active');
+      } catch (e) {
+        alert('Gagal memuat formulir edit: ' + e.message);
+      }
+    }
+
+    // 3. SUBMIT EDIT PELANGGAN
+    async function submitEditPelanggan(e) {
+      e.preventDefault();
+      const id = document.getElementById('editPelangganId').value;
+      const btn = document.getElementById('btnSubmitEditPelanggan');
+      const originalText = btn.textContent;
+      btn.textContent = 'Menyimpan...';
+      btn.disabled = true;
+
+      const kec = document.getElementById('editKecamatan').value;
+      const payload = {
+        nama_pelanggan: document.getElementById('editNamaPelanggan').value,
+        no_telepon: document.getElementById('editNoTelepon').value,
+        nama_kecamatan: 'Kec. ' + kec,
+        kelurahan_desa: document.getElementById('editKelurahanDesa').value,
+        alamat_lengkap: document.getElementById('editAlamatLengkap').value
+      };
+
+      try {
+        const res = await SanggaraAPI.updatePelanggan(id, payload);
+        if (res.status === 'success') {
+          closeModal('editPelangganModal');
+          loadPelangganData();
+        } else {
+          alert('Gagal memperbarui: ' + (res.message || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // 4. HAPUS PELANGGAN
+    async function deletePelangganAction(id, namaPelanggan) {
+      const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus pelanggan "${namaPelanggan}" dari database?`);
+      if (!confirmDelete) return;
+
+      try {
+        const res = await SanggaraAPI.deletePelanggan(id);
+        if (res.status === 'success') {
+          loadPelangganData();
+        } else {
+          alert('Gagal menghapus: ' + (res.message || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Gagal menghapus pelanggan: ' + err.message);
       }
     }
 
@@ -248,7 +383,125 @@
           loadPelangganData({ q: e.target.value });
         });
       }
+
+      // Tutup modal jika klik overlay
+      document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            overlay.classList.remove('active');
+          }
+        });
+      });
     });
   </script>
+
+  <!-- Modal 1: Detail Pelanggan -->
+  <div class="modal-overlay" id="detailPelangganModal">
+    <div class="modal-card-box">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Detail Pelanggan</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('detailPelangganModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-card-body">
+        <div style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <span class="badge badge-info" id="detailTotalBadge" style="font-size: 11.5px; margin-bottom: 6px; display: inline-block;">0 Transaksi</span>
+            <h4 id="detailNamaPelanggan" style="font-size: 18px; font-weight: 800; color: #1e293b; margin: 2px 0;">Nama Konsumen</h4>
+            <span id="detailKodePelanggan" style="font-size: 12.5px; color: #64748b; font-weight: 500;">Kode: -</span>
+          </div>
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #e6faf2; color: #00b87c; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </div>
+        </div>
+
+        <div class="detail-row-item">
+          <span class="detail-label">Nomor Telepon / WhatsApp</span>
+          <span class="detail-value" id="detailNoTelepon" style="color: #00b87c;">-</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Kecamatan</span>
+          <span class="detail-value" id="detailKecamatan">-</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Kelurahan / Desa</span>
+          <span class="detail-value" id="detailKelurahan">-</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Alamat Lengkap</span>
+          <span class="detail-value" id="detailAlamatLengkap" style="max-width: 280px; word-break: break-word;">-</span>
+        </div>
+      </div>
+      <div class="modal-card-footer">
+        <button type="button" class="btn btn-outline-primary" onclick="closeModal('detailPelangganModal')" style="padding: 8px 18px; font-size: 13px;">Tutup</button>
+        <button type="button" class="btn btn-primary" id="btnEditFromDetail" style="padding: 8px 20px; font-size: 13px; background-color: #059669; border-color: #059669;">Edit Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Edit Data Pelanggan -->
+  <div class="modal-overlay" id="editPelangganModal">
+    <div class="modal-card-box">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Edit Data Pelanggan</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('editPelangganModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <form id="formEditPelanggan" onsubmit="submitEditPelanggan(event)">
+        <div class="modal-card-body">
+          <input type="hidden" id="editPelangganId">
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Kode Pelanggan</label>
+            <input type="text" id="editKodePelanggan" class="search-input" style="width: 100%; background: #f8fafc; font-weight: 700; color: #64748b;" readonly>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div>
+              <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Nama Konsumen</label>
+              <input type="text" id="editNamaPelanggan" class="search-input" style="width: 100%;" required>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Nomor Telepon</label>
+              <input type="text" id="editNoTelepon" class="search-input" style="width: 100%;" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div>
+              <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Kecamatan</label>
+              <select id="editKecamatan" class="search-input" style="width: 100%; height: 38px;">
+                <option value="Purwakarta">Kec. Purwakarta</option>
+                <option value="Babakancikao">Kec. Babakancikao</option>
+                <option value="Jatiluhur">Kec. Jatiluhur</option>
+                <option value="Campaka">Kec. Campaka</option>
+                <option value="Bungursari">Kec. Bungursari</option>
+                <option value="Pasawahan">Kec. Pasawahan</option>
+                <option value="Plered">Kec. Plered</option>
+                <option value="Sukatani">Kec. Sukatani</option>
+                <option value="Darangdan">Kec. Darangdan</option>
+                <option value="Wanayasa">Kec. Wanayasa</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Kelurahan / Desa</label>
+              <input type="text" id="editKelurahanDesa" class="search-input" style="width: 100%;" placeholder="Contoh: Nagri Kidul">
+            </div>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Alamat Lengkap</label>
+            <textarea id="editAlamatLengkap" rows="3" class="search-input" style="width: 100%; height: auto; padding: 10px; resize: vertical;" placeholder="Nama jalan, nomor rumah, RT/RW..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-card-footer">
+          <button type="button" class="btn btn-outline-primary" onclick="closeModal('editPelangganModal')" style="padding: 8px 18px; font-size: 13px;">Batal</button>
+          <button type="submit" id="btnSubmitEditPelanggan" class="btn btn-primary" style="padding: 8px 22px; font-size: 13px;">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
