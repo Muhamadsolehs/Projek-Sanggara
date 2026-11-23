@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sanggara Management System - Navigasi Halaman & CSS</title>
+  <link rel="stylesheet" href="css/global.css">
+  <style>
+    .portal-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .portal-hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .portal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      background: #e6f9f2;
+      color: #00b87c;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .portal-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: #1e293b;
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+    }
+
+    .portal-desc {
+      font-size: 15px;
+      color: #64748b;
+      max-width: 680px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .filter-pills-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      padding: 8px 18px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-pill:hover {
+      border-color: #00b87c;
+      color: #00b87c;
+    }
+
+    .filter-pill.active {
+      background: #00b87c;
+      color: #ffffff;
+      border-color: #00b87c;
+      box-shadow: 0 4px 12px rgba(0, 184, 124, 0.25);
+    }
+
+    .pages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+    }
+
+    .page-card {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .page-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08);
+      border-color: #00b87c;
+    }
+
+    .page-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .page-number-tag {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .page-card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+
+    .page-card-desc {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .css-file-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #0f766e;
+      margin-bottom: 20px;
+    }
+
+    .card-footer-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-view-page {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background-color: #00b87c;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 12.5px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-view-page:hover {
+      background-color: #009e69;
+    }
+
+    .html-name {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body style="background-color: #f8fafc;">
+  <div class="portal-container">
+    <!-- Hero Header -->
+    <div class="portal-hero">
+      <div class="portal-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Sistem Manajemen Sanggar Bunda Febri (SBF)
+      </div>
+      <h1 class="portal-title">Daftar Halaman & File CSS Terpisah</h1>
+      <p class="portal-desc">
+        Seluruh tampilan dari 15 desain halaman telah dibuatkan kode CSS terpisah secara modular untuk masing-masing halaman, lengkap dengan template HTML yang dapat langsung dibuka dan disesuaikan.
+      </p>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-pills-bar">
+      <button class="filter-pill active" onclick="filterCards('all', this)">Semua (15 Halaman)</button>
+      <button class="filter-pill" onclick="filterCards('auth-dash', this)">Autentikasi & Dashboard</button>
+      <button class="filter-pill" onclick="filterCards('laporan', this)">Laporan & Analisa</button>
+      <button class="filter-pill" onclick="filterCards('master', this)">Master Data & Form</button>
+      <button class="filter-pill" onclick="filterCards('booking', this)">Booking & Pesanan</button>
+    </div>
+
+    <!-- Pages Grid -->
+    <div class="pages-grid">
+      <!-- 1. Login -->
+      <div class="page-card" data-category="auth-dash">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 01</span>
+            <span class="badge badge-success">Autentikasi</span>
+          </div>
+          <h3 class="page-card-title">Halaman Login</h3>
+          <p class="page-card-desc">Tampilan split screen: Hero banner gradient hijau emerald dan form login dashboard Sanggara.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/login.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/login.html</span>
+          <a href="pages/login.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 2. Dashboard -->
+      <div class="page-card" data-category="auth-dash">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 02</span>
+            <span class="badge badge-success">Dashboard</span>
+          </div>
+          <h3 class="page-card-title">Halaman Dashboard</h3>
+          <p class="page-card-desc">Ringkasan bisnis, 4 KPI stats card, grafik batang arus kas bulanan, dan progres ranking Top 5 Kecamatan.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/dashboard.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/dashboard.html</span>
+          <a href="pages/dashboard.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 3. Laporan Pemasukan -->
+      <div class="page-card" data-category="laporan">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 03</span>
+            <span class="badge badge-info">Laporan</span>
+          </div>
+          <h3 class="page-card-title">Data Pemasukan</h3>
+          <p class="page-card-desc">Laporan transaksi pemasukan dengan filter tanggal, pencarian, dan tabel mutasi kasir.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/laporan-pemasukan.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/laporan-pemasukan.html</span>
+          <a href="pages/laporan-pemasukan.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 4. Laporan Pengeluaran -->
+      <div class="page-card" data-category="laporan">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 04</span>
+            <span class="badge badge-danger">Laporan</span>
+          </div>
+          <h3 class="page-card-title">Data Pengeluaran</h3>
+          <p class="page-card-desc">Laporan transaksi beban biaya operasional, pencarian, filter tanggal, dan bukti struk transaksi.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/laporan-pengeluaran.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/laporan-pengeluaran.html</span>
+          <a href="pages/laporan-pengeluaran.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 5. Analisa Pelanggan -->
+      <div class="page-card" data-category="laporan">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 05</span>
+            <span class="badge badge-info">Analisa</span>
+          </div>
+          <h3 class="page-card-title">Analisa Pelanggan</h3>
+          <p class="page-card-desc">Peringkat booking 17 kecamatan, sebaran geografis klaster wilayah (Donut chart), dan Top 3 Wilayah.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/analisa-pelanggan.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/analisa-pelanggan.html</span>
+          <a href="pages/analisa-pelanggan.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 6. Analisa Keuangan -->
+      <div class="page-card" data-category="laporan">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 06</span>
+            <span class="badge badge-info">Analisa</span>
+          </div>
+          <h3 class="page-card-title">Analisa Keuangan</h3>
+          <p class="page-card-desc">Komparasi bulanan Pemasukan vs Pengeluaran, donut sumber omset & pos beban, serta tabel mutasi arus kas.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/analisa-keuangan.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/analisa-keuangan.html</span>
+          <a href="pages/analisa-keuangan.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 7. Kelola Produk -->
+      <div class="page-card" data-category="master">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 07</span>
+            <span class="badge badge-warning">Master Data</span>
+          </div>
+          <h3 class="page-card-title">Data Produk</h3>
+          <p class="page-card-desc">Daftar produk inventaris busana, tombol Template/Import/Tambah, filter kategori, dan empty state.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/kelola-produk.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/kelola-produk.html</span>
+          <a href="pages/kelola-produk.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 8. Tambah Produk -->
+      <div class="page-card" data-category="master">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 08</span>
+            <span class="badge badge-warning">Form Modal</span>
+          </div>
+          <h3 class="page-card-title">Tambah Barang / Produk</h3>
+          <p class="page-card-desc">Formulir input barang dengan character limit counters, dropdown kualitas & kategori, dan kotak upload foto.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/tambah-produk.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/tambah-produk.html</span>
+          <a href="pages/tambah-produk.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 9. Kelola Pelanggan -->
+      <div class="page-card" data-category="master">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 09</span>
+            <span class="badge badge-warning">Master Data</span>
+          </div>
+          <h3 class="page-card-title">Data Pelanggan</h3>
+          <p class="page-card-desc">Tabel master pelanggan konsumen, tombol tambah, filter alamat, dan ilustrasi data belum tersedia.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/kelola-pelanggan.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/kelola-pelanggan.html</span>
+          <a href="pages/kelola-pelanggan.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 10. Tambah Pelanggan -->
+      <div class="page-card" data-category="master">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 10</span>
+            <span class="badge badge-warning">Form Modal</span>
+          </div>
+          <h3 class="page-card-title">Tambah Pelanggan</h3>
+          <p class="page-card-desc">Formulir pendaftaran konsumen: nama, nomor telepon, dan dropdown bertingkat pilihan alamat wilayah.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/tambah-pelanggan.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/tambah-pelanggan.html</span>
+          <a href="pages/tambah-pelanggan.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 11. Kelola Kategori -->
+      <div class="page-card" data-category="master">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 11</span>
+            <span class="badge badge-warning">Master Data</span>
+          </div>
+          <h3 class="page-card-title">Data Kategori</h3>
+          <p class="page-card-desc">Manajemen kategori busana dan aksesoris sanggar, pencarian kategori, dan visual status data.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/kelola-kategori.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/kelola-kategori.html</span>
+          <a href="pages/kelola-kategori.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 12. Tambah Kategori -->
+      <div class="page-card" data-category="master">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 12</span>
+            <span class="badge badge-warning">Form Modal</span>
+          </div>
+          <h3 class="page-card-title">Tambah Kategori</h3>
+          <p class="page-card-desc">Formulir penambahan kategori produk baru dengan counter limit dan tombol simpan aksi.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/tambah-kategori.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/tambah-kategori.html</span>
+          <a href="pages/tambah-kategori.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 13. Booking Kalender -->
+      <div class="page-card" data-category="booking">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 13</span>
+            <span class="badge badge-primary" style="background:#d1fae5; color:#00875a;">Booking</span>
+          </div>
+          <h3 class="page-card-title">Data Booking (Kalender)</h3>
+          <p class="page-card-desc">Kalender jadwal sewa bulanan dengan badge pill warna-warni untuk Ambil, Pakai, dan Kembali busana.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/booking-kalender.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/booking-kalender.html</span>
+          <a href="pages/booking-kalender.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 14. Booking Tabel -->
+      <div class="page-card" data-category="booking">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 14</span>
+            <span class="badge badge-primary" style="background:#d1fae5; color:#00875a;">Booking</span>
+          </div>
+          <h3 class="page-card-title">Data Booking (Tabel)</h3>
+          <p class="page-card-desc">Tampilan list tabel transaksi booking, status pickup/pakai/pickin, denda, filter bulan & tahun.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/booking-tabel.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/booking-tabel.html</span>
+          <a href="pages/booking-tabel.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 15. Pesanan Tabel -->
+      <div class="page-card" data-category="booking">
+        <div>
+          <div class="page-card-header">
+            <span class="page-number-tag">PAGE 15</span>
+            <span class="badge badge-primary" style="background:#d1fae5; color:#00875a;">Booking</span>
+          </div>
+          <h3 class="page-card-title">Data Pesanan</h3>
+          <p class="page-card-desc">Rincian item pakaian yang dipesan per booking, jumlah item, filter periode, dan status ketersediaan.</p>
+          <div class="css-file-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>css/pesanan-tabel.css</span>
+          </div>
+        </div>
+        <div class="card-footer-action">
+          <span class="html-name">pages/pesanan-tabel.html</span>
+          <a href="pages/pesanan-tabel.html" class="btn-view-page" target="_blank">Buka Halaman &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function filterCards(category, element) {
+      document.querySelectorAll('.filter-pill').forEach(pill => pill.classList.remove('active'));
+      element.classList.add('active');
+
+      const cards = document.querySelectorAll('.page-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

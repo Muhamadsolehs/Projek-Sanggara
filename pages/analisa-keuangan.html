@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analisa Keuangan - Sanggara Management System</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/analisa-keuangan.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">sanggara<span>.</span></a>
+        <button class="btn-sidebar-toggle" aria-label="Toggle Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <div class="nav-group">
+          <div class="nav-item" onclick="this.parentElement.classList.toggle('open')">
+            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></span>
+            <span class="nav-label">Laporan</span>
+            <span class="nav-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+          </div>
+          <div class="nav-sublist">
+            <a href="laporan-pemasukan.html" class="subnav-item">Laporan Pemasukan</a>
+            <a href="laporan-pengeluaran.html" class="subnav-item">Laporan Pengeluaran</a>
+          </div>
+        </div>
+
+        <div class="nav-group open">
+          <div class="nav-item active" onclick="this.parentElement.classList.toggle('open')">
+            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span>
+            <span class="nav-label">Analisa Laporan</span>
+            <span class="nav-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+          </div>
+          <div class="nav-sublist">
+            <a href="analisa-pelanggan.html" class="subnav-item">Analisa Pelanggan</a>
+            <a href="analisa-keuangan.html" class="subnav-item active">Analisa Keuangan</a>
+          </div>
+        </div>
+
+        <a href="kelola-produk.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></span>
+          <span class="nav-label">Kelola Produk</span>
+        </a>
+
+        <a href="kelola-pelanggan.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+          <span class="nav-label">Kelola Pelanggan</span>
+        </a>
+
+        <a href="kelola-kategori.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg></span>
+          <span class="nav-label">Kelola Kategori</span>
+        </a>
+
+        <a href="booking-kalender.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
+          <span class="nav-label">Booking</span>
+        </a>
+
+        <a href="#" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></span>
+          <span class="nav-label">Kasir</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="app-main">
+      <header class="app-header">
+        <div class="header-actions">
+          <button class="btn-icon-badge" aria-label="Notifications">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span class="badge-dot"></span>
+          </button>
+          
+          <div class="user-profile">
+            <div class="user-avatar">AS</div>
+            <div class="user-info">
+              <span class="user-name">Amanah</span>
+              <span class="user-role">Solusi</span>
+            </div>
+            <button class="btn-user-more" aria-label="User Options">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Filter Header Bar -->
+        <div class="page-toolbar" style="margin-bottom: 20px;">
+          <div>
+            <h2 class="card-title" style="font-size: 22px;">Analisa Keuangan</h2>
+            <p class="card-subtitle">Semua Outlet</p>
+          </div>
+
+          <div class="toolbar-right">
+            <div class="date-filter-picker">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <span>9 Mar 2022 - 22 Mar 2022</span>
+            </div>
+
+            <div class="select-filter-wrapper">
+              <select class="filter-select" style="padding-left: 14px;">
+                <option>Pilih Kecamatan</option>
+                <option>Purwakarta</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Ekspor Laporan</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Top Section: Comparison & Donut Stack -->
+        <div class="keuangan-top-grid">
+          <!-- Left: Pemasukan vs Pengeluaran Bulanan -->
+          <div class="card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Perbandingan Pemasukan vs Pengeluaran Bulanan</h3>
+                <p class="card-subtitle">Sorot batang grafik pada setiap bulan untuk melihat detail nominal pemasukan, pengeluaran, dan surplus bersih.</p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;">
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background: #00c087;"></span>
+                  <span>Pemasukan</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;">
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background: #f87171;"></span>
+                  <span>Pengeluaran</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Clustered Chart -->
+            <div class="clustered-chart-box">
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 60px;"></div>
+                  <div class="bar-outflow" style="height: 38px;"></div>
+                </div>
+                <span class="col-month-txt">Jan</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 70px;"></div>
+                  <div class="bar-outflow" style="height: 42px;"></div>
+                </div>
+                <span class="col-month-txt">Feb</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 80px;"></div>
+                  <div class="bar-outflow" style="height: 40px;"></div>
+                </div>
+                <span class="col-month-txt">Mar</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 95px;"></div>
+                  <div class="bar-outflow" style="height: 48px;"></div>
+                </div>
+                <span class="col-month-txt">Apr</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 85px;"></div>
+                  <div class="bar-outflow" style="height: 44px;"></div>
+                </div>
+                <span class="col-month-txt">Mei</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 98px;"></div>
+                  <div class="bar-outflow" style="height: 50px;"></div>
+                </div>
+                <span class="col-month-txt">Jun</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 88px;"></div>
+                  <div class="bar-outflow" style="height: 46px;"></div>
+                </div>
+                <span class="col-month-txt">Jul</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 115px;"></div>
+                  <div class="bar-outflow" style="height: 65px;"></div>
+                </div>
+                <span class="col-month-txt">Agu</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 92px;"></div>
+                  <div class="bar-outflow" style="height: 48px;"></div>
+                </div>
+                <span class="col-month-txt">Sep</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 140px;"></div>
+                  <div class="bar-outflow" style="height: 52px;"></div>
+                </div>
+                <span class="col-month-txt">Okt</span>
+              </div>
+              <div class="clustered-col">
+                <div class="col-bars-duo">
+                  <div class="bar-inflow" style="height: 88px;"></div>
+                  <div class="bar-outflow" style="height: 42px;"></div>
+                </div>
+                <span class="col-month-txt">Nov</span>
+              </div>
+            </div>
+
+            <!-- 3 Highlights -->
+            <div class="keuangan-metrics-grid">
+              <div class="metric-box">
+                <div class="metric-box-label">Bulan Omset Tertinggi</div>
+                <div class="metric-box-title">Okt — Rp 31.200.000</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-box-label">Bulan Biaya Tertinggi</div>
+                <div class="metric-box-title">Agu — Rp 10.400.000</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-box-label">Efisiensi Operasional</div>
+                <div class="metric-box-title">Rasio Biaya 33,9%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: 2 Donut Cards -->
+          <div class="donuts-stack">
+            <!-- Sumber Pemasukan -->
+            <div class="card" style="margin-bottom: 0;">
+              <div class="card-header-flex" style="margin-bottom: 4px;">
+                <h3 class="card-title">Sumber Pemasukan</h3>
+                <span class="badge badge-info">Masuk</span>
+              </div>
+              <p class="card-subtitle">Kontribusi per kategori sewa</p>
+
+              <div class="donut-sm-container">
+                <div class="donut-sm-wrapper">
+                  <svg class="donut-svg" width="95" height="95" viewBox="0 0 42 42">
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="#fff"></circle>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#00b87c" stroke-width="7" stroke-dasharray="52 48" stroke-dashoffset="0"></circle>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#0284c7" stroke-width="7" stroke-dasharray="26 74" stroke-dashoffset="-52"></circle>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#38bdf8" stroke-width="7" stroke-dasharray="16 84" stroke-dashoffset="-78"></circle>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#f59e0b" stroke-width="7" stroke-dasharray="6 94" stroke-dashoffset="-94"></circle>
+                  </svg>
+                  <div class="donut-sm-center">100%</div>
+                </div>
+
+                <div class="donut-sm-legend">
+                  <div class="donut-sm-legend-item">
+                    <div style="display:flex;align-items:center;gap:6px;"><span class="legend-dot" style="background:#00b87c;"></span><span>Baju Pengantin</span></div>
+                    <b>52%</b>
+                  </div>
+                  <div class="donut-sm-legend-item">
+                    <div style="display:flex;align-items:center;gap:6px;"><span class="legend-dot" style="background:#0284c7;"></span><span>Kostum Tari</span></div>
+                    <b>26%</b>
+                  </div>
+                  <div class="donut-sm-legend-item">
+                    <div style="display:flex;align-items:center;gap:6px;"><span class="legend-dot" style="background:#38bdf8;"></span><span>Kebaya & Wisuda</span></div>
+                    <b>16%</b>
+                  </div>
+                  <div class="donut-sm-legend-item">
+                    <div style="display:flex;align-items:center;gap:6px;"><span class="legend-dot" style="background:#f59e0b;"></span><span>Denda & Aksesoris</span></div>
+                    <b>6%</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pos Pengeluaran -->
+            <div class="card" style="margin-bottom: 0;">
+              <div class="card-header-flex" style="margin-bottom: 4px;">
+                <h3 class="card-title">Pos Pengeluaran</h3>
+                <span class="badge badge-danger">Keluar</span>
+              </div>
+              <p class="card-subtitle">Distribusi beban operasional</p>
+
+              <div class="donut-sm-container">
+                <div class="donut-sm-wrapper">
+                  <svg class="donut-svg" width="95" height="95" viewBox="0 0 42 42">
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="#fff"></circle>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#f87171" stroke-width="7" stroke-dasharray="38 62" stroke-dashoffset="0"></circle>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#fb923c" stroke-width="7" stroke-dasharray="34 66" stroke-dashoffset="-38"></circle>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#facc15" stroke-width="7" stroke-dasharray="18 82" stroke-dashoffset="-72"></circle>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#94a3b8" stroke-width="7" stroke-dasharray="10 90" stroke-dashoffset="-90"></circle>
+                  </svg>
+                  <div class="donut-sm-center">100%</div>
+                </div>
+
+                <div class="donut-sm-legend">
+                  <div class="donut-sm-legend-item">
+                    <div style="display:flex;align-items:center;gap:6px;"><span class="legend-dot" style="background:#f87171;"></span><span>Laundry & Perawatan</span></div>
+                    <b>38%</b>
+                  </div>
+                  <div class="donut-sm-legend-item">
+                    <div style="display:flex;align-items:center;gap:6px;"><span class="legend-dot" style="background:#fb923c;"></span><span>Gaji Karyawan</span></div>
+                    <b>34%</b>
+                  </div>
+                  <div class="donut-sm-legend-item">
+                    <div style="display:flex;align-items:center;gap:6px;"><span class="legend-dot" style="background:#facc15;"></span><span>Stok & Jahit</span></div>
+                    <b>18%</b>
+                  </div>
+                  <div class="donut-sm-legend-item">
+                    <div style="display:flex;align-items:center;gap:6px;"><span class="legend-dot" style="background:#94a3b8;"></span><span>Listrik & Operasional</span></div>
+                    <b>10%</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Section: Tabel Rincian Arus Kas -->
+        <div class="card">
+          <div class="page-toolbar">
+            <div>
+              <h3 class="card-title">Tabel Rincian Arus Kas Pemasukan & Pengeluaran</h3>
+              <p class="card-subtitle">Catatan mutasi transaksi sewa, pelunasan DP, laundry, gaji, dan pengadaan stok Sanggar Bunda Febri.</p>
+            </div>
+
+            <div class="toolbar-right">
+              <div class="arus-kas-tabs">
+                <button class="tab-btn active">Semua</button>
+                <button class="tab-btn">Pemasukan</button>
+                <button class="tab-btn">Pengeluaran</button>
+              </div>
+
+              <div class="search-input-wrapper" style="width: 240px;">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" class="search-input" placeholder="Cari keterangan atau kode...">
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Kode Transaksi</th>
+                  <th>Kategori</th>
+                  <th>Keterangan Transaksi</th>
+                  <th>Metode</th>
+                  <th>Jenis</th>
+                  <th style="text-align: right;">Nominal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>19 Nov 2026</td>
+                  <td style="font-weight: 600;">INV/261119/008</td>
+                  <td>Sewa Pengantin</td>
+                  <td>Pelunasan 2 Set Pengantin Sunda Siger — Cordelia (Kec. Purwakarta)</td>
+                  <td>Transfer BCA</td>
+                  <td><span class="badge badge-success">Pemasukan</span></td>
+                  <td style="text-align: right;" class="cash-nominal-pos">+ Rp 2.850.000</td>
+                </tr>
+                <tr>
+                  <td>18 Nov 2026</td>
+                  <td style="font-weight: 600;">EXP/261118/014</td>
+                  <td>Laundry & Perawatan</td>
+                  <td>Cuci uap & payet 18 set kebaya wisuda & beskap</td>
+                  <td>Kas Tunai</td>
+                  <td><span class="badge badge-danger">Pengeluaran</span></td>
+                  <td style="text-align: right;" class="cash-nominal-neg">- Rp 850.000</td>
+                </tr>
+                <tr>
+                  <td>17 Nov 2026</td>
+                  <td style="font-weight: 600;">INV/261117/005</td>
+                  <td>Kostum Tari</td>
+                  <td>DP 25% Sewa 12 Kostum Tari Jaipong — Sanggar SMA 1 Jatiluhur</td>
+                  <td>QRIS</td>
+                  <td><span class="badge badge-success">Pemasukan</span></td>
+                  <td style="text-align: right;" class="cash-nominal-pos">+ Rp 1.125.000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

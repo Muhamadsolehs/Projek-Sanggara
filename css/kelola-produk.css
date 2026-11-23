@@ -1,0 +1,40 @@
+/* ==========================================================================
+   PAGE: KELOLA PRODUK (Data Produk)
+   File: css/kelola-produk.css
+   ========================================================================== */
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.title-with-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-hint, .icon-fav {
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.icon-hint:hover, .icon-fav:hover {
+  color: var(--color-primary);
+}
+
+.produk-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.produk-table th, .produk-table td {
+  text-align: left;
+}

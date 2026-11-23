@@ -1,0 +1,288 @@
+/* ==========================================================================
+   PAGE: ANALISA PELANGGAN
+   File: css/analisa-pelanggan.css
+   ========================================================================== */
+
+.analisa-layout-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr;
+  gap: 24px;
+}
+
+/* Header Filter Controls */
+.filter-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filter-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.select-dropdown-custom {
+  padding: 8px 36px 8px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-white);
+  color: var(--color-text-main);
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+/* Left Card: 17 Kecamatan */
+.rank-toggle-group {
+  display: inline-flex;
+  background-color: #f1f5f9;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.rank-toggle-btn {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+}
+
+.rank-toggle-btn.active {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0 20px;
+}
+
+.legend-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.dot-top { background-color: #00b87c; }
+.dot-mid-high { background-color: #0284c7; }
+.dot-mid { background-color: #38bdf8; }
+.dot-low { background-color: #94a3b8; }
+
+.kecamatan-bars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kec-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.kec-rank-num {
+  width: 24px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-light);
+  flex-shrink: 0;
+}
+
+.kec-name {
+  width: 100px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  flex-shrink: 0;
+}
+
+.kec-track {
+  flex: 1;
+  height: 18px;
+  background-color: #f1f5f9;
+  border-radius: var(--radius-full);
+  position: relative;
+  overflow: hidden;
+}
+
+.kec-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.kec-count {
+  width: 55px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+/* Right Side Cards */
+.donut-chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0 16px;
+}
+
+.donut-svg-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.donut-svg {
+  transform: rotate(-90deg);
+}
+
+.donut-center-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.donut-center-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+}
+
+.donut-center-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.donut-legend-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.donut-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+}
+
+.donut-legend-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-main);
+}
+
+.donut-legend-val {
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+/* 3 Wilayah Teratas Card */
+.top3-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.top3-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fafbfc;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.top3-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.top3-badge-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-white);
+  flex-shrink: 0;
+}
+
+.badge-rank-1 { background-color: #00b87c; }
+.badge-rank-2 { background-color: #0d9488; }
+.badge-rank-3 { background-color: #0284c7; }
+
+.top3-info-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.top3-info-sub {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+}
+
+.top3-right {
+  text-align: right;
+}
+
+.top3-booking-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.top3-revenue {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 1100px) {
+  .analisa-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}

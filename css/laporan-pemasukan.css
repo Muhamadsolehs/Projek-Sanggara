@@ -1,0 +1,72 @@
+/* ==========================================================================
+   PAGE: LAPORAN PEMASUKAN (Data Pemasukan)
+   File: css/laporan-pemasukan.css
+   ========================================================================== */
+
+.page-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  letter-spacing: -0.3px;
+}
+
+.date-range-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.laporan-table {
+  width: 100%;
+}
+
+.laporan-table th {
+  padding: 14px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.laporan-table td {
+  padding: 18px 16px;
+  font-size: 13px;
+  color: var(--color-text-main);
+  border-bottom: 1px solid var(--color-border-light);
+  vertical-align: middle;
+}
+
+.nominal-val {
+  font-weight: 600;
+  color: var(--color-text-main);
+}

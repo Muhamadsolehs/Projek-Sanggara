@@ -1,0 +1,15 @@
+/* ==========================================================================
+   PAGE: PESANAN TABEL (Data Pesanan - Tabel)
+   File: css/pesanan-tabel.css
+   ========================================================================== */
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.pesanan-table th, .pesanan-table td {
+  text-align: left;
+}
