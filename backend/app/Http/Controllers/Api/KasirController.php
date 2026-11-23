@@ -1,0 +1,203 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Produk;
+use App\Models\Kategori;
+use App\Models\Pelanggan;
+use App\Models\Booking;
+use App\Models\DetailBooking;
+use App\Models\PembayaranTransaksi;
+
+class KasirController extends Controller
+{
+    /**
+     * Mengambil daftar produk katalog untuk menu kasir
+     */
+    public function getProduk(Request $request)
+    {
+        try {
+            $query = Produk::with('kategori')->where('status', 'tersedia');
+
+            if ($request->has('kategori') && !empty($request->kategori)) {
+                $query->where('id_kategori', $request->kategori);
+            }
+
+            if ($request->has('q') && !empty($request->q)) {
+                $query->where('nama_produk', 'like', "%{$request->q}%")
+                      ->orWhere('kode_produk', 'like', "%{$request->q}%");
+            }
+
+            $produk = $query->get()->map(function ($p) {
+                return [
+                    'id_produk' => $p->id_produk,
+                    'kode_produk' => $p->kode_produk,
+                    'nama_produk' => $p->nama_produk,
+                    'kategori' => $p->kategori ? $p->kategori->nama_kategori : '-',
+                    'kualitas' => $p->kualitas,
+                    'harga_sewa' => (float)$p->harga_sewa,
+                    'harga_formatted' => 'Rp ' . number_format($p->harga_sewa, 0, ',', '.'),
+                    'stok_siap' => $p->stok_siap,
+                    'foto_produk' => $p->foto_produk,
+                    'status' => $p->status,
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $produk,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Memproses pesanan baru dari menu kasir
+     */
+    public function checkout(Request $request)
+    {
+        $request->validate([
+            'id_pelanggan' => 'required|integer',
+            'tgl_ambil' => 'required|date',
+            'tgl_pakai' => 'required|date',
+            'items' => 'required|array|min:1',
+            'items.*.id_produk' => 'required|integer',
+            'items.*.jumlah' => 'required|integer|min:1',
+            'opsi_pembayaran' => 'required|string|in:lunas,dp',
+            'metode_bayar' => 'required|string|in:TUNAI,BANK,QRIS',
+            'uang_diterima' => 'nullable|numeric',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $idPelanggan = $request->id_pelanggan;
+            $tglAmbil = $request->tgl_ambil;
+            $tglPakai = $request->tgl_pakai;
+            $tglKembali = date('Y-m-d', strtotime($tglPakai . ' +3 days'));
+
+            // Hitung subtotal produk
+            $subtotal = 0;
+            $itemsData = [];
+
+            foreach ($request->items as $item) {
+                $produk = Produk::findOrFail($item['id_produk']);
+                if ($produk->stok_siap < $item['jumlah']) {
+                    throw new \Exception("Stok siap untuk {$produk->nama_produk} tidak mencukupi (Tersedia: {$produk->stok_siap})");
+                }
+                $itemSubtotal = $produk->harga_sewa * $item['jumlah'];
+                $subtotal += $itemSubtotal;
+                $itemsData[] = [
+                    'produk' => $produk,
+                    'jumlah' => $item['jumlah'],
+                    'harga_satuan' => $produk->harga_sewa,
+                    'subtotal' => $itemSubtotal,
+                ];
+            }
+
+            $totalTagihan = $subtotal;
+            $opsi = strtolower($request->opsi_pembayaran);
+            $totalDp = round($totalTagihan * 0.25, 2);
+
+            if ($opsi === 'lunas') {
+                $jumlahBayarSekarang = $totalTagihan;
+                $sisaTagihan = 0;
+                $statusPembayaran = 'LUNAS';
+                $jenisPembayaran = 'LUNAS_LANGSUNG';
+            } else {
+                $jumlahBayarSekarang = $totalDp;
+                $sisaTagihan = $totalTagihan - $totalDp;
+                $statusPembayaran = 'DP';
+                $jenisPembayaran = 'DP';
+            }
+
+            $metode = strtoupper($request->metode_bayar);
+            $uangDiterima = $request->filled('uang_diterima') ? (float)$request->uang_diterima : $jumlahBayarSekarang;
+            $kembalian = max(0, $uangDiterima - $jumlahBayarSekarang);
+
+            // Generate No Nota & No Booking
+            $countToday = Booking::whereDate('tgl_transaksi', now()->toDateString())->count() + 1;
+            $noNota = 'CS/01/' . date('dmy') . '/' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
+            $noBooking = Booking::max('no_booking') + 1;
+
+            $booking = Booking::create([
+                'no_nota' => $noNota,
+                'no_booking' => $noBooking,
+                'id_pelanggan' => $idPelanggan,
+                'id_user' => auth()->id() ?? 2,
+                'tgl_transaksi' => now(),
+                'tgl_ambil' => $tglAmbil,
+                'tgl_pakai' => $tglPakai,
+                'tgl_kembali_rencana' => $tglKembali,
+                'durasi_sewa_hari' => 3,
+                'subtotal_produk' => $subtotal,
+                'total_tagihan' => $totalTagihan,
+                'opsi_pembayaran' => $opsi,
+                'persentase_dp' => 25.00,
+                'total_dp' => $totalDp,
+                'total_bayar' => $jumlahBayarSekarang,
+                'sisa_tagihan' => $sisaTagihan,
+                'metode_bayar_terakhir' => $metode,
+                'status_pembayaran' => $statusPembayaran,
+                'status_sewa' => 'booking',
+            ]);
+
+            // Insert detail booking (Trigger MySQL otomatis mengurangi stok_siap & menambah stok_disewa)
+            foreach ($itemsData as $it) {
+                DetailBooking::create([
+                    'id_booking' => $booking->id_booking,
+                    'id_produk' => $it['produk']->id_produk,
+                    'jumlah' => $it['jumlah'],
+                    'harga_satuan' => $it['harga_satuan'],
+                    'subtotal' => $it['subtotal'],
+                ]);
+            }
+
+            // Insert pembayaran
+            $noBukti = 'PAY-' . date('ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            PembayaranTransaksi::create([
+                'no_bukti_bayar' => $noBukti,
+                'id_booking' => $booking->id_booking,
+                'tgl_bayar' => now(),
+                'jenis_pembayaran' => $jenisPembayaran,
+                'jumlah_bayar' => $jumlahBayarSekarang,
+                'uang_diterima' => $uangDiterima,
+                'kembalian' => $kembalian,
+                'metode_bayar' => $metode,
+                'id_user' => auth()->id() ?? 2,
+                'keterangan' => 'Pembayaran ' . ($opsi === 'lunas' ? 'Lunas' : 'DP 25%') . ' kasir',
+            ]);
+
+            // Update total transaksi di pelanggan
+            Pelanggan::where('id_pelanggan', $idPelanggan)->increment('total_transaksi');
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Transaksi kasir berhasil dicatat!',
+                'data' => [
+                    'id_booking' => $booking->id_booking,
+                    'no_nota' => $booking->no_nota,
+                    'no_booking' => $booking->no_booking,
+                    'total_tagihan' => $totalTagihan,
+                    'total_bayar' => $jumlahBayarSekarang,
+                    'kembalian' => $kembalian,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memproses transaksi kasir: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+}

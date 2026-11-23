@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/data-nota.css">
   <script src="../js/global.js"></script>
+  <script src="../js/api.js"></script>
 </head>
 <body>
   <div class="app-container">
@@ -132,10 +133,12 @@
 
               <div class="select-filter-wrapper">
                 <div class="filter-badge-btn">Filter</div>
-                <select class="filter-select">
-                  <option>Bulan & Tahun</option>
-                  <option>November 2026</option>
-                  <option>Desember 2026</option>
+                <select class="filter-select" id="filterSelect" onchange="handleFilterNota(this.value)">
+                  <option value="SEMUA">Bulan & Tahun (Semua)</option>
+                  <option value="11">November 2026</option>
+                  <option value="12">Desember 2026</option>
+                  <option value="LUNAS">Status: LUNAS</option>
+                  <option value="DP">Status: DP</option>
                 </select>
               </div>
             </div>
@@ -145,7 +148,7 @@
           <div class="page-toolbar">
             <div class="search-input-wrapper" style="width: 320px;">
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" class="search-input" placeholder="Cari ...">
+              <input type="text" class="search-input" id="searchNotaInput" placeholder="Cari no nota, customer, kasir ..." oninput="handleSearchNota(this.value)">
             </div>
           </div>
 
@@ -274,14 +277,96 @@
   </div>
 
   <script>
+    let currentBookingId = 2;
     let currentTagihan = 281250;
     let selectedMethod = 'Tunai';
+    let searchDebounceTimer = null;
 
     function formatRupiah(num) {
       return 'Rp ' + Number(num).toLocaleString('id-ID');
     }
 
-    function openBayarModal(noNota, noBooking, amount, customer) {
+    // Memuat data real dari Backend Laravel 13 API
+    async function loadDataNota(filters = {}) {
+      const tbody = document.querySelector('.data-nota-table tbody');
+      if (!tbody) return;
+
+      try {
+        const isOnline = await SanggaraAPI.isOnline();
+        if (!isOnline) {
+          console.info('Backend Laravel 13 belum aktif di http://127.0.0.1:8000. Menampilkan data template awal.');
+          return;
+        }
+
+        const res = await SanggaraAPI.getNotaList(filters);
+        if (res.status === 'success' && Array.isArray(res.data)) {
+          renderTableRows(res.data);
+        }
+      } catch (err) {
+        console.error('Gagal mengambil data nota dari API:', err);
+      }
+    }
+
+    function renderTableRows(data) {
+      const tbody = document.querySelector('.data-nota-table tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 28px; color: #94a3b8; font-weight: 500;">Tidak ada data nota transaksi yang sesuai filter.</td></tr>`;
+        return;
+      }
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.id = `rowBooking${row.id_booking}`;
+        const isLunas = row.status === 'LUNAS';
+
+        tr.innerHTML = `
+          <td class="cell-bold">${row.no_nota}</td>
+          <td>${row.no_booking}</td>
+          <td>${row.waktu}</td>
+          <td class="cell-bold">${row.kasir}</td>
+          <td class="cell-bold">${row.customer}</td>
+          <td>${row.total_dp_formatted}</td>
+          <td>${row.total_tagihan_formatted}</td>
+          <td id="row${row.id_booking}BayarVal">${row.bayar_formatted}</td>
+          <td id="row${row.id_booking}SisaVal">${row.sisa_tagihan_formatted}</td>
+          <td id="row${row.id_booking}MetodeVal">${row.metode_bayar}</td>
+          <td class="cell-bold" id="row${row.id_booking}StatusVal">${row.status}</td>
+          <td>
+            <div class="actions-cell-pills" id="row${row.id_booking}ActionContainer">
+              ${isLunas 
+                ? `<span class="pill-action pill-lunas">LUNAS</span>`
+                : `<button type="button" class="pill-action pill-bayar" id="btnBayarRow${row.id_booking}" onclick="openBayarModal('${row.no_nota}', ${row.id_booking}, ${row.sisa_tagihan}, '${row.customer}')">BAYAR</button>`
+              }
+              <a href="nota.html?id=${row.id_booking}" id="linkDetailRow${row.id_booking}" class="pill-action pill-detail">DETAIL</a>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleSearchNota(keyword) {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        loadDataNota({ q: keyword });
+      }, 300);
+    }
+
+    function handleFilterNota(val) {
+      if (val === 'SEMUA') {
+        loadDataNota();
+      } else if (val === 'LUNAS' || val === 'DP') {
+        loadDataNota({ status: val });
+      } else {
+        loadDataNota({ month: val, year: 2026 });
+      }
+    }
+
+    function openBayarModal(noNota, idBooking, amount, customer) {
+      currentBookingId = idBooking;
       currentTagihan = amount;
       document.getElementById('modalTagihanVal').textContent = formatRupiah(amount);
       document.getElementById('modalUangInput').value = formatRupiah(amount);
@@ -311,7 +396,6 @@
       let rawVal = inputEl.value.replace(/[^0-9]/g, '');
       let numVal = rawVal ? parseInt(rawVal, 10) : 0;
       
-      // Update Kembalian
       const diff = numVal - currentTagihan;
       const kembalianEl = document.getElementById('modalKembalianVal');
       if (diff >= 0) {
@@ -325,35 +409,52 @@
       inputEl.value = numVal > 0 ? formatRupiah(numVal) : '';
     }
 
-    function submitModalPelunasan() {
-      // 1. Update row 2 di tabel secara instan
-      const bayarCell = document.getElementById('row2BayarVal');
-      const sisaCell = document.getElementById('row2SisaVal');
-      const statusCell = document.getElementById('row2StatusVal');
-      const metodeCell = document.getElementById('row2MetodeVal');
-      const actionCell = document.getElementById('row2ActionContainer');
-      const linkDetail = document.getElementById('linkDetailRow2');
+    async function submitModalPelunasan() {
+      const uangRaw = document.getElementById('modalUangInput').value.replace(/[^0-9]/g, '');
+      const uangVal = uangRaw ? parseInt(uangRaw, 10) : currentTagihan;
 
-      if (bayarCell && sisaCell && statusCell && actionCell) {
-        bayarCell.textContent = 'RP 375.000';
-        sisaCell.textContent = '0';
-        metodeCell.textContent = selectedMethod.toUpperCase();
-        statusCell.textContent = 'LUNAS';
+      try {
+        const isOnline = await SanggaraAPI.isOnline();
+        if (isOnline) {
+          // Kirim POST ke Backend Laravel 13 API
+          const res = await SanggaraAPI.bayarPelunasan({
+            id_booking: currentBookingId,
+            metode_bayar: selectedMethod.toUpperCase(),
+            uang_diterima: uangVal,
+          });
 
-        actionCell.innerHTML = `
-          <span class="pill-action pill-lunas">LUNAS</span>
-          <a href="nota.html?type=lunas" class="pill-action pill-detail">DETAIL</a>
-        `;
+          closeBayarModal();
+          showSanggaraToast(res.message, currentBookingId);
+          // Muat ulang data terbaru langsung dari database
+          await loadDataNota();
+        } else {
+          // Fallback UI instant jika backend sedang offline
+          const bayarCell = document.getElementById(`row${currentBookingId}BayarVal`) || document.getElementById('row2BayarVal');
+          const sisaCell = document.getElementById(`row${currentBookingId}SisaVal`) || document.getElementById('row2SisaVal');
+          const statusCell = document.getElementById(`row${currentBookingId}StatusVal`) || document.getElementById('row2StatusVal');
+          const metodeCell = document.getElementById(`row${currentBookingId}MetodeVal`) || document.getElementById('row2MetodeVal');
+          const actionCell = document.getElementById(`row${currentBookingId}ActionContainer`) || document.getElementById('row2ActionContainer');
+
+          if (bayarCell && sisaCell && statusCell && actionCell) {
+            bayarCell.textContent = 'RP 375.000';
+            sisaCell.textContent = '0';
+            metodeCell.textContent = selectedMethod.toUpperCase();
+            statusCell.textContent = 'LUNAS';
+
+            actionCell.innerHTML = `
+              <span class="pill-action pill-lunas">LUNAS</span>
+              <a href="nota.html?id=${currentBookingId}" class="pill-action pill-detail">DETAIL</a>
+            `;
+          }
+          closeBayarModal();
+          showSanggaraToast(`Pelunasan booking #${currentBookingId} senilai ${formatRupiah(currentTagihan)} via ${selectedMethod} berhasil diproses!`, currentBookingId);
+        }
+      } catch (err) {
+        alert(err.message || 'Gagal memproses pembayaran pelunasan.');
       }
-
-      // 2. Tutup Modal
-      closeBayarModal();
-
-      // 3. Tampilkan Toast Sanggara (bukan alert Windows)
-      showSanggaraToast(`Pelunasan booking #2 senilai ${formatRupiah(currentTagihan)} via ${selectedMethod} berhasil diproses!`);
     }
 
-    function showSanggaraToast(message) {
+    function showSanggaraToast(message, idBooking = 2) {
       const existing = document.querySelector('.toast-notification');
       if (existing) existing.remove();
 
@@ -362,7 +463,7 @@
       toast.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
         <span>${message}</span>
-        <a href="nota.html?type=lunas" class="toast-link">Lihat Struk &rarr;</a>
+        <a href="nota.html?id=${idBooking}" class="toast-link">Lihat Struk &rarr;</a>
       `;
 
       document.body.appendChild(toast);
@@ -371,7 +472,7 @@
         toast.style.transform = 'translateY(20px)';
         toast.style.transition = 'all 0.3s ease';
         setTimeout(() => toast.remove(), 300);
-      }, 4500);
+      }, 5000);
     }
 
     // Close on click outside modal
@@ -387,6 +488,11 @@
       if (e.key === 'Escape') {
         closeBayarModal();
       }
+    });
+
+    // Load data from Laravel backend on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDataNota();
     });
   </script>
 </body>

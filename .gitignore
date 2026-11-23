@@ -1,0 +1,17 @@
+# Laravel Backend
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/.env.backup
+backend/.phpunit.result.cache
+backend/storage/*.key
+backend/storage/logs/*.log
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
