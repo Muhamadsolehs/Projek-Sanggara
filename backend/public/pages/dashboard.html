@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="../image/logo.png" type="image/png">
+  <link rel="icon" href="../image/logo.png" type="image/png">
+  <title>Dashboard - Sanggara Management System</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <script src="../js/global.js"></script>
+  <script src="../js/api.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">sanggara<span>.</span></a>
+        <button class="btn-sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item active">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <!-- Laporan Dropdown -->
+        <div class="nav-group">
+          <div class="nav-item" onclick="this.parentElement.classList.toggle('open')">
+            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></span>
+            <span class="nav-label">Laporan</span>
+            <span class="nav-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+          </div>
+          <div class="nav-sublist">
+            <a href="laporan-pemasukan.html" class="subnav-item">Laporan Pemasukan</a>
+            <a href="laporan-pengeluaran.html" class="subnav-item">Laporan Pengeluaran</a>
+          </div>
+        </div>
+
+        <!-- Analisa Laporan Dropdown -->
+        <div class="nav-group">
+          <div class="nav-item" onclick="this.parentElement.classList.toggle('open')">
+            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span>
+            <span class="nav-label">Analisa Laporan</span>
+            <span class="nav-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+          </div>
+          <div class="nav-sublist">
+            <a href="analisa-pelanggan.html" class="subnav-item">Analisa Pelanggan</a>
+            <a href="analisa-keuangan.html" class="subnav-item">Analisa Keuangan</a>
+          </div>
+        </div>
+
+        <a href="kelola-produk.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></span>
+          <span class="nav-label">Kelola Produk</span>
+        </a>
+
+        <a href="kelola-pelanggan.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+          <span class="nav-label">Kelola Pelanggan</span>
+        </a>
+
+        <a href="kelola-kategori.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg></span>
+          <span class="nav-label">Kelola Kategori</span>
+        </a>
+
+        <a href="booking-kalender.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
+          <span class="nav-label">Booking</span>
+        </a>
+
+        <a href="kasir.html" class="nav-item">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></span>
+          <span class="nav-label">Kasir</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="app-main">
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="btn-header-sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle Sidebar" title="Buka/Tutup Sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <a href="dashboard.html" class="header-brand-logo">sanggara<span>.</span></a>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn-icon-badge" aria-label="Notifications">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span class="badge-dot"></span>
+          </button>
+          
+          <div class="user-profile">
+            <div class="user-avatar">AS</div>
+            <div class="user-info">
+              <span class="user-name">Amanah</span>
+              <span class="user-role">Solusi</span>
+            </div>
+            <button class="btn-user-more" aria-label="User Options">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Workspace -->
+      <main class="content-body">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+          <div class="banner-left">
+            <div class="banner-icon-box">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M15 10v11M12 2l10 8H2l10-8z"></path></svg>
+            </div>
+            <div class="banner-title-area">
+              <div class="banner-tagline">Sanggara <span style="font-weight: 400; opacity: 0.8; text-transform: none;">Powered by Pratama Solusi Teknologi</span></div>
+              <h2 class="banner-heading">SAATNYA SIAPKAN KEBUTUHAN BISNISMU</h2>
+              <p class="banner-desc">Sanggara powered by PST siap dukung kebutuhan bisnismu.</p>
+            </div>
+          </div>
+          <button class="banner-collapse-btn" aria-label="Collapse banner">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          </button>
+        </div>
+
+        <!-- 4 KPI Metrics -->
+        <div class="stat-cards-grid">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Surplus Keuangan Bersih</span>
+              <div class="stat-icon-wrapper icon-blue">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="18" y2="8"></line><line x1="6" y1="12" x2="6" y2="12"></line><line x1="10" y1="12" x2="18" y2="12"></line><line x1="6" y1="16" x2="6" y2="16"></line><line x1="10" y1="16" x2="18" y2="16"></line></svg>
+              </div>
+            </div>
+            <div class="stat-value" id="dashSurplusVal">Rp 164.300.000</div>
+            <div class="stat-footer success" id="dashSurplusFooter">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              <span>Margin 66,1% • Rp 248,5 jt</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Total Transaksi Booking</span>
+              <div class="stat-icon-wrapper icon-cyan">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              </div>
+            </div>
+            <div class="stat-value" id="dashBookingVal">602 Transaksi</div>
+            <div class="stat-footer success" id="dashBookingFooter">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <span>94,2% Lunas • 5,8% DP (25%)</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Pasar Terbesar (17 Kec.)</span>
+              <div class="stat-icon-wrapper icon-yellow">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+            </div>
+            <div class="stat-value" id="dashPasarVal">Kec. Purwakarta</div>
+            <div class="stat-footer" id="dashPasarFooter">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <span>148 Booking (24,6% total)</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Kesiapan Stok Busana</span>
+              <div class="stat-icon-wrapper icon-green">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3c0 .77.29 1.48.77 2L2 14l3 3 7-5 7 5 3-3-7.77-7A3 3 0 0 0 15 5a3 3 0 0 0-3-3z"></path></svg>
+              </div>
+            </div>
+            <div class="stat-value" id="dashStokVal">194 / 245 Unit</div>
+            <div class="stat-footer success" id="dashStokFooter">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <span>79,2% Siap Sewa • 38 Disewa</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle Analytics Row -->
+        <div class="analytics-row">
+          <!-- Arus Kas & Performa Kategori -->
+          <div class="card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Kesimpulan Arus Kas & Performa Kategori</h3>
+                <p class="card-subtitle">Perbandingan pemasukan sewa terhadap beban operasional dan kontribusi produk terlaris.</p>
+              </div>
+              <a href="analisa-keuangan.html" class="card-link">Lihat Detail &rarr;</a>
+            </div>
+
+            <!-- Visual Bar Chart -->
+            <div class="cashflow-chart-container">
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 55px;" title="Pemasukan Jan: Rp 18jt"></div>
+                  <div class="bar bar-red" style="height: 35px;" title="Pengeluaran Jan: Rp 10jt"></div>
+                </div>
+                <span class="month-label">Jan</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 65px;"></div>
+                  <div class="bar bar-red" style="height: 40px;"></div>
+                </div>
+                <span class="month-label">Feb</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 75px;"></div>
+                  <div class="bar bar-red" style="height: 38px;"></div>
+                </div>
+                <span class="month-label">Mar</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 90px;"></div>
+                  <div class="bar bar-red" style="height: 45px;"></div>
+                </div>
+                <span class="month-label">Apr</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 80px;"></div>
+                  <div class="bar bar-red" style="height: 42px;"></div>
+                </div>
+                <span class="month-label">Mei</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 95px;"></div>
+                  <div class="bar bar-red" style="height: 50px;"></div>
+                </div>
+                <span class="month-label">Jun</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 85px;"></div>
+                  <div class="bar bar-red" style="height: 48px;"></div>
+                </div>
+                <span class="month-label">Jul</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 110px;"></div>
+                  <div class="bar bar-red" style="height: 60px;"></div>
+                </div>
+                <span class="month-label">Agu</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 90px;"></div>
+                  <div class="bar bar-red" style="height: 45px;"></div>
+                </div>
+                <span class="month-label">Sep</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 135px;"></div>
+                  <div class="bar bar-red" style="height: 52px;"></div>
+                </div>
+                <span class="month-label">Okt</span>
+              </div>
+              <div class="chart-month-col">
+                <div class="bars-pair">
+                  <div class="bar bar-green" style="height: 85px;"></div>
+                  <div class="bar bar-red" style="height: 40px;"></div>
+                </div>
+                <span class="month-label">Nov</span>
+              </div>
+            </div>
+
+            <!-- 3 Highlights -->
+            <div class="cashflow-metrics-row">
+              <div class="metric-box">
+                <div class="metric-box-label">Kategori Terlaris</div>
+                <div class="metric-box-title">Pengantin (52%)</div>
+                <div class="metric-box-desc">Diikuti Kostum Tari</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-box-label">Pos Biaya Terbesar</div>
+                <div class="metric-box-title">Laundry (38%)</div>
+                <div class="metric-box-desc">Gaji Staf 34% • Stok</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-box-label">Puncak Musim Sewa</div>
+                <div class="metric-box-title">Okt (Rp 31,2 jt)</div>
+                <div class="metric-box-desc">Surplus bersih Rp 21,4</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top 5 Kecamatan -->
+          <div class="card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Top 5 Kecamatan</h3>
+                <p class="card-subtitle">Dari 17 kecamatan Purwakarta</p>
+              </div>
+              <a href="analisa-pelanggan.html" class="card-link">Semua 17 &rarr;</a>
+            </div>
+
+            <div class="rank-list">
+              <div class="rank-item">
+                <div class="rank-item-header">
+                  <span class="rank-name">#1 Kec. Purwakarta</span>
+                  <span class="rank-stat">148 booking (24,6%)</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill fill-teal" style="width: 100%;"></div>
+                </div>
+              </div>
+
+              <div class="rank-item">
+                <div class="rank-item-header">
+                  <span class="rank-name">#2 Kec. Babakancikao</span>
+                  <span class="rank-stat">86 booking (14,3%)</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill fill-teal" style="width: 58%;"></div>
+                </div>
+              </div>
+
+              <div class="rank-item">
+                <div class="rank-item-header">
+                  <span class="rank-name">#3 Kec. Jatiluhur</span>
+                  <span class="rank-stat">64 booking (10,6%)</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill fill-teal" style="width: 43%;"></div>
+                </div>
+              </div>
+
+              <div class="rank-item">
+                <div class="rank-item-header">
+                  <span class="rank-name">#4 Kec. Campaka</span>
+                  <span class="rank-stat">56 booking (9,3%)</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill fill-blue" style="width: 38%;"></div>
+                </div>
+              </div>
+
+              <div class="rank-item">
+                <div class="rank-item-header">
+                  <span class="rank-name">#5 Kec. Bungursari</span>
+                  <span class="rank-stat">49 booking (8,1%)</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill fill-blue" style="width: 33%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Inventory Status -->
+        <div class="card">
+          <div class="card-header-flex" style="margin-bottom: 0;">
+            <h3 class="card-title">Status Kondisi Inventaris</h3>
+            <span class="badge badge-info" id="inventoryTotalBadge" style="font-size: 13px; font-weight: 700;">245 Unit</span>
+          </div>
+          <div class="inventory-status-bar">
+            <div class="segment-siap" id="segmentSiap" title="Siap Sewa: 79.2%"></div>
+            <div class="segment-sewa" id="segmentSewa" title="Sedang Disewa: 15.5%"></div>
+            <div class="segment-cuci" id="segmentCuci" title="Sedang Dicuci: 4.1%"></div>
+            <div class="segment-rusak" id="segmentRusak" title="Perbaikan: 1.2%"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    async function loadDashboardRealData() {
+      try {
+        const isOnline = await SanggaraAPI.isOnline();
+        if (!isOnline) {
+          console.info('Backend Laravel 13 belum aktif di http://127.0.0.1:8000. Menampilkan data template awal.');
+          return;
+        }
+
+        const res = await SanggaraAPI.getDashboard();
+        if (res.status === 'success' && res.data && res.data.cards) {
+          const cards = res.data.cards;
+
+          // 1. Surplus Keuangan
+          if (cards.surplus_keuangan) {
+            document.getElementById('dashSurplusVal').textContent = cards.surplus_keuangan.formatted;
+            document.getElementById('dashSurplusFooter').querySelector('span').textContent = 
+              `Margin ${cards.surplus_keuangan.margin} • Pemasukan Rp ` + (cards.surplus_keuangan.total_pemasukan / 1000000).toFixed(1) + ' jt';
+          }
+
+          // 2. Transaksi Booking
+          if (cards.transaksi_booking) {
+            document.getElementById('dashBookingVal').textContent = `${cards.transaksi_booking.total} Transaksi`;
+            document.getElementById('dashBookingFooter').querySelector('span').textContent = 
+              `${cards.transaksi_booking.persen_lunas} Lunas • ${cards.transaksi_booking.persen_dp} DP (25%)`;
+          }
+
+          // 3. Pasar Terbesar
+          if (cards.pasar_terbesar) {
+            document.getElementById('dashPasarVal').textContent = cards.pasar_terbesar.nama_kecamatan;
+            document.getElementById('dashPasarFooter').querySelector('span').textContent = 
+              `${cards.pasar_terbesar.total_booking} Booking (${cards.pasar_terbesar.persentase_pasar} total)`;
+          }
+
+          // 4. Kesiapan Stok
+          if (cards.kesiapan_stok) {
+            document.getElementById('dashStokVal').textContent = `${cards.kesiapan_stok.siap_sewa} / ${cards.kesiapan_stok.total_unit} Unit`;
+            document.getElementById('dashStokFooter').querySelector('span').textContent = 
+              `${cards.kesiapan_stok.persen_siap} Siap Sewa • ${cards.kesiapan_stok.disewa} Disewa`;
+            const badge = document.getElementById('inventoryTotalBadge');
+            if (badge) badge.textContent = `${cards.kesiapan_stok.total_unit} Unit`;
+          }
+        }
+      } catch (err) {
+        console.warn('Dashboard API real-data info:', err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboardRealData();
+    });
+  </script>
+</body>
+</html>

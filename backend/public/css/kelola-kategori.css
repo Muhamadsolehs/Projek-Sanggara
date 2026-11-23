@@ -1,0 +1,15 @@
+/* ==========================================================================
+   PAGE: KELOLA KATEGORI (Data Kategori)
+   File: css/kelola-kategori.css
+   ========================================================================== */
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.kategori-table th, .kategori-table td {
+  text-align: left;
+}

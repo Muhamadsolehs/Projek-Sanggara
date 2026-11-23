@@ -1,0 +1,227 @@
+/* ==========================================================================
+   PAGE: BOOKING KALENDER (Data Booking & Pesanan - Kalender)
+   File: css/booking-kalender.css
+   ========================================================================== */
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.calendar-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Calendar Filter Toolbar */
+.calendar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.calendar-filter-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 4px 6px 4px 16px;
+  background-color: var(--color-white);
+}
+
+.calendar-filter-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.calendar-select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  cursor: pointer;
+  outline: none;
+  padding: 4px 16px 4px 6px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 2px center;
+}
+
+.calendar-nav-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition-fast);
+}
+
+.calendar-nav-btn:hover {
+  background-color: #f1f5f9;
+  color: var(--color-text-main);
+}
+
+/* Calendar Grid */
+.calendar-grid-container {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--color-white);
+}
+
+.calendar-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: #fafbfc;
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.weekday-col {
+  padding: 12px 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.weekday-minggu { color: #ef4444; }
+.weekday-sabtu { color: #0284c7; }
+
+.calendar-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.cal-day-cell {
+  min-height: 105px;
+  border-right: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  background-color: var(--color-white);
+  transition: background-color var(--transition-fast);
+}
+
+.cal-day-cell:nth-child(7n) {
+  border-right: none;
+}
+
+.cal-day-cell.muted-day {
+  background-color: #fafbfc;
+  color: #cbd5e1;
+}
+
+.day-number {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.muted-day .day-number {
+  color: #94a3b8;
+}
+
+.day-cell-id {
+  font-size: 10px;
+  color: #cbd5e1;
+  text-align: right;
+  align-self: flex-end;
+}
+
+/* Event Schedule Tags */
+.event-pills-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0;
+}
+
+.event-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  background-color: var(--color-white);
+  border: 1.5px solid;
+}
+
+.event-pill-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.event-num-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: var(--color-white);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.event-tag-sub {
+  font-size: 9.5px;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+}
+
+.event-dot-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Event Types */
+.event-ambil {
+  border-color: #00b87c;
+  color: #00875a;
+}
+.event-ambil .event-num-circle { background-color: #00b87c; }
+.event-ambil .event-tag-sub { background-color: #d1fae5; color: #00875a; }
+.event-ambil .event-dot-indicator { background-color: #00b87c; }
+
+.event-pakai {
+  border-color: #0284c7;
+  color: #0369a1;
+}
+.event-pakai .event-num-circle { background-color: #0284c7; }
+.event-pakai .event-tag-sub { background-color: #e0f2fe; color: #0369a1; }
+.event-pakai .event-dot-indicator { background-color: #0284c7; }
+
+.event-kembali {
+  border-color: #f59e0b;
+  color: #b45309;
+}
+.event-kembali .event-num-circle { background-color: #f59e0b; }
+.event-kembali .event-tag-sub { background-color: #fef3c7; color: #b45309; }
+.event-kembali .event-dot-indicator { background-color: #f59e0b; }

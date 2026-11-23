@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="../image/logo.png" type="image/png">
+  <link rel="icon" href="../image/logo.png" type="image/png">
+  <title>Tambah Pelanggan - Sanggara Management System</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/tambah-pelanggan.css">
+</head>
+<body>
+  <div class="modal-page-layout">
+    <!-- Top Bar -->
+    <header class="modal-header-bar">
+      <div class="modal-header-left">
+        <a href="kelola-pelanggan.html" class="btn-close-modal" aria-label="Tutup">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </a>
+        <h1 class="modal-header-title">Tambah Pelanggan</h1>
+      </div>
+
+      <div class="modal-header-logo">sanggara.</div>
+    </header>
+
+    <!-- Modal Form Body -->
+    <main class="modal-body-container">
+      <div class="form-modal-card">
+        <form class="form-stack" action="kelola-pelanggan.html" method="get">
+          <!-- Nama Konsumen -->
+          <div class="form-group">
+            <div class="form-field-header">
+              <label class="form-field-label">Nama Konsumen<span class="required-asterisk">*</span></label>
+              <span class="field-counter">15/25</span>
+            </div>
+            <input type="text" class="form-control-input" placeholder="Masukkan nama konsumen" required>
+          </div>
+
+          <!-- Nomor Telepon -->
+          <div class="form-group">
+            <div class="form-field-header">
+              <label class="form-field-label">Nomor Telepon<span class="required-asterisk">*</span></label>
+              <span class="field-counter">0/50</span>
+            </div>
+            <input type="tel" class="form-control-input" placeholder="08xxxxxxxxxx" required>
+          </div>
+
+          <!-- Alamat -->
+          <div class="form-group">
+            <div class="form-field-header">
+              <label class="form-field-label">Alamat</label>
+              <span class="field-counter">0/50</span>
+            </div>
+            <div class="alamat-dual-select">
+              <select class="form-control-select">
+                <option value="">Pilih Kecamatan</option>
+                <option value="purwakarta">Kec. Purwakarta</option>
+                <option value="babakancikao">Kec. Babakancikao</option>
+                <option value="jatiluhur">Kec. Jatiluhur</option>
+              </select>
+              <select class="form-control-select">
+                <option value="">Pilih Kelurahan / Desa</option>
+                <option value="nagri-kaler">Nagri Kaler</option>
+                <option value="nagri-kidul">Nagri Kidul</option>
+                <option value="cihideung">Cihideung</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-footer-actions">
+            <a href="kelola-pelanggan.html" class="btn btn-text">Batal</a>
+            <button type="submit" class="btn btn-primary" style="padding: 9px 24px;">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

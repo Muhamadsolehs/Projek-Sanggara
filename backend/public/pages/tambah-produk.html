@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="../image/logo.png" type="image/png">
+  <link rel="icon" href="../image/logo.png" type="image/png">
+  <title>Tambah Barang - Sanggara Management System</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/tambah-produk.css">
+</head>
+<body>
+  <div class="modal-page-layout">
+    <!-- Top Bar -->
+    <header class="modal-header-bar">
+      <div class="modal-header-left">
+        <a href="kelola-produk.html" class="btn-close-modal" aria-label="Tutup">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </a>
+        <h1 class="modal-header-title">Tambah Barang</h1>
+      </div>
+
+      <div class="modal-header-logo">sanggara.</div>
+    </header>
+
+    <!-- Modal Form Body -->
+    <main class="modal-body-container">
+      <div class="form-modal-card">
+        <form class="form-stack" action="kelola-produk.html" method="get">
+          <!-- Nama Barang -->
+          <div class="form-group">
+            <div class="form-field-header">
+              <label class="form-field-label">Nama Barang<span class="required-asterisk">*</span></label>
+              <span class="field-counter">15/25</span>
+            </div>
+            <input type="text" class="form-control-input" placeholder="Masukkan nama barang" required>
+          </div>
+
+          <!-- Kategori -->
+          <div class="form-group">
+            <div class="form-field-header">
+              <label class="form-field-label">Kategori<span class="required-asterisk">*</span></label>
+              <span class="field-counter">0/50</span>
+            </div>
+            <select class="form-control-select" required>
+              <option value="">Pilih</option>
+              <option value="pengantin">Baju Pengantin</option>
+              <option value="tari">Kostum Tari</option>
+              <option value="kebaya">Kebaya Wisuda</option>
+            </select>
+          </div>
+
+          <!-- Kualitas -->
+          <div class="form-group">
+            <div class="form-field-header">
+              <label class="form-field-label">Kualitas</label>
+              <span class="field-counter">0/50</span>
+            </div>
+            <select class="form-control-select">
+              <option value="">Pilih</option>
+              <option value="premium">Premium</option>
+              <option value="standar">Standar</option>
+            </select>
+          </div>
+
+          <!-- Stok & Harga Sewa -->
+          <div class="form-grid-2cols">
+            <div class="form-group">
+              <label class="form-field-label">Stok</label>
+              <input type="number" class="form-control-input" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label class="form-field-label">Harga sewa</label>
+              <input type="text" class="form-control-input" placeholder="Rp 0">
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="form-group">
+            <label class="form-field-label">Status</label>
+            <input type="text" class="form-control-input" placeholder="Tersedia">
+          </div>
+
+          <!-- Foto -->
+          <div class="form-group">
+            <label class="form-field-label">Foto</label>
+            <p class="upload-subtext">Format gambar .jpg .jpeg .png dan ukuran minimum 100 × 100 (Untuk gambar optimal gunakan ukuran minimum 1000 × 1000 px).</p>
+            <div class="upload-dropzone">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-footer-actions">
+            <a href="kelola-produk.html" class="btn btn-text">Batal</a>
+            <button type="submit" class="btn btn-primary" style="padding: 9px 24px;">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

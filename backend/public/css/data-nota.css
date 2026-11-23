@@ -1,0 +1,369 @@
+/* ==========================================================================
+   PAGE: DATA NOTA (Tabel Data Nota Kasir & Booking)
+   File: css/data-nota.css
+   ========================================================================== */
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.title-with-breadcrumb {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title-header-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb-path {
+  font-size: 11.5px;
+  color: var(--color-text-light);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.data-nota-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-pesanan-link {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.btn-pesanan-link:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* Data Table Columns */
+.data-nota-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-nota-table th {
+  padding: 12px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.data-nota-table td {
+  padding: 14px 10px;
+  font-size: 12px;
+  color: var(--color-text-main);
+  border-bottom: 1px solid var(--color-border-light);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.cell-bold {
+  font-weight: 700;
+}
+
+/* Action Buttons Pills */
+.actions-cell-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill-action {
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.pill-lunas {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.pill-lunas:hover {
+  background-color: #a7f3d0;
+}
+
+.pill-bayar {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.pill-bayar:hover {
+  background-color: #fecaca;
+}
+
+.pill-detail {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.pill-detail:hover {
+  background-color: #bae6fd;
+}
+
+/* ==========================================================================
+   MODAL POPUP PELUNASAN (Custom Popup Sesuai Desain Sanggara)
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bayar-modal-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+.bayar-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bayar-modal-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.bayar-modal-amount {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.btn-modal-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  margin-left: 8px;
+}
+
+.btn-modal-close:hover {
+  color: #1e293b;
+  background-color: #f1f5f9;
+}
+
+/* Inner Box Container */
+.bayar-input-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bayar-input-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #1e293b;
+}
+
+.bayar-input-label svg {
+  color: var(--color-primary);
+}
+
+.bayar-text-input {
+  width: 100%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  outline: none;
+  transition: all var(--transition-fast);
+  font-family: var(--font-family);
+  background-color: #ffffff;
+}
+
+.bayar-text-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 184, 124, 0.12);
+}
+
+.bayar-change-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2px;
+}
+
+.change-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.change-amount {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Payment Methods Grid */
+.bayar-methods-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.method-option-pill {
+  padding: 9px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-family);
+}
+
+.method-option-pill:hover {
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.method-option-pill.active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: #f0fdf4;
+}
+
+/* Submit Pay Button */
+.btn-modal-pay-submit {
+  width: 100%;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 184, 124, 0.25);
+  transition: all var(--transition-fast);
+  font-family: var(--font-family);
+}
+
+.btn-modal-pay-submit:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+/* Toast Success Notification */
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #064e3b;
+  color: #ffffff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+  font-size: 13px;
+  animation: slideUpToast 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpToast {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-link {
+  color: #6ee7b7;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 6px;
+}

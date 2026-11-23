@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="../image/logo.png" type="image/png">
+  <link rel="icon" href="../image/logo.png" type="image/png">
+  <title>Struk Pembayaran - Sanggara Bunda Febri</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/nota.css">
+  <script src="../js/api.js"></script>
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header" style="justify-content: space-between; border-bottom: 1px solid var(--color-border-light);">
+    <a href="kasir.html" class="brand-logo" style="color: var(--color-primary); font-size: 22px;">sanggara<span>.</span></a>
+
+    <div class="header-actions">
+      <button class="btn-icon-badge" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span class="badge-dot"></span>
+      </button>
+      
+      <div class="user-profile">
+        <div class="user-avatar">AS</div>
+        <div class="user-info">
+          <span class="user-name">Amanah</span>
+          <span class="user-role">Solusi</span>
+        </div>
+        <button class="btn-user-more" aria-label="User Options">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Receipt Paper Section -->
+  <div class="receipt-page-wrapper">
+    <div class="receipt-paper-card">
+      <!-- Receipt Brand Header -->
+      <div class="receipt-header">
+        <div class="receipt-brand-name">Sanggar Bunda Febri</div>
+        <div class="receipt-brand-logo">SBF</div>
+        <div class="receipt-city">Purwakarta</div>
+        <div class="receipt-address">
+          Galeri SBF<br>
+          Jln. veteran gang keramik perum cihideung indah blok A 1
+        </div>
+        <div class="receipt-phone">081802238821</div>
+      </div>
+
+      <hr class="receipt-dashed-line">
+
+      <!-- Metadata -->
+      <div class="receipt-meta-grid">
+        <div class="receipt-meta-row">
+          <span class="meta-label">No Nota</span>
+          <span class="meta-colon">:</span>
+          <span class="meta-val" id="notaNum">CS/01/261116/0001</span>
+        </div>
+        <div class="receipt-meta-row">
+          <span class="meta-label">Waktu</span>
+          <span class="meta-colon">:</span>
+          <span class="meta-val" id="notaTime">16 Nov 26 10:50</span>
+        </div>
+        <div class="receipt-meta-row">
+          <span class="meta-label">No Urut</span>
+          <span class="meta-colon">:</span>
+          <span class="meta-val" id="bookingNum">1</span>
+        </div>
+        <div class="receipt-meta-row">
+          <span class="meta-label">Kasir</span>
+          <span class="meta-colon">:</span>
+          <span class="meta-val" id="kasirName">Ahmad Rivaldy</span>
+        </div>
+        <div class="receipt-meta-row">
+          <span class="meta-label">Customer</span>
+          <span class="meta-colon">:</span>
+          <span class="meta-val" id="customerName">Cordelia</span>
+        </div>
+      </div>
+
+      <hr class="receipt-dashed-line">
+
+      <!-- Rincian Item Barang -->
+      <div class="receipt-items-list" id="receiptItemsList">
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Baju Tari Jaipong Daun Asih (Atasan)</span>
+          <div class="receipt-item-calc">
+            <span>1x @60.000</span>
+            <span>60.000</span>
+          </div>
+        </div>
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Kain Sinjang Jaipong Prada Emas</span>
+          <div class="receipt-item-calc">
+            <span>1x @30.000</span>
+            <span>30.000</span>
+          </div>
+        </div>
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Aksesoris Siger Sunda & Kembang Goyang</span>
+          <div class="receipt-item-calc">
+            <span>1x @20.000</span>
+            <span>20.000</span>
+          </div>
+        </div>
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Paket Kostum Tambahan & Selendang</span>
+          <div class="receipt-item-calc">
+            <span>1x @265.000</span>
+            <span>265.000</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="receipt-dashed-line">
+
+      <!-- Calculation Table -->
+      <div class="receipt-calc-table" id="calcTableContainer">
+        <div class="receipt-calc-row">
+          <span id="subtotalLabel">Subtotal 4 Produk</span>
+          <span id="subtotalVal">375.000</span>
+        </div>
+        <div class="receipt-calc-row bold-row">
+          <span>Total Harga Sewa</span>
+          <span id="totalSewaVal">375.000</span>
+        </div>
+      </div>
+
+      <hr class="receipt-dashed-line">
+
+      <!-- Status Highlight Box (Green tint container in screenshot) -->
+      <div class="receipt-status-card" id="statusCardBox">
+        <div class="receipt-calc-row" id="statusPembayaranRow">
+          <span>Status Pembayaran</span>
+          <span class="badge-lunas-receipt">LUNAS 100%</span>
+        </div>
+        <div class="receipt-calc-row" id="dpTerbayarRow">
+          <span>DP Terbayar Sebelumnya</span>
+          <span id="dpTerbayarVal">Rp 93.750</span>
+        </div>
+        <div class="receipt-calc-row" id="pelunasanHariIniRow">
+          <span>Pelunasan Hari Ini</span>
+          <span id="pelunasanHariIniVal">+ Rp 281.250</span>
+        </div>
+        <div class="receipt-calc-row sisa-bayar-row" id="sisaBayarRow">
+          <span id="sisaBayarLabel">SISA BAYAR (PELUNASAN)</span>
+          <span id="sisaBayarVal" class="sisa-bayar-lunas">Rp 0 (LUNAS)</span>
+        </div>
+        <div class="sisa-bayar-note" id="sisaBayarNote" style="display: none;">*Wajib dilunasi saat pengambilan kostum</div>
+      </div>
+
+      <hr class="receipt-dashed-line">
+
+      <!-- Payment Breakdown -->
+      <div class="receipt-calc-table">
+        <div class="receipt-calc-row">
+          <span id="paymentMethodLabel">Metode Pelunasan</span>
+          <span id="tunaiReceivedVal">Tunai (Cash)</span>
+        </div>
+        <div class="receipt-calc-row">
+          <span>Uang Diterima</span>
+          <span id="totalReceivedVal">300.000</span>
+        </div>
+        <div class="receipt-calc-row">
+          <span>Kembalian Customer</span>
+          <span id="kembalianVal">18.750</span>
+        </div>
+        <div class="receipt-calc-row bold-row" id="totalBersihRow" style="margin-top: 2px;">
+          <span>Total Bersih Terbayar</span>
+          <span id="totalBersihVal">375.000</span>
+        </div>
+      </div>
+
+      <hr class="receipt-dashed-line">
+
+      <!-- Policy Info -->
+      <div class="receipt-policy-box" id="policyBox">
+        Pastikan Pesanan Anda Sudah Sesuai. Pembayaran telah Lunas 100%. Pengembalian sewa tepat waktu maksimal H+3 dari hari pemakaian acara.
+      </div>
+
+      <!-- Socials -->
+      <div class="receipt-socials">
+        youtube: sanggarbundafebri<br>
+        instagram: sewakostumpurwakarta
+      </div>
+
+      <!-- Footer Stamp -->
+      <div class="receipt-stamp-footer">
+        <span id="footerPaymentStatus">Terbayar (DP) 16 Nov 26 14 13</span><br>
+        <span id="footerPrinter">dicetak: Ahmad Rivaldy</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons below paper -->
+    <div class="receipt-actions-container">
+      <button type="button" class="btn-print-receipt" onclick="window.print()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        <span>Cetak Struk SBF</span>
+      </button>
+
+      <a href="data-nota.html" class="btn-back-kasir">
+        <span>Kembali</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Dynamic Receipt Hydration Script -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const viewType = urlParams.get('type');
+
+      const bookingId = urlParams.get('id');
+
+      // Jika ada parameter ?id=... coba muat langsung data real dari Laravel 13 API
+      if (bookingId) {
+        loadNotaFromApi(bookingId);
+        return;
+      }
+
+      // If user specifically requested 'dp' view
+      if (viewType === 'dp') {
+        renderDpReceipt();
+        return;
+      }
+
+      // If localStorage has an active checkout order and no explicit type
+      const stored = localStorage.getItem('sanggara_current_order');
+      if (stored && !viewType) {
+        try {
+          const order = JSON.parse(stored);
+          if (order && order.items && order.items.length > 0) {
+            renderFromOrder(order);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      // Default: Coba muat ID 1 dari API atau fallback ke Lunas 100%
+      loadNotaFromApi(1);
+    });
+
+    async function loadNotaFromApi(id) {
+      try {
+        const isOnline = await SanggaraAPI.isOnline();
+        if (!isOnline) {
+          renderLunasReceipt();
+          return;
+        }
+
+        const res = await SanggaraAPI.getNotaDetail(id);
+        if (res.status === 'success' && res.data) {
+          renderReceiptFromApiData(res.data);
+        } else {
+          renderLunasReceipt();
+        }
+      } catch (err) {
+        console.warn('API getNotaDetail fallback:', err);
+        renderLunasReceipt();
+      }
+    }
+
+    function renderReceiptFromApiData(data) {
+      document.getElementById('customerName').textContent = data.customer;
+      document.getElementById('notaNum').textContent = data.no_nota;
+      document.getElementById('notaTime').textContent = data.waktu;
+      document.getElementById('bookingNum').textContent = data.no_booking;
+      document.getElementById('kasirName').textContent = data.kasir;
+
+      const itemsContainer = document.getElementById('receiptItemsList');
+      itemsContainer.innerHTML = '';
+
+      if (data.items && data.items.length > 0) {
+        data.items.forEach(it => {
+          const block = document.createElement('div');
+          block.className = 'receipt-item-block';
+          block.innerHTML = `
+            <span class="receipt-item-name">${it.nama_produk}</span>
+            <div class="receipt-item-calc">
+              <span>${it.jumlah}x @${it.harga_formatted}</span>
+              <span>${it.subtotal_formatted}</span>
+            </div>
+          `;
+          itemsContainer.appendChild(block);
+        });
+      }
+
+      document.getElementById('subtotalLabel').textContent = `Subtotal ${data.total_items_count} Produk`;
+      document.getElementById('subtotalVal').textContent = data.subtotal_formatted;
+      document.getElementById('totalSewaVal').textContent = data.total_harga_sewa_formatted;
+
+      const isLunas = data.status_pembayaran === 'LUNAS' || data.sisa_bayar <= 0;
+
+      if (isLunas) {
+        document.getElementById('statusPembayaranRow').style.display = 'flex';
+        document.getElementById('statusPembayaranRow').querySelector('.badge-lunas-receipt').textContent = 'LUNAS 100%';
+        document.getElementById('statusPembayaranRow').querySelector('.badge-lunas-receipt').className = 'badge-lunas-receipt';
+
+        document.getElementById('dpTerbayarRow').style.display = 'flex';
+        document.getElementById('dpTerbayarRow').querySelector('span:first-child').textContent = 'DP Terbayar Sebelumnya';
+        document.getElementById('dpTerbayarVal').textContent = data.total_dp_formatted;
+
+        document.getElementById('pelunasanHariIniRow').style.display = 'flex';
+        document.getElementById('pelunasanHariIniRow').querySelector('span:first-child').textContent = 'Pelunasan Hari Ini';
+        const pelunasanVal = data.total_harga_sewa - data.total_dp;
+        document.getElementById('pelunasanHariIniVal').textContent = '+ Rp ' + Number(pelunasanVal).toLocaleString('id-ID');
+
+        document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (PELUNASAN)';
+        document.getElementById('sisaBayarVal').textContent = 'Rp 0 (LUNAS)';
+        document.getElementById('sisaBayarVal').className = 'sisa-bayar-lunas';
+        document.getElementById('sisaBayarNote').style.display = 'none';
+
+        document.getElementById('paymentMethodLabel').textContent = 'Metode Pelunasan';
+        document.getElementById('tunaiReceivedVal').textContent = (data.metode_bayar || 'Tunai') + (data.metode_bayar === 'TUNAI' ? ' (Cash)' : '');
+        document.getElementById('totalReceivedVal').textContent = data.uang_diterima_formatted;
+        document.getElementById('kembalianVal').textContent = data.kembalian_formatted;
+        document.getElementById('totalBersihRow').style.display = 'flex';
+        document.getElementById('totalBersihVal').textContent = data.total_bersih_terbayar_formatted;
+
+        document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai. Pembayaran telah Lunas 100%. Pengembalian sewa tepat waktu maksimal H+3 dari hari pemakaian acara.`;
+        document.getElementById('footerPaymentStatus').textContent = `Terbayar (LUNAS) ${data.waktu}`;
+      } else {
+        // Tampilan DP
+        document.getElementById('statusPembayaranRow').style.display = 'none';
+
+        document.getElementById('dpTerbayarRow').style.display = 'flex';
+        document.getElementById('dpTerbayarRow').querySelector('span:first-child').textContent = 'DP Sewa (25%)';
+        document.getElementById('dpTerbayarVal').textContent = data.total_dp_formatted;
+
+        document.getElementById('pelunasanHariIniRow').style.display = 'flex';
+        document.getElementById('pelunasanHariIniRow').querySelector('span:first-child').textContent = 'Total Tagihan Saat Ini';
+        document.getElementById('pelunasanHariIniVal').textContent = data.total_harga_sewa_formatted;
+
+        document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (Pelunasan)';
+        document.getElementById('sisaBayarVal').textContent = data.sisa_bayar_formatted;
+        document.getElementById('sisaBayarVal').className = '';
+        document.getElementById('sisaBayarNote').style.display = 'block';
+
+        document.getElementById('paymentMethodLabel').textContent = data.metode_bayar || 'QRIS';
+        document.getElementById('tunaiReceivedVal').textContent = data.metode_bayar || 'QRIS';
+        document.getElementById('totalReceivedVal').textContent = data.total_dp_formatted;
+        document.getElementById('kembalianVal').textContent = '0';
+        document.getElementById('totalBersihRow').style.display = 'none';
+
+        document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai &amp;<br>Untuk Dp 100% Tidak Dapat Dikembalikan<br>Apabila Pesanan dibatalkan. Sisa sewa<br>wajib dilunasi saat pengambilan barang.`;
+        document.getElementById('footerPaymentStatus').textContent = `Terbayar (DP) ${data.waktu}`;
+      }
+    }
+
+    function renderLunasReceipt() {
+      document.getElementById('customerName').textContent = 'Cordelia';
+      document.getElementById('notaNum').textContent = 'CS/01/261116/0001';
+      document.getElementById('bookingNum').textContent = '1';
+      document.getElementById('kasirName').textContent = 'Ahmad Rivaldy';
+
+      const itemsContainer = document.getElementById('receiptItemsList');
+      itemsContainer.innerHTML = `
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Baju Tari Jaipong Daun Asih (Atasan)</span>
+          <div class="receipt-item-calc">
+            <span>1x @60.000</span>
+            <span>60.000</span>
+          </div>
+        </div>
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Kain Sinjang Jaipong Prada Emas</span>
+          <div class="receipt-item-calc">
+            <span>1x @30.000</span>
+            <span>30.000</span>
+          </div>
+        </div>
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Aksesoris Siger Sunda & Kembang Goyang</span>
+          <div class="receipt-item-calc">
+            <span>1x @20.000</span>
+            <span>20.000</span>
+          </div>
+        </div>
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Paket Kostum Tambahan & Selendang</span>
+          <div class="receipt-item-calc">
+            <span>1x @265.000</span>
+            <span>265.000</span>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('subtotalLabel').textContent = 'Subtotal 4 Produk';
+      document.getElementById('subtotalVal').textContent = '375.000';
+      document.getElementById('totalSewaVal').textContent = '375.000';
+
+      document.getElementById('statusPembayaranRow').style.display = 'flex';
+      document.getElementById('dpTerbayarRow').style.display = 'flex';
+      document.getElementById('dpTerbayarVal').textContent = 'Rp 93.750';
+      document.getElementById('pelunasanHariIniRow').style.display = 'flex';
+      document.getElementById('pelunasanHariIniVal').textContent = '+ Rp 281.250';
+
+      document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (PELUNASAN)';
+      document.getElementById('sisaBayarVal').textContent = 'Rp 0 (LUNAS)';
+      document.getElementById('sisaBayarVal').className = 'sisa-bayar-lunas';
+      document.getElementById('sisaBayarNote').style.display = 'none';
+
+      document.getElementById('paymentMethodLabel').textContent = 'Metode Pelunasan';
+      document.getElementById('tunaiReceivedVal').textContent = 'Tunai (Cash)';
+      document.getElementById('totalReceivedVal').textContent = '300.000';
+      document.getElementById('kembalianVal').textContent = '18.750';
+      document.getElementById('totalBersihRow').style.display = 'flex';
+      document.getElementById('totalBersihVal').textContent = '375.000';
+
+      document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai. Pembayaran telah Lunas 100%. Pengembalian sewa tepat waktu maksimal H+3 dari hari pemakaian acara.`;
+      document.getElementById('footerPaymentStatus').textContent = 'Terbayar (LUNAS) 16 Nov 26 14 13';
+    }
+
+    function renderDpReceipt() {
+      document.getElementById('customerName').textContent = 'Cordelia';
+      const itemsContainer = document.getElementById('receiptItemsList');
+      itemsContainer.innerHTML = `
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Baju Tari Jaipong Daun Asih (Atasan)</span>
+          <div class="receipt-item-calc">
+            <span>1x @50.000</span>
+            <span>50.000</span>
+          </div>
+        </div>
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Kain Sinjang Jaipong Prada Emas</span>
+          <div class="receipt-item-calc">
+            <span>1x @30.000</span>
+            <span>30.000</span>
+          </div>
+        </div>
+        <div class="receipt-item-block">
+          <span class="receipt-item-name">Aksesoris Siger Sunda & Kembang Goyang</span>
+          <div class="receipt-item-calc">
+            <span>1x @20.000</span>
+            <span>20.000</span>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('subtotalLabel').textContent = 'Subtotal 3 Produk';
+      document.getElementById('subtotalVal').textContent = '100.000';
+      document.getElementById('totalSewaVal').textContent = '100.000';
+
+      document.getElementById('statusPembayaranRow').style.display = 'none';
+      document.getElementById('dpTerbayarRow').style.display = 'flex';
+      document.getElementById('dpTerbayarRow').querySelector('span:first-child').textContent = 'DP Sewa (25%)';
+      document.getElementById('dpTerbayarVal').textContent = '25.000';
+      document.getElementById('pelunasanHariIniRow').style.display = 'flex';
+      document.getElementById('pelunasanHariIniRow').querySelector('span:first-child').textContent = 'Total Tagihan Saat Ini';
+      document.getElementById('pelunasanHariIniVal').textContent = '25.000';
+
+      document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (Pelunasan)';
+      document.getElementById('sisaBayarVal').textContent = 'Rp 75.000';
+      document.getElementById('sisaBayarVal').className = '';
+      document.getElementById('sisaBayarNote').style.display = 'block';
+
+      document.getElementById('paymentMethodLabel').textContent = 'Tunai';
+      document.getElementById('tunaiReceivedVal').textContent = '50.000';
+      document.getElementById('totalReceivedVal').textContent = '50.000';
+      document.getElementById('kembalianVal').textContent = '25.000';
+      document.getElementById('totalBersihRow').style.display = 'none';
+
+      document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai &amp;<br>Untuk Dp 100% Tidak Dapat Dikembalikan<br>Apabila Pesanan dibatalkan. Sisa sewa<br>wajib dilunasi saat pengambilan barang.`;
+      document.getElementById('footerPaymentStatus').textContent = 'Terbayar (DP) 16 Nov 26 14 13';
+    }
+
+    function renderFromOrder(order) {
+      if (order.isDp) {
+        renderDpReceipt();
+      } else {
+        renderLunasReceipt();
+      }
+    }
+  </script>
+</body>
+</html>

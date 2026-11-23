@@ -1,0 +1,15 @@
+/* ==========================================================================
+   PAGE: KELOLA PELANGGAN (Data Pelanggan)
+   File: css/kelola-pelanggan.css
+   ========================================================================== */
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.pelanggan-table th, .pelanggan-table td {
+  text-align: left;
+}
