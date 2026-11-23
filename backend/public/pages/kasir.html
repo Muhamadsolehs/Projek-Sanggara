@@ -297,10 +297,11 @@
               </div>
 
               <div class="meta-field-item">
-                <label class="meta-field-header">Pilih tanggal booking</label>
-                <div class="date-input-control">
+                <label class="meta-field-header" for="bookingDateInput">Pilih tanggal booking</label>
+                <div class="date-input-control" id="dateInputControl" onclick="toggleKasirCalendar(event)">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                  <input type="text" value="16 November 2026" placeholder="Tanggal/Bulan/Tahun">
+                  <input type="text" id="bookingDateInput" value="16 Desember 2026" placeholder="Pilih tanggal booking..." readonly style="cursor: pointer; background: transparent;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #94a3b8; margin-left: auto; margin-right: 0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
               </div>
             </div>
@@ -420,6 +421,103 @@
           <button type="submit" class="btn btn-primary" style="padding: 9px 26px;">Simpan</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: KALENDER SEWA SBF / JADWAL BOOKING AKTIF (Pop-up Interaktif) -->
+  <div class="kasir-calendar-overlay" id="kasirCalendarOverlay" onclick="if(event.target===this) closeKasirCalendar()">
+    <div class="kasir-calendar-card" id="kasirCalendarCard">
+      <!-- Header -->
+      <div class="cal-card-header">
+        <div class="cal-header-left">
+          <div class="cal-header-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          </div>
+          <div class="cal-header-titles">
+            <h4 class="cal-title">Kalender Sewa SBF</h4>
+            <span class="cal-subtitle">Jadwal Booking Aktif</span>
+          </div>
+        </div>
+        <div class="cal-nav-controls">
+          <button type="button" class="btn-cal-arrow" onclick="prevCalMonth()" title="Bulan Sebelumnya">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button type="button" class="btn-cal-today" onclick="goToTodayCal()">Hari ini</button>
+          <button type="button" class="btn-cal-arrow" onclick="nextCalMonth()" title="Bulan Berikutnya">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Month & Year Selector Bar -->
+      <div class="cal-selector-bar">
+        <div class="cal-select-pills">
+          <div class="cal-select-wrap">
+            <select id="calMonthSelect" onchange="onCalSelectChange()">
+              <option value="0">Jan</option>
+              <option value="1">Feb</option>
+              <option value="2">Mar</option>
+              <option value="3">Apr</option>
+              <option value="4">Mei</option>
+              <option value="5">Jun</option>
+              <option value="6">Jul</option>
+              <option value="7">Ags</option>
+              <option value="8">Sep</option>
+              <option value="9">Okt</option>
+              <option value="10">Nov</option>
+              <option value="11" selected>Des</option>
+            </select>
+            <svg class="select-arr" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+
+          <div class="cal-select-wrap">
+            <select id="calYearSelect" onchange="onCalSelectChange()">
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
+              <option value="2027">2027</option>
+            </select>
+            <svg class="select-arr" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+
+        <div class="cal-current-label" id="calCurrentLabel">Desember 2026</div>
+      </div>
+
+      <!-- Weekdays -->
+      <div class="cal-weekdays">
+        <div class="cal-weekday col-sun">Min</div>
+        <div class="cal-weekday">Sen</div>
+        <div class="cal-weekday">Sel</div>
+        <div class="cal-weekday">Rab</div>
+        <div class="cal-weekday">Kam</div>
+        <div class="cal-weekday">Jum</div>
+        <div class="cal-weekday col-sat">Sab</div>
+      </div>
+
+      <!-- Days Grid -->
+      <div class="cal-days-grid" id="calDaysGrid"></div>
+
+      <!-- Legend -->
+      <div class="cal-legend-row">
+        <span class="legend-item"><span class="legend-dot dot-ambil"></span> Ambil</span>
+        <span class="legend-item"><span class="legend-dot dot-pakai"></span> Pakai</span>
+        <span class="legend-item"><span class="legend-dot dot-kembali"></span> Kembali</span>
+      </div>
+
+      <!-- Bottom Card for Clicked Booking / Selected Date -->
+      <div class="cal-info-card" id="calInfoCard">
+        <div class="cal-info-texts">
+          <div class="cal-info-title" id="calInfoTitle">1 Des • Pengambilan Barang</div>
+          <div class="cal-info-sub" id="calInfoSub">Peminjam: Cordelia (Busana Tari Jaipong Sutra)</div>
+        </div>
+        <div class="cal-info-badge" id="calInfoBadge">DP 25%</div>
+      </div>
+
+      <!-- Temporary Booked Warning Notice -->
+      <div class="cal-booked-warning" id="calBookedWarning" style="display: none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span id="calBookedWarningText">Tanggal ini sudah dibooking & tidak dapat dipilih</span>
+      </div>
     </div>
   </div>
 
@@ -742,7 +840,8 @@
         else if (text.includes('TRANSFER') || text.includes('BANK')) activeMethod = 'BANK';
       }
 
-      const today = new Date().toISOString().split('T')[0];
+      const bookingDateToSend = selectedBookingDate || new Date().toISOString().split('T')[0];
+      const dateDisplay = document.getElementById('bookingDateInput')?.value || new Date().toLocaleString('id-ID');
 
       // Backup ke localStorage
       const orderData = {
@@ -754,7 +853,7 @@
         sisaBayar: sisaBayar,
         cashReceived: cashReceived,
         kembalian: kembalian >= 0 ? kembalian : 0,
-        date: new Date().toLocaleString('id-ID'),
+        date: dateDisplay,
         noNota: "CS/01/" + Date.now().toString().slice(-6),
         noBooking: "1",
         kasir: "Ahmad Rivaldy"
@@ -767,8 +866,8 @@
         if (isOnline) {
           const payload = {
             id_pelanggan: customerId,
-            tgl_ambil: today,
-            tgl_pakai: today,
+            tgl_ambil: bookingDateToSend,
+            tgl_pakai: bookingDateToSend,
             opsi_pembayaran: paymentOption,
             metode_bayar: activeMethod,
             uang_diterima: cashReceived,
@@ -787,6 +886,245 @@
       window.location.href = 'nota.html';
     }
 
+    // =========================================================================
+    // KASIR INTERACTIVE CALENDAR ENGINE (Auto-disable Booked Dates)
+    // =========================================================================
+    const MONTH_NAMES_ID = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const MONTH_SHORT_ID = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+    ];
+
+    let calActiveYear = 2026;
+    let calActiveMonth = 11; // 0-indexed: 11 = Desember
+    let selectedBookingDate = '2026-12-16'; // YYYY-MM-DD
+    let cachedBookedDates = {}; // Keyed by YYYY-MM-DD
+
+    function toggleKasirCalendar(e) {
+      if (e) e.stopPropagation();
+      const overlay = document.getElementById('kasirCalendarOverlay');
+      if (overlay.classList.contains('active')) {
+        closeKasirCalendar();
+      } else {
+        openKasirCalendar();
+      }
+    }
+
+    async function openKasirCalendar() {
+      const overlay = document.getElementById('kasirCalendarOverlay');
+      overlay.classList.add('active');
+
+      const mSel = document.getElementById('calMonthSelect');
+      const ySel = document.getElementById('calYearSelect');
+      if (mSel) mSel.value = calActiveMonth;
+      if (ySel) ySel.value = calActiveYear;
+
+      await loadAndRenderCalendar();
+    }
+
+    function closeKasirCalendar() {
+      const overlay = document.getElementById('kasirCalendarOverlay');
+      if (overlay) overlay.classList.remove('active');
+    }
+
+    async function loadAndRenderCalendar() {
+      const mSel = document.getElementById('calMonthSelect');
+      const ySel = document.getElementById('calYearSelect');
+      if (mSel) mSel.value = calActiveMonth;
+      if (ySel) ySel.value = calActiveYear;
+
+      const label = document.getElementById('calCurrentLabel');
+      if (label) label.textContent = `${MONTH_NAMES_ID[calActiveMonth]} ${calActiveYear}`;
+
+      // Fetch booked dates for active month & year from API
+      try {
+        const res = await SanggaraAPI.getBookedDates({
+          month: calActiveMonth + 1,
+          year: calActiveYear
+        });
+        if (res && res.status === 'success' && res.data) {
+          cachedBookedDates = res.data;
+        } else {
+          cachedBookedDates = {};
+        }
+      } catch (err) {
+        console.warn('Gagal memuat jadwal booking dari API:', err);
+        cachedBookedDates = {};
+      }
+
+      renderCalendarDays();
+      updateDefaultInfoCard();
+    }
+
+    function renderCalendarDays() {
+      const grid = document.getElementById('calDaysGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const firstDay = new Date(calActiveYear, calActiveMonth, 1).getDay(); // 0 is Sunday
+      const daysInMonth = new Date(calActiveYear, calActiveMonth + 1, 0).getDate();
+      const prevMonthDays = new Date(calActiveYear, calActiveMonth, 0).getDate();
+
+      // Previous month padding days
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const dayNum = prevMonthDays - i;
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell muted';
+        cell.textContent = dayNum;
+        grid.appendChild(cell);
+      }
+
+      // Current month days
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('div');
+        const mStr = String(calActiveMonth + 1).padStart(2, '0');
+        const dStr = String(day).padStart(2, '0');
+        const dateKey = `${calActiveYear}-${mStr}-${dStr}`;
+
+        cell.textContent = day;
+
+        // Check if date has an active booking in database
+        const booking = cachedBookedDates[dateKey];
+
+        if (booking) {
+          // Tanggal sudah dibooking: OTOMATIS DISABLE & WARNAI (Ambil/Pakai/Kembali)
+          cell.className = `cal-day-cell booked booked-${booking.type}`;
+          cell.title = `${booking.type_label}: ${booking.customer} (${booking.produk})`;
+
+          cell.onclick = (e) => {
+            e.stopPropagation();
+            onBookedDateClick(dateKey, booking);
+          };
+        } else {
+          // Tanggal tersedia untuk disewa
+          cell.className = 'cal-day-cell available';
+          if (selectedBookingDate === dateKey) {
+            cell.classList.add('selected');
+          }
+
+          cell.onclick = (e) => {
+            e.stopPropagation();
+            onAvailableDateClick(dateKey, day);
+          };
+        }
+
+        grid.appendChild(cell);
+      }
+
+      // Next month padding days
+      const totalCells = firstDay + daysInMonth;
+      const nextMonthPadding = (totalCells % 7 === 0) ? 0 : 7 - (totalCells % 7);
+      for (let n = 1; n <= nextMonthPadding; n++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell muted';
+        cell.textContent = n;
+        grid.appendChild(cell);
+      }
+    }
+
+    function onBookedDateClick(dateKey, booking) {
+      // Update Info Card with details of this booking
+      const titleEl = document.getElementById('calInfoTitle');
+      const subEl = document.getElementById('calInfoSub');
+      const badgeEl = document.getElementById('calInfoBadge');
+
+      if (titleEl) titleEl.textContent = booking.info_title || `${booking.day} ${MONTH_SHORT_ID[calActiveMonth]} • Booking Aktif`;
+      if (subEl) subEl.textContent = booking.info_sub || `Peminjam: ${booking.customer}`;
+      if (badgeEl) badgeEl.textContent = booking.badge || 'Booking';
+
+      // Tampilkan notifikasi peringatan bahwa tanggal telah terbooking
+      const warning = document.getElementById('calBookedWarning');
+      const warningTxt = document.getElementById('calBookedWarningText');
+      if (warning && warningTxt) {
+        warningTxt.textContent = `Tanggal ${booking.day} ${MONTH_NAMES_ID[calActiveMonth]} telah dibooking (${booking.customer}) & tidak dapat dipilih`;
+        warning.style.display = 'flex';
+
+        clearTimeout(window._calWarnTimeout);
+        window._calWarnTimeout = setTimeout(() => {
+          warning.style.display = 'none';
+        }, 3000);
+      }
+    }
+
+    function onAvailableDateClick(dateKey, day) {
+      selectedBookingDate = dateKey;
+      const formattedDate = `${day} ${MONTH_NAMES_ID[calActiveMonth]} ${calActiveYear}`;
+
+      // Update date input display di Keranjang Sewa
+      const input = document.getElementById('bookingDateInput');
+      if (input) input.value = formattedDate;
+
+      // Update Info Card
+      const titleEl = document.getElementById('calInfoTitle');
+      const subEl = document.getElementById('calInfoSub');
+      const badgeEl = document.getElementById('calInfoBadge');
+
+      if (titleEl) titleEl.textContent = `${day} ${MONTH_SHORT_ID[calActiveMonth]} • Tanggal Dipilih`;
+      if (subEl) subEl.textContent = `Tersedia untuk transaksi kasir baru`;
+      if (badgeEl) badgeEl.textContent = 'Tersedia';
+
+      const warning = document.getElementById('calBookedWarning');
+      if (warning) warning.style.display = 'none';
+
+      renderCalendarDays();
+
+      // Tutup kalender dengan transisi halus
+      setTimeout(() => {
+        closeKasirCalendar();
+      }, 250);
+    }
+
+    function updateDefaultInfoCard() {
+      const titleEl = document.getElementById('calInfoTitle');
+      const subEl = document.getElementById('calInfoSub');
+      const badgeEl = document.getElementById('calInfoBadge');
+
+      const sortedKeys = Object.keys(cachedBookedDates).sort();
+      if (sortedKeys.length > 0) {
+        const first = cachedBookedDates[sortedKeys[0]];
+        if (titleEl) titleEl.textContent = first.info_title;
+        if (subEl) subEl.textContent = first.info_sub;
+        if (badgeEl) badgeEl.textContent = first.badge;
+      } else {
+        if (titleEl) titleEl.textContent = `${MONTH_NAMES_ID[calActiveMonth]} ${calActiveYear}`;
+        if (subEl) subEl.textContent = `Semua tanggal tersedia untuk disewa`;
+        if (badgeEl) badgeEl.textContent = 'Tersedia';
+      }
+    }
+
+    function prevCalMonth() {
+      calActiveMonth--;
+      if (calActiveMonth < 0) {
+        calActiveMonth = 11;
+        calActiveYear--;
+      }
+      loadAndRenderCalendar();
+    }
+
+    function nextCalMonth() {
+      calActiveMonth++;
+      if (calActiveMonth > 11) {
+        calActiveMonth = 0;
+        calActiveYear++;
+      }
+      loadAndRenderCalendar();
+    }
+
+    function goToTodayCal() {
+      calActiveYear = 2026;
+      calActiveMonth = 11;
+      loadAndRenderCalendar();
+    }
+
+    function onCalSelectChange() {
+      calActiveMonth = parseInt(document.getElementById('calMonthSelect').value, 10);
+      calActiveYear = parseInt(document.getElementById('calYearSelect').value, 10);
+      loadAndRenderCalendar();
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
       // 1. Muat katalog produk & pelanggan asli dari database jika backend aktif
       await loadKasirRealCatalog();
@@ -797,6 +1135,9 @@
         if (productsData.length > 1) addToCart(productsData[1].id);
         renderCart();
       }
+
+      // 3. Preload data kalender booking
+      loadAndRenderCalendar();
     });
   </script>
 </body>

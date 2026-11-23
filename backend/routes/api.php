@@ -34,6 +34,7 @@ Route::post('/nota/bayar', [DataNotaController::class, 'bayar']);
 
 // Kasir (POS)
 Route::get('/kasir/produk', [KasirController::class, 'getProduk']);
+Route::get('/kasir/booked-dates', [KasirController::class, 'getBookedDates']);
 Route::post('/kasir/checkout', [KasirController::class, 'checkout']);
 
 // Master Data: Produk, Pelanggan, Kategori

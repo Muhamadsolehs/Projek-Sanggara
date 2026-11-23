@@ -85,6 +85,15 @@ const SanggaraAPI = {
     return data;
   },
 
+  async getBookedDates(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/kasir/booked-dates${query ? '?' + query : ''}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat jadwal booking');
+    return await res.json();
+  },
+
   async getProduk(params = {}) {
     const query = new URLSearchParams(params).toString();
     const res = await fetch(`${this.baseUrl}/produk${query ? '?' + query : ''}`, {

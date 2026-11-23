@@ -200,4 +200,115 @@ class KasirController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Mengambil daftar tanggal yang memiliki jadwal booking aktif (untuk kalender kasir)
+     */
+    public function getBookedDates(Request $request)
+    {
+        try {
+            $month = $request->query('month');
+            $year = $request->query('year');
+
+            $query = Booking::with(['pelanggan', 'details.produk'])
+                ->where('status_sewa', '!=', 'dibatalkan');
+
+            if ($year) {
+                $query->where(function ($q) use ($year) {
+                    $q->whereYear('tgl_ambil', $year)
+                      ->orWhereYear('tgl_kembali_rencana', $year);
+                });
+            }
+
+            if ($month) {
+                $query->where(function ($q) use ($month) {
+                    $q->whereMonth('tgl_ambil', $month)
+                      ->orWhereMonth('tgl_kembali_rencana', $month);
+                });
+            }
+
+            $bookings = $query->get();
+            $bookedDates = [];
+
+            $monthsId = [
+                'Jan' => 'Jan', 'Feb' => 'Feb', 'Mar' => 'Mar', 'Apr' => 'Apr',
+                'May' => 'Mei', 'Jun' => 'Jun', 'Jul' => 'Jul', 'Aug' => 'Ags',
+                'Sep' => 'Sep', 'Oct' => 'Okt', 'Nov' => 'Nov', 'Dec' => 'Des'
+            ];
+
+            foreach ($bookings as $b) {
+                $custName = $b->pelanggan ? $b->pelanggan->nama_pelanggan : 'Pelanggan';
+                $productNames = $b->details->map(function ($d) {
+                    return $d->produk ? $d->produk->nama_produk : '';
+                })->filter()->implode(', ');
+
+                if (empty($productNames)) {
+                    $productNames = 'Busana';
+                }
+
+                $dpBadge = ($b->status_pembayaran === 'LUNAS')
+                    ? 'Lunas'
+                    : ('DP ' . round($b->persentase_dp) . '%');
+
+                $tglAmbil = $b->tgl_ambil ? $b->tgl_ambil->format('Y-m-d') : null;
+                $tglPakai = $b->tgl_pakai ? $b->tgl_pakai->format('Y-m-d') : null;
+                $tglKembali = $b->tgl_kembali_rencana ? $b->tgl_kembali_rencana->format('Y-m-d') : null;
+
+                if (!$tglAmbil) continue;
+
+                $endStr = $tglKembali ?: ($tglPakai ?: $tglAmbil);
+                $curr = new \DateTime($tglAmbil);
+                $end = new \DateTime($endStr);
+                $end->modify('+1 day');
+
+                $period = new \DatePeriod($curr, new \DateInterval('P1D'), $end);
+
+                foreach ($period as $dt) {
+                    $dateStr = $dt->format('Y-m-d');
+                    $mEng = $dt->format('M');
+                    $mId = $monthsId[$mEng] ?? $mEng;
+                    $dayNum = $dt->format('j');
+
+                    $type = 'pakai';
+                    $typeLabel = 'Pakai';
+                    $infoTitle = "{$dayNum} {$mId} • Pemakaian Busana";
+
+                    if ($dateStr === $tglAmbil) {
+                        $type = 'ambil';
+                        $typeLabel = 'Ambil';
+                        $infoTitle = "{$dayNum} {$mId} • Pengambilan Barang";
+                    } elseif ($dateStr === $tglKembali) {
+                        $type = 'kembali';
+                        $typeLabel = 'Kembali';
+                        $infoTitle = "{$dayNum} {$mId} • Pengembalian Barang";
+                    }
+
+                    $bookedDates[$dateStr] = [
+                        'date' => $dateStr,
+                        'day' => (int)$dayNum,
+                        'type' => $type,
+                        'type_label' => $typeLabel,
+                        'customer' => $custName,
+                        'produk' => $productNames,
+                        'no_nota' => $b->no_nota,
+                        'status_sewa' => $b->status_sewa,
+                        'status_pembayaran' => $b->status_pembayaran,
+                        'info_title' => $infoTitle,
+                        'info_sub' => "Peminjam: {$custName} ({$productNames})",
+                        'badge' => $dpBadge,
+                    ];
+                }
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $bookedDates,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal mengambil jadwal booking: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
