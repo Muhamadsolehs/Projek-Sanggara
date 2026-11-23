@@ -30,6 +30,8 @@ sanggara_project/
 │   ├── kasir.css                # CSS Khusus: Menu Kasir & Booking Interaktif (POS)
 │   ├── data-nota.css            # CSS Khusus: Tabel Rekapitulasi Data Nota & Pelunasan
 │   └── nota.css                 # CSS Khusus: Lembar Struk & Nota Thermal Pembayaran
+├── database/                    # Arsitektur Skema Basis Data Relasional (RDBMS)
+│   └── sanggara_database.sql    # DDL, Views, Triggers, & Data Seeder Lengkap
 ├── js/                          # Script interaksi UI & logika sistem
 │   └── global.js                # Interaksi Global: Toggle Sidebar, Persist State, Dropdown Menu
 └── pages/                       # File HTML representasi setiap halaman

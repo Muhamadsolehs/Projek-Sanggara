@@ -127,16 +127,29 @@ img, svg {
   height: 100vh;
   position: sticky;
   top: 0;
-  left: 0;
   z-index: 50;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.04);
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: margin-left;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s ease,
+              visibility 0.3s ease;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-/* Sidebar Closed State */
-body.sidebar-closed .app-sidebar {
-  margin-left: calc(-1 * var(--sidebar-width));
+/* Sidebar Closed State: Menutup & Hilang Sempurna */
+body.sidebar-closed .app-sidebar,
+html.sidebar-closed .app-sidebar {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .sidebar-header {
@@ -145,6 +158,8 @@ body.sidebar-closed .app-sidebar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: var(--sidebar-width);
+  flex-shrink: 0;
 }
 
 .brand-logo {
@@ -184,6 +199,9 @@ body.sidebar-closed .app-sidebar {
   flex-direction: column;
   gap: 4px;
   overflow-y: auto;
+  overflow-x: hidden;
+  width: var(--sidebar-width);
+  flex-shrink: 0;
 }
 
 .nav-item {
@@ -301,11 +319,14 @@ body.sidebar-closed .app-sidebar {
   gap: 14px;
 }
 
+/* Tombol hamburger di header disembunyikan secara default saat sidebar terbuka,
+   agar TIDAK ADA DUA tombol hamburger yang muncul bersamaan */
 .btn-header-sidebar-toggle {
+  display: none !important;
   color: var(--color-primary);
+  background-color: var(--color-primary-light);
   width: 36px;
   height: 36px;
-  display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
@@ -314,7 +335,8 @@ body.sidebar-closed .app-sidebar {
 }
 
 .btn-header-sidebar-toggle:hover {
-  background-color: var(--color-primary-light);
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 
 .header-brand-logo {
@@ -322,7 +344,7 @@ body.sidebar-closed .app-sidebar {
   font-weight: 800;
   letter-spacing: -0.5px;
   color: var(--color-primary);
-  display: none;
+  display: none !important;
   align-items: center;
   text-decoration: none;
 }
@@ -331,8 +353,15 @@ body.sidebar-closed .app-sidebar {
   color: #059669;
 }
 
-body.sidebar-closed .header-brand-logo {
-  display: inline-flex;
+/* HANYA ketika sidebar ditutup/hilang, tombol hamburger pembuka dan logo muncul di header kiri */
+body.sidebar-closed .btn-header-sidebar-toggle,
+html.sidebar-closed .btn-header-sidebar-toggle {
+  display: flex !important;
+}
+
+body.sidebar-closed .header-brand-logo,
+html.sidebar-closed .header-brand-logo {
+  display: inline-flex !important;
 }
 
 .header-actions {
