@@ -26,7 +26,10 @@ sanggara_project/
 │   ├── tambah-kategori.css      # CSS Khusus: Formulir Tambah Kategori
 │   ├── booking-kalender.css     # CSS Khusus: Kalender Agenda Sewa Bulanan
 │   ├── booking-tabel.css        # CSS Khusus: Tabel Rekap Data Booking
-│   └── pesanan-tabel.css        # CSS Khusus: Tabel Rincian Data Pesanan
+│   ├── pesanan-tabel.css        # CSS Khusus: Tabel Rincian Data Pesanan
+│   ├── kasir.css                # CSS Khusus: Menu Kasir & Booking Interaktif (POS)
+│   ├── data-nota.css            # CSS Khusus: Tabel Rekapitulasi Data Nota & Pelunasan
+│   └── nota.css                 # CSS Khusus: Lembar Struk & Nota Thermal Pembayaran
 └── pages/                       # File HTML representasi setiap halaman
     ├── login.html
     ├── dashboard.html
@@ -42,7 +45,10 @@ sanggara_project/
     ├── tambah-kategori.html
     ├── booking-kalender.html
     ├── booking-tabel.html
-    └── pesanan-tabel.html
+    ├── pesanan-tabel.html
+    ├── kasir.html
+    ├── data-nota.html
+    └── nota.html
 ```
 
 ---
@@ -66,6 +72,9 @@ sanggara_project/
 | **13** | **Booking (Kalender)** | `css/booking-kalender.css` | `pages/booking-kalender.html` | Kalender agenda bulanan (Minggu - Sabtu), badge Ambil (Hijau), Pakai (Biru), dan Kembali (Kuning/Oranye). |
 | **14** | **Booking (Tabel)** | `css/booking-tabel.css` | `pages/booking-tabel.html` | Tabel daftar booking pesanan konsumen, pickup, pakai, pickin, status denda, filter bulan & tahun. |
 | **15** | **Pesanan (Tabel)** | `css/pesanan-tabel.css` | `pages/pesanan-tabel.html` | Tabel detail barang/kostum per booking, jumlah kuantitas, aksi, filter periode. |
+| **16** | **Kasir (Interaktif)** | `css/kasir.css` | `pages/kasir.html` | Alur kasir lengkap: filter katalog, keranjang dinamis, kalkulasi DP 25%, modal pelanggan baru, dan checkout. |
+| **17** | **Nota / Struk SBF** | `css/nota.css` | `pages/nota.html` | Lembar struk fisik Sanggar Bunda Febri (SBF), rincian sewa, DP, sisa pelunasan, dan fungsi cetak thermal. |
+| **18** | **Data Nota** | `css/data-nota.css` | `pages/data-nota.html` | Rekapitulasi transaksi nota booking, status pelunasan Lunas/DP, tombol bayar cepat, dan link detail nota. |
 
 ---
 

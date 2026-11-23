@@ -1,0 +1,281 @@
+/* ==========================================================================
+   PAGE: NOTA / STRUK PEMBAYARAN KASIR
+   File: css/nota.css
+   ========================================================================== */
+
+.receipt-page-wrapper {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 20px 80px;
+}
+
+/* Receipt Paper Card */
+.receipt-paper-card {
+  width: 100%;
+  max-width: 380px;
+  background-color: #ffffff;
+  border-radius: var(--radius-sm);
+  padding: 36px 30px 40px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.02);
+  font-family: 'Courier New', Courier, monospace, var(--font-family);
+  color: #1e293b;
+  font-size: 11.5px;
+  line-height: 1.45;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+/* Header */
+.receipt-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.receipt-brand-name {
+  font-family: var(--font-family);
+  font-size: 13.5px;
+  font-style: italic;
+  font-weight: 600;
+  color: #334155;
+}
+
+.receipt-brand-logo {
+  font-family: var(--font-family);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #0f172a;
+  margin: 2px 0;
+}
+
+.receipt-city {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.receipt-address {
+  font-size: 10px;
+  color: #475569;
+  max-width: 260px;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+.receipt-phone {
+  font-size: 10px;
+  color: #475569;
+}
+
+/* Meta Data Info */
+.receipt-meta-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.receipt-meta-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.meta-label {
+  width: 90px;
+}
+
+.meta-colon {
+  width: 12px;
+}
+
+.meta-val {
+  flex: 1;
+  font-weight: 600;
+}
+
+/* Dashed Dividers */
+.receipt-dashed-line {
+  border: none;
+  border-top: 1px dashed #94a3b8;
+  margin: 4px 0;
+}
+
+/* Items List */
+.receipt-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.receipt-item-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.receipt-item-name {
+  font-weight: 700;
+  font-size: 11px;
+  color: #0f172a;
+}
+
+.receipt-item-calc {
+  display: flex;
+  justify-content: space-between;
+  color: #334155;
+  font-size: 11px;
+}
+
+/* Totals Section */
+.receipt-calc-table {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.receipt-calc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.receipt-calc-row.bold-row {
+  font-weight: 700;
+}
+
+/* Status Card Container (Tinted green box matching screenshot) */
+.receipt-status-card {
+  background-color: #d1fae5;
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sisa-bayar-row {
+  color: #065f46;
+  font-weight: 800;
+  font-size: 11.5px;
+  margin-top: 2px;
+}
+
+.sisa-bayar-note {
+  font-size: 9.5px;
+  font-style: italic;
+  color: #e11d48;
+  text-align: right;
+  margin-top: -2px;
+}
+
+.badge-lunas-receipt {
+  background-color: #d1fae5;
+  color: #065f46;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  display: inline-block;
+}
+
+.sisa-bayar-lunas {
+  color: #0d9488 !important;
+  font-weight: 800;
+  font-size: 11.5px;
+}
+
+/* Policy & Social Footer */
+.receipt-policy-box {
+  font-size: 9.5px;
+  color: #475569;
+  text-align: center;
+  line-height: 1.4;
+  margin: 6px 0;
+}
+
+.receipt-socials {
+  text-align: center;
+  font-size: 10px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.receipt-stamp-footer {
+  text-align: center;
+  font-size: 9.5px;
+  color: #64748b;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* Action Buttons below receipt */
+.receipt-actions-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.btn-print-receipt {
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.btn-print-receipt:hover {
+  background-color: #1e293b;
+  transform: translateY(-1px);
+}
+
+.btn-back-kasir {
+  background-color: #ffffff;
+  color: var(--color-text-main);
+  border: 1px solid var(--color-border);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.btn-back-kasir:hover {
+  background-color: #f1f5f9;
+}
+
+/* ==========================================================================
+   PRINT MEDIA STYLES (@media print)
+   ========================================================================== */
+@media print {
+  body {
+    background-color: #ffffff !important;
+  }
+  .app-header, .receipt-actions-container {
+    display: none !important;
+  }
+  .receipt-page-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .receipt-paper-card {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+}

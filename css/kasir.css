@@ -1,0 +1,835 @@
+/* ==========================================================================
+   PAGE: KASIR (Point of Sale & Booking System)
+   File: css/kasir.css
+   ========================================================================== */
+
+.kasir-container {
+  display: grid;
+  grid-template-columns: 1fr 410px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* ==========================================================================
+   LEFT: KATALOG PRODUK
+   ========================================================================== */
+.catalog-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.catalog-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.catalog-search-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.catalog-search-wrapper .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  width: 17px;
+  height: 17px;
+}
+
+.catalog-search-input {
+  width: 100%;
+  padding: 10px 14px 10px 42px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-white);
+  color: var(--color-text-main);
+  font-size: 13px;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.catalog-search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.12);
+}
+
+.btn-lihat-nota {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 10px 20px;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-primary);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn-lihat-nota:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+/* Category Filter Pills */
+.category-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cat-pill {
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cat-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.cat-pill.active {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.25);
+}
+
+/* Products Grid */
+.products-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.product-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-card);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  border-color: #bbf0dc;
+}
+
+.product-visual-box {
+  width: 100%;
+  height: 95px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Tint background styles */
+.tint-green { background-color: #edf9f4; color: #00b87c; }
+.tint-blue { background-color: #e0f2fe; color: #0284c7; }
+.tint-yellow { background-color: #fef9c3; color: #ca8a04; }
+.tint-orange { background-color: #ffedd5; color: #ea580c; }
+.tint-pink { background-color: #fce7f3; color: #db2777; }
+.tint-slate { background-color: #f1f5f9; color: #475569; }
+
+.product-stock-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.product-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.product-cat-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: capitalize;
+}
+
+.product-name-txt {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-grade-txt {
+  font-size: 11px;
+  color: var(--color-text-light);
+}
+
+.product-card-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+
+.product-pricing {
+  display: flex;
+  flex-direction: column;
+}
+
+.tariff-label {
+  font-size: 10.5px;
+  color: var(--color-text-light);
+}
+
+.tariff-price {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.btn-add-cart {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #edf9f4;
+  color: var(--color-primary);
+  border: 1px solid #d1fae5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-add-cart:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  transform: scale(1.08);
+}
+
+/* ==========================================================================
+   RIGHT: KERANJANG SEWA PANEL
+   ========================================================================== */
+.cart-panel-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: sticky;
+  top: 90px;
+}
+
+.cart-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.cart-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.cart-title-group svg {
+  color: var(--color-primary);
+}
+
+.cart-count-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Customer & Date Selection */
+.cart-meta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.meta-field-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.meta-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.btn-add-customer-link {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--color-primary);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.btn-add-customer-link:hover {
+  text-decoration: underline;
+}
+
+.customer-select-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-white);
+  padding: 8px 12px;
+}
+
+.customer-select-control svg {
+  color: #94a3b8;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.customer-select-control select {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  color: var(--color-text-main);
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 2px center;
+  padding-right: 20px;
+}
+
+.date-input-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  background-color: var(--color-white);
+}
+
+.date-input-control svg {
+  color: #94a3b8;
+  margin-right: 8px;
+}
+
+.date-input-control input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  color: var(--color-text-main);
+}
+
+/* Cart Items Container */
+.cart-items-wrapper {
+  min-height: 140px;
+  max-height: 250px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Cart Empty State */
+.cart-empty-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px 10px;
+  gap: 8px;
+}
+
+.cart-empty-icon {
+  width: 50px;
+  height: 50px;
+  color: #cbd5e1;
+}
+
+.cart-empty-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.cart-empty-sub {
+  font-size: 11.5px;
+  color: var(--color-text-light);
+  max-width: 220px;
+}
+
+/* Cart Active Items */
+.cart-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.cart-item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 190px;
+}
+
+.cart-item-cat {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.cart-item-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  line-height: 1.3;
+}
+
+.cart-item-subcalc {
+  font-size: 11px;
+  color: var(--color-text-light);
+}
+
+.cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-spinner {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 2px 6px;
+  gap: 8px;
+  background-color: var(--color-white);
+}
+
+.btn-qty {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+}
+
+.btn-qty:hover {
+  background-color: #f1f5f9;
+  color: var(--color-text-main);
+}
+
+.qty-val-txt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  min-width: 14px;
+  text-align: center;
+}
+
+.btn-remove-item {
+  color: #94a3b8;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.btn-remove-item:hover {
+  color: var(--color-red);
+}
+
+/* Payment Calculation & Summary */
+.cart-payment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 14px;
+}
+
+.total-payment-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.total-payment-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.total-payment-amount {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0d9488;
+}
+
+/* Radio Payment Options */
+.payment-options-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.payment-options-label {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.radio-pill-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.radio-pill-item input[type="radio"] {
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Uang Yang Dibayarkan Box */
+.cash-input-box {
+  background-color: #f8fafc;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cash-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cash-box-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cash-box-title svg {
+  color: var(--color-primary);
+}
+
+.badge-payment-status {
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.status-lunas {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-dp {
+  background-color: #ccfbf1;
+  color: #0f766e;
+}
+
+.cash-input-field {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.cash-input-field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.12);
+}
+
+.change-amount-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.change-label {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.change-val {
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+/* Payment Method Buttons */
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.btn-method {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-white);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-method:hover {
+  border-color: var(--color-primary);
+}
+
+.btn-method.active {
+  border: 1.5px solid var(--color-primary);
+  color: var(--color-primary);
+  background-color: #edf9f4;
+}
+
+/* Action Button */
+.btn-process-checkout {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.btn-process-checkout.disabled {
+  background-color: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-process-checkout.ready {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: var(--shadow-primary);
+  cursor: pointer;
+}
+
+.btn-process-checkout.ready:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   MODAL POPUP: TAMBAH PELANGGAN BARU (Image 6)
+   ========================================================================== */
+.modal-backdrop-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal-backdrop-overlay.active {
+  display: flex;
+}
+
+.customer-modal-card {
+  width: 100%;
+  max-width: 540px;
+  background-color: var(--color-white);
+  border-radius: var(--radius-xl);
+  padding: 32px 36px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  animation: modalScaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.customer-modal-title {
+  text-align: center;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.customer-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-form-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-form-label {
+  width: 130px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  flex-shrink: 0;
+}
+
+.modal-form-input, .modal-form-select {
+  flex: 1;
+  padding: 9px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--color-text-main);
+  outline: none;
+  background-color: var(--color-white);
+  transition: all var(--transition-fast);
+}
+
+.modal-form-input:focus, .modal-form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.12);
+}
+
+.modal-dual-selects {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-actions-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .kasir-container {
+    grid-template-columns: 1fr;
+  }
+  .cart-panel-card {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .products-catalog-grid {
+    grid-template-columns: 1fr;
+  }
+  .modal-form-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .modal-form-label {
+    width: 100%;
+  }
+  .modal-dual-selects {
+    width: 100%;
+  }
+}
