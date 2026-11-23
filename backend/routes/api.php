@@ -44,6 +44,11 @@ Route::post('/produk/{id}', [ProdukController::class, 'update']); // fallback fo
 Route::delete('/produk/{id}', [ProdukController::class, 'destroy']);
 Route::get('/pelanggan', [PelangganController::class, 'index']);
 Route::get('/kategori', [KategoriController::class, 'index']);
+Route::get('/kategori/{id}', [KategoriController::class, 'show']);
+Route::post('/kategori', [KategoriController::class, 'store']);
+Route::put('/kategori/{id}', [KategoriController::class, 'update']);
+Route::post('/kategori/{id}', [KategoriController::class, 'update']); // fallback
+Route::delete('/kategori/{id}', [KategoriController::class, 'destroy']);
 
 // Laporan Keuangan
 Route::get('/laporan/pemasukan', [LaporanController::class, 'pemasukan']);

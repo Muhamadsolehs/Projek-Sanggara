@@ -143,6 +143,52 @@ const SanggaraAPI = {
     return await res.json();
   },
 
+  async getKategoriDetail(id) {
+    const res = await fetch(`${this.baseUrl}/kategori/${id}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error(`Kategori #${id} tidak ditemukan`);
+    return await res.json();
+  },
+
+  async tambahKategori(payload) {
+    const res = await fetch(`${this.baseUrl}/kategori`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menambahkan kategori');
+    return data;
+  },
+
+  async updateKategori(id, payload) {
+    const res = await fetch(`${this.baseUrl}/kategori/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal memperbarui kategori');
+    return data;
+  },
+
+  async deleteKategori(id) {
+    const res = await fetch(`${this.baseUrl}/kategori/${id}`, {
+      method: 'DELETE',
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menghapus kategori');
+    return data;
+  },
+
   async getLaporanPemasukan(params = {}) {
     const query = new URLSearchParams(params).toString();
     const res = await fetch(`${this.baseUrl}/laporan/pemasukan${query ? '?' + query : ''}`, {

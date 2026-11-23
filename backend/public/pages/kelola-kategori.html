@@ -141,7 +141,7 @@
                   <th>NAMA KATEGORI</th>
                   <th>DESKRIPSI</th>
                   <th>JUMLAH PRODUK</th>
-                  <th style="text-align: right;">AKSI</th>
+                  <th style="text-align: center; width: 140px;">AKSI</th>
                 </tr>
               </thead>
               <tbody id="kategoriTableBody">
@@ -219,13 +219,120 @@
               ${k.total_produk} Produk
             </span>
           </td>
-          <td style="text-align: right;">
-            <button class="action-btn" title="Ubah Kategori" style="color: #00b87c;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-            </button>
+          <td style="text-align: center;">
+            <div class="table-action-btns">
+              <!-- Tombol Lihat -->
+              <button type="button" class="btn-action-icon btn-action-view" onclick="viewKategori(${k.id_kategori})" title="Lihat Detail Kategori" aria-label="Lihat">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+              <!-- Tombol Edit -->
+              <button type="button" class="btn-action-icon btn-action-edit" onclick="openEditKategoriModal(${k.id_kategori})" title="Edit Kategori" aria-label="Edit">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+              <!-- Tombol Hapus -->
+              <button type="button" class="btn-action-icon btn-action-delete" onclick="deleteKategoriAction(${k.id_kategori}, '${k.nama_kategori.replace(/'/g, "\\'")}')" title="Hapus Kategori" aria-label="Hapus">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+              </button>
+            </div>
           </td>
         </tr>
       `).join('');
+    }
+
+    // Modal Control Functions
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('active');
+    }
+
+    // 1. LIHAT DETAIL KATEGORI
+    async function viewKategori(id) {
+      try {
+        const k = allCategories.find(item => item.id_kategori === id) || (await SanggaraAPI.getKategoriDetail(id)).data;
+        if (!k) return;
+
+        document.getElementById('detailNamaKategori').textContent = k.nama_kategori;
+        document.getElementById('detailSlugKategori').textContent = `Slug: ${k.slug}`;
+        document.getElementById('detailTotalBadge').textContent = `${k.total_produk} Produk Terdaftar`;
+        document.getElementById('detailIdKategori').textContent = `#${k.id_kategori}`;
+        document.getElementById('detailDeskripsiKategori').textContent = k.deskripsi || 'Tidak ada deskripsi.';
+        document.getElementById('detailJumlahProduk').textContent = `${k.total_produk} Produk`;
+
+        const btnEdit = document.getElementById('btnEditFromDetail');
+        btnEdit.onclick = () => {
+          closeModal('detailKategoriModal');
+          openEditKategoriModal(id);
+        };
+
+        document.getElementById('detailKategoriModal').classList.add('active');
+      } catch (e) {
+        alert('Gagal mengambil rincian kategori: ' + e.message);
+      }
+    }
+
+    // 2. BUKA MODAL EDIT KATEGORI
+    async function openEditKategoriModal(id) {
+      try {
+        const k = allCategories.find(item => item.id_kategori === id) || (await SanggaraAPI.getKategoriDetail(id)).data;
+        if (!k) return;
+
+        document.getElementById('editKategoriId').value = k.id_kategori;
+        document.getElementById('editNamaKategori').value = k.nama_kategori;
+        document.getElementById('editSlugKategori').value = k.slug;
+        document.getElementById('editDeskripsiKategori').value = k.deskripsi || '';
+
+        document.getElementById('editKategoriModal').classList.add('active');
+      } catch (e) {
+        alert('Gagal memuat formulir edit: ' + e.message);
+      }
+    }
+
+    // 3. SUBMIT EDIT KATEGORI
+    async function submitEditKategori(e) {
+      e.preventDefault();
+      const id = document.getElementById('editKategoriId').value;
+      const btn = document.getElementById('btnSubmitEditKategori');
+      const originalText = btn.textContent;
+      btn.textContent = 'Menyimpan...';
+      btn.disabled = true;
+
+      const payload = {
+        nama_kategori: document.getElementById('editNamaKategori').value,
+        slug: document.getElementById('editSlugKategori').value,
+        deskripsi: document.getElementById('editDeskripsiKategori').value
+      };
+
+      try {
+        const res = await SanggaraAPI.updateKategori(id, payload);
+        if (res.status === 'success') {
+          closeModal('editKategoriModal');
+          loadKategoriData();
+        } else {
+          alert('Gagal memperbarui: ' + (res.message || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // 4. HAPUS KATEGORI
+    async function deleteKategoriAction(id, namaKategori) {
+      const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus kategori "${namaKategori}"?`);
+      if (!confirmDelete) return;
+
+      try {
+        const res = await SanggaraAPI.deleteKategori(id);
+        if (res.status === 'success') {
+          loadKategoriData();
+        } else {
+          alert('Gagal menghapus: ' + (res.message || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Gagal menghapus kategori: ' + err.message);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -246,7 +353,88 @@
           }
         });
       }
+
+      // Tutup modal jika klik overlay
+      document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            overlay.classList.remove('active');
+          }
+        });
+      });
     });
   </script>
+
+  <!-- Modal 1: Detail Kategori -->
+  <div class="modal-overlay" id="detailKategoriModal">
+    <div class="modal-card-box">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Detail Kategori</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('detailKategoriModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-card-body">
+        <div style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+          <span class="badge badge-info" id="detailTotalBadge" style="font-size: 11.5px; margin-bottom: 6px; display: inline-block;">0 Produk Terdaftar</span>
+          <h4 id="detailNamaKategori" style="font-size: 18px; font-weight: 800; color: #1e293b; margin: 2px 0;">Nama Kategori</h4>
+          <span id="detailSlugKategori" style="font-size: 12.5px; color: #64748b; font-weight: 500;">Slug: -</span>
+        </div>
+
+        <div class="detail-row-item">
+          <span class="detail-label">ID Kategori</span>
+          <span class="detail-value" id="detailIdKategori">#1</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Deskripsi</span>
+          <span class="detail-value" id="detailDeskripsiKategori" style="max-width: 280px; word-break: break-word;">-</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Total Item Terkait</span>
+          <span class="detail-value" id="detailJumlahProduk" style="color: #00b87c;">0 Produk</span>
+        </div>
+      </div>
+      <div class="modal-card-footer">
+        <button type="button" class="btn btn-outline-primary" onclick="closeModal('detailKategoriModal')" style="padding: 8px 18px; font-size: 13px;">Tutup</button>
+        <button type="button" class="btn btn-primary" id="btnEditFromDetail" style="padding: 8px 20px; font-size: 13px; background-color: #059669; border-color: #059669;">Edit Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Edit Data Kategori -->
+  <div class="modal-overlay" id="editKategoriModal">
+    <div class="modal-card-box">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Edit Data Kategori</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('editKategoriModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <form id="formEditKategori" onsubmit="submitEditKategori(event)">
+        <div class="modal-card-body">
+          <input type="hidden" id="editKategoriId">
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Nama Kategori</label>
+            <input type="text" id="editNamaKategori" class="search-input" style="width: 100%;" placeholder="Contoh: Kostum Tari" required>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Slug URL (Otomatis jika dikosongkan)</label>
+            <input type="text" id="editSlugKategori" class="search-input" style="width: 100%; font-family: monospace;" placeholder="kostum-tari">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Deskripsi Kategori</label>
+            <textarea id="editDeskripsiKategori" rows="3" class="search-input" style="width: 100%; height: auto; padding: 10px; resize: vertical;" placeholder="Deskripsi peruntukan atau koleksi busana kategori ini..."></textarea>
+          </div>
+        </div>
+        <div class="modal-card-footer">
+          <button type="button" class="btn btn-outline-primary" onclick="closeModal('editKategoriModal')" style="padding: 8px 18px; font-size: 13px;">Batal</button>
+          <button type="submit" id="btnSubmitEditKategori" class="btn btn-primary" style="padding: 8px 22px; font-size: 13px;">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
