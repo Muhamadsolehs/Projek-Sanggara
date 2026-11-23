@@ -312,7 +312,7 @@
               <a href="analisa-pelanggan.html" class="card-link">Semua 17 &rarr;</a>
             </div>
 
-            <div class="rank-list">
+            <div class="rank-list" id="topKecamatanList">
               <div class="rank-item">
                 <div class="rank-item-header">
                   <span class="rank-name">#1 Kec. Purwakarta</span>
@@ -388,7 +388,7 @@
       try {
         const isOnline = await SanggaraAPI.isOnline();
         if (!isOnline) {
-          console.info('Backend Laravel 13 belum aktif di http://127.0.0.1:8000. Menampilkan data template awal.');
+          console.info('Backend Laravel 13 belum aktif di http://127.0.0.1:8000. Menampilkan data template.');
           return;
         }
 
@@ -399,31 +399,80 @@
           // 1. Surplus Keuangan
           if (cards.surplus_keuangan) {
             document.getElementById('dashSurplusVal').textContent = cards.surplus_keuangan.formatted;
-            document.getElementById('dashSurplusFooter').querySelector('span').textContent = 
-              `Margin ${cards.surplus_keuangan.margin} • Pemasukan Rp ` + (cards.surplus_keuangan.total_pemasukan / 1000000).toFixed(1) + ' jt';
+            const pemasukanJt = (parseFloat(cards.surplus_keuangan.total_pemasukan || 0) / 1000000).toFixed(1);
+            const footerEl = document.getElementById('dashSurplusFooter');
+            if (footerEl) {
+              const span = footerEl.querySelector('span');
+              if (span) span.textContent = `Margin ${cards.surplus_keuangan.margin} • Pemasukan Rp ${pemasukanJt} jt`;
+            }
           }
 
           // 2. Transaksi Booking
           if (cards.transaksi_booking) {
             document.getElementById('dashBookingVal').textContent = `${cards.transaksi_booking.total} Transaksi`;
-            document.getElementById('dashBookingFooter').querySelector('span').textContent = 
-              `${cards.transaksi_booking.persen_lunas} Lunas • ${cards.transaksi_booking.persen_dp} DP (25%)`;
+            const footerEl = document.getElementById('dashBookingFooter');
+            if (footerEl) {
+              const span = footerEl.querySelector('span');
+              if (span) span.textContent = `${cards.transaksi_booking.persen_lunas} Lunas • ${cards.transaksi_booking.persen_dp} DP (25%)`;
+            }
           }
 
           // 3. Pasar Terbesar
           if (cards.pasar_terbesar) {
             document.getElementById('dashPasarVal').textContent = cards.pasar_terbesar.nama_kecamatan;
-            document.getElementById('dashPasarFooter').querySelector('span').textContent = 
-              `${cards.pasar_terbesar.total_booking} Booking (${cards.pasar_terbesar.persentase_pasar} total)`;
+            const footerEl = document.getElementById('dashPasarFooter');
+            if (footerEl) {
+              const span = footerEl.querySelector('span');
+              if (span) span.textContent = `${cards.pasar_terbesar.total_booking} Booking (${cards.pasar_terbesar.persentase_pasar} total)`;
+            }
           }
 
           // 4. Kesiapan Stok
           if (cards.kesiapan_stok) {
             document.getElementById('dashStokVal').textContent = `${cards.kesiapan_stok.siap_sewa} / ${cards.kesiapan_stok.total_unit} Unit`;
-            document.getElementById('dashStokFooter').querySelector('span').textContent = 
-              `${cards.kesiapan_stok.persen_siap} Siap Sewa • ${cards.kesiapan_stok.disewa} Disewa`;
+            const footerEl = document.getElementById('dashStokFooter');
+            if (footerEl) {
+              const span = footerEl.querySelector('span');
+              if (span) span.textContent = `${cards.kesiapan_stok.persen_siap} Siap Sewa • ${cards.kesiapan_stok.disewa} Disewa`;
+            }
             const badge = document.getElementById('inventoryTotalBadge');
             if (badge) badge.textContent = `${cards.kesiapan_stok.total_unit} Unit`;
+
+            const segSiap = document.getElementById('segmentSiap');
+            if (segSiap) segSiap.style.width = cards.kesiapan_stok.persen_siap;
+          }
+
+          // 5. Top 5 Kecamatan Dinamis
+          if (res.data.top_kecamatan && res.data.top_kecamatan.length > 0) {
+            const rankList = document.getElementById('topKecamatanList');
+            if (rankList) {
+              const maxVal = Math.max(...res.data.top_kecamatan.map(k => parseInt(k.total_booking) || 0), 1);
+              rankList.innerHTML = res.data.top_kecamatan.map((k, idx) => {
+                const count = parseInt(k.total_booking) || 0;
+                const percent = Math.max(Math.round((count / maxVal) * 100), 12);
+                const colorClass = idx < 3 ? 'fill-teal' : 'fill-blue';
+                return `
+                  <div class="rank-item">
+                    <div class="rank-item-header">
+                      <span class="rank-name">#${idx + 1} ${k.nama_kecamatan}</span>
+                      <span class="rank-stat">${count} booking (${k.persentase_pasar || 0}%)</span>
+                    </div>
+                    <div class="progress-track">
+                      <div class="progress-fill ${colorClass}" style="width: ${percent}%;"></div>
+                    </div>
+                  </div>
+                `;
+              }).join('');
+            }
+          }
+
+          // 6. Kategori Terlaris
+          if (res.data.kategori_terlaris && res.data.kategori_terlaris.length > 0) {
+            const topKat = res.data.kategori_terlaris[0];
+            const katBox = document.querySelector('.metric-box-title');
+            if (katBox && topKat) {
+              katBox.textContent = `${topKat.nama_kategori} (${topKat.total_sewa} Sewa)`;
+            }
           }
         }
       } catch (err) {

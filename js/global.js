@@ -33,14 +33,28 @@ function toggleNavGroup(element) {
 
 document.addEventListener('DOMContentLoaded', () => {
   // Handle collapsible sidebar submenus (Laporan & Analisa)
-  // Gunakan onclick langsung untuk menimpa inline onclick agar TIDAK terjadi double-toggle
   document.querySelectorAll('.nav-group > .nav-item').forEach(item => {
-    item.onclick = function(e) {
+    item.addEventListener('click', function(e) {
       if (e) e.preventDefault();
       const parentGroup = this.closest('.nav-group');
       if (parentGroup) {
         parentGroup.classList.toggle('open');
       }
-    };
+    });
   });
+
+  // Auto-expand nav-group if current URL is inside submenu
+  try {
+    const currentFile = window.location.pathname.split('/').pop();
+    if (currentFile) {
+      document.querySelectorAll('.subnav-item').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href.includes(currentFile)) {
+          link.classList.add('active');
+          const group = link.closest('.nav-group');
+          if (group) group.classList.add('open');
+        }
+      });
+    }
+  } catch (e) {}
 });

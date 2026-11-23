@@ -129,7 +129,7 @@
           <div class="page-toolbar">
             <div class="search-input-wrapper" style="width: 320px;">
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" class="search-input" placeholder="Cari ...">
+              <input type="text" id="searchKategoriInput" class="search-input" placeholder="Cari kategori...">
             </div>
           </div>
 
@@ -144,11 +144,14 @@
                   <th style="text-align: right;">AKSI</th>
                 </tr>
               </thead>
+              <tbody id="kategoriTableBody">
+                <!-- Data dinamis dari MySQL via SanggaraAPI.getKategori() -->
+              </tbody>
             </table>
           </div>
 
           <!-- Empty State (Image 11) -->
-          <div class="empty-state">
+          <div class="empty-state" id="kategoriEmptyState" style="display: none;">
             <div class="empty-state-icon">
               <svg class="empty-state-svg" viewBox="0 0 80 80" fill="none">
                 <rect x="15" y="10" width="50" height="60" rx="12" fill="#E6FAF2" stroke="#80DCBA" stroke-width="2.5"/>
@@ -166,5 +169,84 @@
       </main>
     </div>
   </div>
+
+  <script>
+    let allCategories = [];
+
+    async function loadKategoriData() {
+      const tbody = document.getElementById('kategoriTableBody');
+      const emptyState = document.getElementById('kategoriEmptyState');
+      if (!tbody) return;
+
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 24px; color: #888;">Memuat data kategori dari database...</td></tr>`;
+
+      try {
+        const res = await SanggaraAPI.getKategori();
+        if (res.status === 'success' && res.data && res.data.length > 0) {
+          allCategories = res.data;
+          renderKategoriTable(allCategories);
+        } else {
+          tbody.innerHTML = '';
+          if (emptyState) emptyState.style.display = 'block';
+        }
+      } catch (e) {
+        console.error('Gagal memuat kategori:', e);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 24px; color: #ef4444;">Gagal memuat data dari database. Silakan pastikan server backend berjalan.</td></tr>`;
+      }
+    }
+
+    function renderKategoriTable(list) {
+      const tbody = document.getElementById('kategoriTableBody');
+      const emptyState = document.getElementById('kategoriEmptyState');
+      if (!tbody) return;
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+      }
+
+      if (emptyState) emptyState.style.display = 'none';
+      tbody.innerHTML = list.map(k => `
+        <tr>
+          <td>
+            <div style="font-weight: 700; color: #1e293b; font-size: 14px;">${k.nama_kategori}</div>
+            <div style="font-size: 11.5px; color: #94a3b8;">Slug: ${k.slug}</div>
+          </td>
+          <td style="font-size: 13px; color: #475569;">${k.deskripsi || '-'}</td>
+          <td>
+            <span class="badge badge-info" style="font-size: 12px; font-weight: 600;">
+              ${k.total_produk} Produk
+            </span>
+          </td>
+          <td style="text-align: right;">
+            <button class="action-btn" title="Ubah Kategori" style="color: #00b87c;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadKategoriData();
+
+      const searchInput = document.getElementById('searchKategoriInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const val = e.target.value.toLowerCase().trim();
+          if (!val) {
+            renderKategoriTable(allCategories);
+          } else {
+            const filtered = allCategories.filter(k => 
+              k.nama_kategori.toLowerCase().includes(val) || 
+              (k.deskripsi && k.deskripsi.toLowerCase().includes(val))
+            );
+            renderKategoriTable(filtered);
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>

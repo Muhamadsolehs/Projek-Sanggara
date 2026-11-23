@@ -135,12 +135,12 @@
           <div class="toolbar-container">
             <div class="search-input-wrapper">
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" class="search-input" placeholder="Cari ...">
+              <input type="text" id="searchPengeluaranInput" class="search-input" placeholder="Cari transaksi, beban, PIC...">
             </div>
 
             <div class="date-filter-picker">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-              <span>01 Apr 2022 - 10 Sep 2022</span>
+              <span id="pengeluaranPeriodeLabel">Semua Pengeluaran</span>
             </div>
           </div>
 
@@ -151,27 +151,16 @@
                 <tr>
                   <th>NO.TRANSAKSI</th>
                   <th>TANGGAL</th>
+                  <th>KATEGORI BEBAN</th>
                   <th>NOMINAL</th>
                   <th>METODE PEMBAYARAN</th>
-                  <th>BUKTI TRANSAKSI</th>
+                  <th>PIC / STAF</th>
+                  <th>KETERANGAN</th>
                   <th style="text-align: right;">AKSI</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td style="font-weight: 600;">EXP-00128</td>
-                  <td>18 November 2026</td>
-                  <td class="nominal-expense">850.000</td>
-                  <td>KAS TUNAI</td>
-                  <td>
-                    <span class="badge badge-info">Lihat Struk</span>
-                  </td>
-                  <td style="text-align: right;">
-                    <button class="action-btn" title="Lihat Detail">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    </button>
-                  </td>
-                </tr>
+              <tbody id="pengeluaranTableBody">
+                <!-- Data dinamis dari MySQL via SanggaraAPI.getLaporanPengeluaran() -->
               </tbody>
             </table>
           </div>
@@ -179,5 +168,80 @@
       </main>
     </div>
   </div>
+
+  <script>
+    let allPengeluaran = [];
+
+    async function loadPengeluaranData(params = {}) {
+      const tbody = document.getElementById('pengeluaranTableBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: #888;">Memuat data mutasi kas keluar dari database...</td></tr>`;
+
+      try {
+        const res = await SanggaraAPI.getLaporanPengeluaran(params);
+        if (res.status === 'success' && res.data && res.data.length > 0) {
+          allPengeluaran = res.data;
+          renderPengeluaranTable(allPengeluaran);
+        } else {
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 28px; color: #64748b;">Belum ada catatan mutasi kas pengeluaran.</td></tr>`;
+        }
+      } catch (e) {
+        console.error('Gagal memuat pengeluaran:', e);
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: #ef4444;">Gagal terhubung ke database. Pastikan server backend Laravel berjalan.</td></tr>`;
+      }
+    }
+
+    function renderPengeluaranTable(list) {
+      const tbody = document.getElementById('pengeluaranTableBody');
+      if (!tbody) return;
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: #64748b;">Tidak ada data yang sesuai pencarian.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(item => `
+        <tr>
+          <td style="font-weight: 700; color: #ef4444;">${item.no_transaksi}</td>
+          <td style="color: #475569; font-size: 13px;">${item.tanggal}</td>
+          <td><span class="badge badge-info" style="font-size: 11.5px;">${item.kategori_beban || '-'}</span></td>
+          <td class="nominal-expense" style="font-weight: 700; color: #ef4444;">${item.nominal_formatted || ('Rp ' + Number(item.nominal).toLocaleString('id-ID'))}</td>
+          <td>
+            <span class="badge" style="background:#f1f5f9; color:#475569; font-size: 11.5px;">${item.metode_pembayaran || 'TUNAI'}</span>
+          </td>
+          <td style="font-weight: 600; color: #334155; font-size: 12.5px;">${item.pic_staf || '-'}</td>
+          <td style="color: #64748b; font-size: 12.5px;">${item.keterangan || '-'}</td>
+          <td style="text-align: right;">
+            <button class="action-btn" title="Lihat Detail" style="color: #00b87c;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPengeluaranData();
+
+      const searchInput = document.getElementById('searchPengeluaranInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const val = e.target.value.toLowerCase().trim();
+          if (!val) {
+            renderPengeluaranTable(allPengeluaran);
+          } else {
+            const filtered = allPengeluaran.filter(p => 
+              (p.no_transaksi && p.no_transaksi.toLowerCase().includes(val)) ||
+              (p.kategori_beban && p.kategori_beban.toLowerCase().includes(val)) ||
+              (p.pic_staf && p.pic_staf.toLowerCase().includes(val)) ||
+              (p.keterangan && p.keterangan.toLowerCase().includes(val))
+            );
+            renderPengeluaranTable(filtered);
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>

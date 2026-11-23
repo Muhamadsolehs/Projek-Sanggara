@@ -426,13 +426,13 @@
   <!-- Interactive JavaScript Engine -->
   <script>
     // Initial catalog data
-    const productsData = [
-      { id: 1, name: "Busana Tari Jaipong Sutra", category: "Kostum Tari", catKey: "tari", price: 50000, grade: "Grade A (Sutra)", stock: 8 },
+    let productsData = [
+      { id: 1, name: "Busana Tari Jaipong Sutra", category: "Kostum Tari", catKey: "tari", price: 150000, grade: "Grade A (Sutra)", stock: 8 },
       { id: 2, name: "Kostum Tari Saman Aceh", category: "Kostum Tari", catKey: "tari", price: 200000, grade: "Grade B (Lengkap)", stock: 10 },
-      { id: 3, name: "Mahkota Siger Sunda & Bros", category: "Aksesoris", catKey: "pengantin", price: 100000, grade: "Kuningan Tebal", stock: 3 },
+      { id: 3, name: "Mahkota Siger Sunda & Bros", category: "Aksesoris", catKey: "pengantin", price: 120000, grade: "Kuningan Tebal", stock: 3 },
       { id: 4, name: "Tari Piring Minangkabau", category: "Kostum Tari", catKey: "tari", price: 175000, grade: "Grade A (Songket)", stock: 6 },
-      { id: 5, name: "Kostum Tari Gambyong...", category: "Kostum Tari", catKey: "tari", price: 160000, grade: "Grade A (Kemben Jarik)", stock: 5 },
-      { id: 6, name: "Beskap Jawa Solo Pria...", category: "Pengantin Adat", catKey: "pengantin", price: 250000, grade: "Grade A (Jarik & Keris)", stock: 4 }
+      { id: 5, name: "Kostum Tari Gambyong", category: "Kostum Tari", catKey: "tari", price: 160000, grade: "Grade A (Kemben Jarik)", stock: 5 },
+      { id: 6, name: "Beskap Jawa Solo Pria", category: "Baju Pengantin Adat", catKey: "pengantin", price: 250000, grade: "Grade A (Jarik & Keris)", stock: 4 }
     ];
 
     // Cart state
@@ -441,6 +441,84 @@
 
     function formatRupiah(num) {
       return 'Rp ' + Number(num).toLocaleString('id-ID');
+    }
+
+    async function loadKasirRealCatalog() {
+      try {
+        const isOnline = await SanggaraAPI.isOnline();
+        if (!isOnline) return;
+
+        // Load Customers from API
+        const resCust = await SanggaraAPI.getPelanggan();
+        if (resCust.status === 'success' && resCust.data && resCust.data.length > 0) {
+          const select = document.getElementById('customerSelect');
+          if (select) {
+            select.innerHTML = resCust.data.map((c, i) => `
+              <option value="${c.id_pelanggan}" ${i === 0 ? 'selected' : ''}>
+                ${c.nama_pelanggan} — ${c.kecamatan || 'Purwakarta'} (${c.no_telepon})
+              </option>
+            `).join('');
+          }
+        }
+
+        // Load Products from API
+        const resProd = await SanggaraAPI.getKasirProduk();
+        if (resProd.status === 'success' && resProd.data && resProd.data.length > 0) {
+          productsData = resProd.data.map(p => {
+            let catKey = 'tari';
+            const katLower = (p.kategori || '').toLowerCase();
+            if (katLower.includes('pengantin')) catKey = 'pengantin';
+            else if (katLower.includes('kebaya') || katLower.includes('wisuda')) catKey = 'kebaya';
+            else if (katLower.includes('aksesoris')) catKey = 'pengantin';
+
+            return {
+              id: p.id_produk,
+              name: p.nama_produk,
+              category: p.kategori,
+              catKey: catKey,
+              price: p.harga_sewa,
+              grade: p.kualitas,
+              stock: p.stok_siap
+            };
+          });
+
+          renderCatalogGrid(productsData);
+        }
+      } catch (e) {
+        console.warn('API Kasir fallback to default:', e);
+      }
+    }
+
+    function renderCatalogGrid(items) {
+      const grid = document.getElementById('productsGrid');
+      if (!grid) return;
+      const tintClasses = ['tint-green', 'tint-blue', 'tint-yellow', 'tint-orange', 'tint-purple'];
+
+      grid.innerHTML = items.map((p, idx) => {
+        const tint = tintClasses[idx % tintClasses.length];
+        return `
+          <div class="product-card" data-category="${p.catKey}" data-id="${p.id}" data-name="${p.name}" data-cat-name="${p.category}" data-price="${p.price}" data-stock="${p.stock}">
+            <div class="product-visual-box ${tint}">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3c0 .77.29 1.48.77 2L2 14l3 3 7-5 7 5 3-3-7.77-7A3 3 0 0 0 15 5a3 3 0 0 0-3-3z"></path></svg>
+              <span class="product-stock-badge">Stok: ${p.stock}</span>
+            </div>
+            <div class="product-info-block">
+              <span class="product-cat-tag">${p.category}</span>
+              <h4 class="product-name-txt" title="${p.name}">${p.name}</h4>
+              <span class="product-grade-txt">${p.grade}</span>
+            </div>
+            <div class="product-card-footer">
+              <div class="product-pricing">
+                <span class="tariff-label">Tarif/Hari</span>
+                <span class="tariff-price">${formatRupiah(p.price)}</span>
+              </div>
+              <button class="btn-add-cart" onclick="addToCart(${p.id})" aria-label="Tambah item" ${p.stock <= 0 ? 'disabled style="opacity:0.4;"' : ''}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     // Category Pill Filtering
@@ -643,19 +721,30 @@
       closeCustomerModal();
     }
 
-    // Proceed to Nota / Receipt
-    function proceedToNota() {
+    // Proceed to Nota / Receipt (Tersimpan ke Database Real via API)
+    async function proceedToNota() {
       if (cart.length === 0) return;
 
-      // Save order details to localStorage for nota.html to read dynamically
       const customerSelect = document.getElementById('customerSelect');
-      const customerText = customerSelect.options[customerSelect.selectedIndex].text;
+      const customerId = parseInt(customerSelect.value) || 1;
+      const customerText = customerSelect.options[customerSelect.selectedIndex]?.text || "Pelanggan";
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const dpAmount = paymentOption === 'dp' ? Math.round(subtotal * 0.25) : subtotal;
       const sisaBayar = paymentOption === 'dp' ? subtotal - dpAmount : 0;
       const cashReceived = Number(document.getElementById('cashReceivedInput').value.replace(/\D/g, '')) || dpAmount;
       const kembalian = cashReceived - dpAmount;
 
+      let activeMethod = 'TUNAI';
+      const activeBtn = document.querySelector('.btn-method.active');
+      if (activeBtn) {
+        const text = activeBtn.innerText.toUpperCase();
+        if (text.includes('QRIS')) activeMethod = 'QRIS';
+        else if (text.includes('TRANSFER') || text.includes('BANK')) activeMethod = 'BANK';
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+
+      // Backup ke localStorage
       const orderData = {
         customer: customerText,
         items: cart,
@@ -665,34 +754,49 @@
         sisaBayar: sisaBayar,
         cashReceived: cashReceived,
         kembalian: kembalian >= 0 ? kembalian : 0,
-        date: "16 Nov 2026 10:50",
-        noNota: "CS/01/261116/0001",
+        date: new Date().toLocaleString('id-ID'),
+        noNota: "CS/01/" + Date.now().toString().slice(-6),
         noBooking: "1",
         kasir: "Ahmad Rivaldy"
       };
-
       localStorage.setItem('sanggara_current_order', JSON.stringify(orderData));
+
+      // Kirim transaksi ke backend database jika online
+      try {
+        const isOnline = await SanggaraAPI.isOnline();
+        if (isOnline) {
+          const payload = {
+            id_pelanggan: customerId,
+            tgl_ambil: today,
+            tgl_pakai: today,
+            opsi_pembayaran: paymentOption,
+            metode_bayar: activeMethod,
+            uang_diterima: cashReceived,
+            items: cart.map(item => ({ id_produk: item.id, jumlah: item.qty }))
+          };
+          const res = await SanggaraAPI.checkoutKasir(payload);
+          if (res.status === 'success' && res.data && res.data.id_booking) {
+            window.location.href = `nota.html?id=${res.data.id_booking}`;
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('Checkout API fallback to local:', err);
+      }
+
       window.location.href = 'nota.html';
     }
 
-    // Quick initial items preload to match user image 3 & 4
-    // If the user wants to test right away, let's preload the items shown in the user screenshot:
-    window.addEventListener('DOMContentLoaded', () => {
-      // Pre-add 3 items as seen in image 3:
-      addToCart(1); // Busana Tari Jaipong Sutra (qty: 3)
-      updateQty(1, 1);
-      updateQty(1, 1);
-      
-      // Pengantin Adat Sunda Siger
-      cart.push({ id: 7, name: "Pengantin Adat Sunda Siger", category: "Pengantin Adat", price: 25000, qty: 1 });
-      
-      // Mahkota Siger Sunda & Bros
-      addToCart(3);
-      updateQty(3, 1);
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 1. Muat katalog produk & pelanggan asli dari database jika backend aktif
+      await loadKasirRealCatalog();
 
-      renderCart();
-      document.getElementById('cashReceivedInput').value = "Rp 400.000";
-      calculateChange();
+      // 2. Preload item contoh keranjang jika keranjang kosong
+      if (cart.length === 0 && productsData.length > 0) {
+        addToCart(productsData[0].id);
+        if (productsData.length > 1) addToCart(productsData[1].id);
+        renderCart();
+      }
     });
   </script>
 </body>

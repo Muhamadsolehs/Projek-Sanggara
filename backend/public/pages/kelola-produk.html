@@ -133,16 +133,17 @@
           <div class="page-toolbar">
             <div class="search-input-wrapper" style="width: 320px;">
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" class="search-input" placeholder="Cari ...">
+              <input type="text" id="searchProdukInput" class="search-input" placeholder="Cari nama / kode produk...">
             </div>
 
             <div class="select-filter-wrapper">
               <div class="filter-badge-btn">Filter</div>
-              <select class="filter-select">
-                <option>Kategori</option>
-                <option>Baju Pengantin</option>
-                <option>Kostum Tari</option>
-                <option>Kebaya Wisuda</option>
+              <select id="filterKategoriSelect" class="filter-select">
+                <option value="">Semua Kategori</option>
+                <option value="1">Kostum Tari</option>
+                <option value="2">Baju Pengantin Adat</option>
+                <option value="3">Kebaya & Wisuda</option>
+                <option value="4">Aksesoris</option>
               </select>
             </div>
           </div>
@@ -162,11 +163,14 @@
                   <th>STATUS</th>
                 </tr>
               </thead>
+              <tbody id="produkTableBody">
+                <!-- Data dinamis dari MySQL via SanggaraAPI.getProduk() -->
+              </tbody>
             </table>
           </div>
 
           <!-- Empty State (Image 7) -->
-          <div class="empty-state">
+          <div class="empty-state" id="produkEmptyState" style="display: none;">
             <div class="empty-state-icon">
               <svg class="empty-state-svg" viewBox="0 0 80 80" fill="none">
                 <rect x="15" y="10" width="50" height="60" rx="12" fill="#E6FAF2" stroke="#80DCBA" stroke-width="2.5"/>
@@ -184,5 +188,77 @@
       </main>
     </div>
   </div>
+
+  <script>
+    async function loadProdukData(params = {}) {
+      const tbody = document.getElementById('produkTableBody');
+      const emptyState = document.getElementById('produkEmptyState');
+      if (!tbody) return;
+
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: #888;">Memuat data produk dari database...</td></tr>`;
+
+      try {
+        const res = await SanggaraAPI.getProduk(params);
+        if (res.status === 'success' && res.data && res.data.length > 0) {
+          if (emptyState) emptyState.style.display = 'none';
+          tbody.innerHTML = res.data.map((p, idx) => `
+            <tr>
+              <td style="font-weight: 600; color: #666;">${idx + 1}</td>
+              <td>
+                <div style="font-weight: 600; color: #1e293b;">${p.nama_produk}</div>
+                <div style="font-size: 11.5px; color: #94a3b8;">${p.kode_produk}</div>
+              </td>
+              <td><span class="badge badge-info" style="font-size: 11.5px;">${p.kategori}</span></td>
+              <td style="font-size: 12.5px; color: #475569;">${p.kualitas}</td>
+              <td style="font-size: 13px;">
+                <strong style="color: #00b87c;">${p.stok_siap}</strong> / <span style="color:#64748b;">${p.stok_total} Unit</span>
+              </td>
+              <td>
+                <div style="width: 36px; height: 36px; border-radius: 6px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #e2e8f0;">
+                  <img src="${p.foto_url || '../image/logo.png'}" alt="Foto" style="width: 24px; height: 24px; object-fit: contain;">
+                </div>
+              </td>
+              <td style="font-weight: 700; color: #00b87c; font-size: 13.5px;">${p.harga_formatted}</td>
+              <td>
+                <span class="badge ${p.status === 'tersedia' ? 'badge-success' : 'badge-danger'}">
+                  ${p.status.toUpperCase()}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '';
+          if (emptyState) emptyState.style.display = 'block';
+        }
+      } catch (e) {
+        console.error('Gagal memuat produk:', e);
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: #ef4444;">Gagal memuat data dari database. Silakan pastikan server backend berjalan.</td></tr>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProdukData();
+
+      const searchInput = document.getElementById('searchProdukInput');
+      if (searchInput) {
+        let timeout = null;
+        searchInput.addEventListener('input', (e) => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            const kat = document.getElementById('filterKategoriSelect')?.value || '';
+            loadProdukData({ q: e.target.value, kategori: kat });
+          }, 300);
+        });
+      }
+
+      const filterKategori = document.getElementById('filterKategoriSelect');
+      if (filterKategori) {
+        filterKategori.addEventListener('change', (e) => {
+          const q = document.getElementById('searchProdukInput')?.value || '';
+          loadProdukData({ q, kategori: e.target.value });
+        });
+      }
+    });
+  </script>
 </body>
 </html>

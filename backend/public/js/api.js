@@ -63,6 +63,28 @@ const SanggaraAPI = {
     return data;
   },
 
+  async getKasirProduk() {
+    const res = await fetch(`${this.baseUrl}/kasir/produk`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat katalog kasir');
+    return await res.json();
+  },
+
+  async checkoutKasir(payload) {
+    const res = await fetch(`${this.baseUrl}/kasir/checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal memproses transaksi kasir');
+    return data;
+  },
+
   async getProduk(params = {}) {
     const query = new URLSearchParams(params).toString();
     const res = await fetch(`${this.baseUrl}/produk${query ? '?' + query : ''}`, {

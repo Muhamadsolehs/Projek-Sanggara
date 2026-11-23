@@ -13,7 +13,7 @@ CREATE DATABASE IF NOT EXISTS `sanggara_db`
 
 USE `sanggara_db`;
 
--- Matikan foreign key check sementara selama proses pembuatan ulang tabel
+-- Matikan foreign key check selama proses import tabel dan data seeder
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS `pembayaran_transaksi`;
@@ -26,8 +26,9 @@ DROP TABLE IF EXISTS `produk`;
 DROP TABLE IF EXISTS `kategori`;
 DROP TABLE IF EXISTS `kecamatan`;
 DROP TABLE IF EXISTS `users`;
-
-SET FOREIGN_KEY_CHECKS = 1;
+DROP TABLE IF EXISTS `sessions`;
+DROP TABLE IF EXISTS `cache`;
+DROP TABLE IF EXISTS `cache_locks`;
 
 -- =============================================================================
 -- 1. TABEL: users (Pengguna, Kasir, & Administrator)
@@ -532,5 +533,7 @@ CREATE TABLE IF NOT EXISTS `cache_locks` (
   `owner` VARCHAR(255) NOT NULL,
   `expiration` INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- Selesai
