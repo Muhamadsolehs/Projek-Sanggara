@@ -12,6 +12,13 @@ function toggleSidebar() {
   } catch (e) {}
 }
 
+function toggleNavGroup(element) {
+  const group = element ? (element.closest('.nav-group') || element.parentElement) : null;
+  if (group) {
+    group.classList.toggle('open');
+  }
+}
+
 // Restore saved preference on load
 (function() {
   try {
@@ -26,12 +33,14 @@ function toggleSidebar() {
 
 document.addEventListener('DOMContentLoaded', () => {
   // Handle collapsible sidebar submenus (Laporan & Analisa)
-  document.querySelectorAll('.nav-group .nav-item').forEach(item => {
-    item.addEventListener('click', function(e) {
+  // Gunakan onclick langsung untuk menimpa inline onclick agar TIDAK terjadi double-toggle
+  document.querySelectorAll('.nav-group > .nav-item').forEach(item => {
+    item.onclick = function(e) {
+      if (e) e.preventDefault();
       const parentGroup = this.closest('.nav-group');
       if (parentGroup) {
         parentGroup.classList.toggle('open');
       }
-    });
+    };
   });
 });

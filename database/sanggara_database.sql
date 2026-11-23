@@ -3,7 +3,7 @@
 -- Sistem Manajemen Penyewaan Busana & Rias Pengantin (Sanggar Bunda Febri - SBF)
 -- Purwakarta, Jawa Barat
 -- File: database/sanggara_database.sql
--- Engine: MySQL 8.0+ / MariaDB 10.4+
+-- Engine: MySQL 8.0+ / MariaDB 10.4+ (XAMPP, Laragon, phpMyAdmin, DBeaver)
 -- Charset: utf8mb4 / Collation: utf8mb4_unicode_ci
 -- =============================================================================
 
@@ -346,58 +346,7 @@ ORDER BY b.id_booking ASC;
 
 
 -- =============================================================================
--- 12. TRIGGERS (Automasi Integritas Data & Sinkronisasi Kas)
--- =============================================================================
-DELIMITER $$
-
--- Trigger 1: Otomatis kurangi stok siap sewa saat detail booking ditambahkan
-CREATE TRIGGER `trg_after_insert_detail_booking`
-AFTER INSERT ON `detail_booking`
-FOR EACH ROW
-BEGIN
-  UPDATE `produk`
-  SET 
-    `stok_siap` = GREATEST(CAST(`stok_siap` AS SIGNED) - NEW.jumlah, 0),
-    `stok_disewa` = `stok_disewa` + NEW.jumlah
-  WHERE `id_produk` = NEW.id_produk;
-END$$
-
--- Trigger 2: Otomatis update status booking ketika pelunasan dicatat di pembayaran_transaksi
-CREATE TRIGGER `trg_after_insert_pembayaran_transaksi`
-AFTER INSERT ON `pembayaran_transaksi`
-FOR EACH ROW
-BEGIN
-  DECLARE v_sisa DECIMAL(12,2);
-  
-  -- Update akumulasi pembayaran pada booking
-  UPDATE `booking`
-  SET 
-    `total_bayar` = `total_bayar` + NEW.jumlah_bayar,
-    `sisa_tagihan` = GREATEST(`total_tagihan` - (`total_bayar` + NEW.jumlah_bayar), 0.00),
-    `metode_bayar_terakhir` = NEW.metode_bayar,
-    `status_pembayaran` = IF((`total_tagihan` - (`total_bayar` + NEW.jumlah_bayar)) <= 0, 'LUNAS', 'DP')
-  WHERE `id_booking` = NEW.id_booking;
-
-  -- Otomatis masukkan ke laporan_pemasukan kas
-  INSERT INTO `laporan_pemasukan` (
-    `no_transaksi`, `id_booking`, `tanggal`, `kategori_pemasukan`, `nominal`, `metode_pembayaran`, `id_user`, `keterangan`
-  ) VALUES (
-    CONCAT('BKK-', LPAD(FLOOR(RAND() * 90000 + 10000), 5, '0')),
-    NEW.id_booking,
-    DATE(NEW.tgl_bayar),
-    IF(NEW.jenis_pembayaran = 'DP', 'Sewa Busana (DP 25%)', 'Sewa Busana (Pelunasan)'),
-    NEW.jumlah_bayar,
-    NEW.metode_bayar,
-    NEW.id_user,
-    CONCAT('Penerimaan kas dari pembayaran ', NEW.no_bukti_bayar)
-  );
-END$$
-
-DELIMITER ;
-
-
--- =============================================================================
--- 13. DATA AWAL (SEEDER DUMMY REALISTIS SESUAI DESIGN UI)
+-- 12. DATA AWAL / SEEDER DUMMY REALISTIS (SEBELUM TRIGGER AKTIF)
 -- =============================================================================
 
 -- A. User Kasir & Admin
@@ -421,10 +370,10 @@ INSERT INTO `produk` (`id_produk`, `kode_produk`, `id_kategori`, `nama_produk`, 
 (4, 'KT-PRG-03', 1, 'Tari Piring Minangkabau', 'Grade A (Songket)', 175000.00, 25000.00, 6, 6, 0, 0, 0, 'tersedia'),
 (5, 'KT-GBY-04', 1, 'Kostum Tari Gambyong', 'Grade A (Kemben Jarik)', 160000.00, 25000.00, 5, 5, 0, 0, 0, 'tersedia'),
 (6, 'PA-JWS-01', 2, 'Beskap Jawa Solo Pria', 'Grade A (Jarik & Keris)', 250000.00, 35000.00, 4, 4, 0, 0, 0, 'tersedia'),
-(7, 'KT-JAI-02', 1, 'Baju Tari Jaipong Daun Asih (Atasan)', 'Grade A', 60000.00, 15000.00, 15, 14, 1, 0, 0, 'tersedia'),
-(8, 'KT-PRD-01', 1, 'Kain Sinjang Jaipong Prada Emas', 'Grade A', 30000.00, 10000.00, 20, 19, 1, 0, 0, 'tersedia'),
-(9, 'AK-KMB-02', 4, 'Aksesoris Siger Sunda & Kembang Goyang', 'Standar', 20000.00, 5000.00, 10, 9, 1, 0, 0, 'tersedia'),
-(10, 'PK-SLD-01', 1, 'Paket Kostum Tambahan & Selendang', 'Lengkap', 265000.00, 35000.00, 5, 4, 1, 0, 0, 'tersedia');
+(7, 'KT-JAI-02', 1, 'Baju Tari Jaipong Daun Asih (Atasan)', 'Grade A', 60000.00, 15000.00, 15, 13, 2, 0, 0, 'tersedia'),
+(8, 'KT-PRD-01', 1, 'Kain Sinjang Jaipong Prada Emas', 'Grade A', 30000.00, 10000.00, 20, 18, 2, 0, 0, 'tersedia'),
+(9, 'AK-KMB-02', 4, 'Aksesoris Siger Sunda & Kembang Goyang', 'Standar', 20000.00, 5000.00, 10, 8, 2, 0, 0, 'tersedia'),
+(10, 'PK-SLD-01', 1, 'Paket Kostum Tambahan & Selendang', 'Lengkap', 265000.00, 35000.00, 5, 3, 2, 0, 0, 'tersedia');
 
 -- D. 17 Kecamatan Purwakarta
 INSERT INTO `kecamatan` (`id_kecamatan`, `nama_kecamatan`, `zona_wilayah`, `target_pasar`) VALUES
@@ -500,13 +449,62 @@ INSERT INTO `pembayaran_transaksi` (`no_bukti_bayar`, `id_booking`, `tgl_bayar`,
 ('PAY-261116-0003', 2, '2026-11-16 10:50:00', 'DP', 93750.00, 93750.00, 0.00, 'QRIS', 2, 'Pembayaran DP 25% via QRIS');
 
 -- G. Laporan Pemasukan (pages/laporan-pemasukan.html)
-INSERT INTO `laporan_pemasukan` (`id_pemasukan`, `no_transaksi`, `id_booking`, `tanggal`, `kategori_pemasukan`, `nominal`, `metode_pembayaran`, `id_user`, `keterangan`) VALUES
-(1, 'BKK-00443', 1, '2026-11-19', 'Sewa Busana', 100000.00, 'BANK', 2, 'Penyewaan busana tari jaipong');
+INSERT INTO `laporan_pemasukan` (`no_transaksi`, `id_booking`, `tanggal`, `kategori_pemasukan`, `nominal`, `metode_pembayaran`, `id_user`, `keterangan`) VALUES
+('BKK-00443', 1, '2026-11-19', 'Sewa Busana', 100000.00, 'BANK', 2, 'Penyewaan busana tari jaipong');
 
 -- H. Laporan Pengeluaran (pages/laporan-pengeluaran.html)
-INSERT INTO `laporan_pengeluaran` (`id_pengeluaran`, `no_transaksi`, `tanggal`, `kategori_beban`, `nominal`, `metode_pembayaran`, `pic_staf`, `keterangan`) VALUES
-(1, 'BKK-00214', '2026-11-10', 'Laundry & Perawatan', 150000.00, 'TUNAI', 'Ahmad Rivaldy', 'Laundry kilat 10 paket busana tari pasca acara'),
-(2, 'BKK-00215', '2026-11-12', 'Gaji Staf & Asisten Rias', 350000.00, 'TUNAI', 'Ivan', 'Honor kru penata rias wisuda'),
-(3, 'BKK-00216', '2026-11-15', 'Pengadaan Stok Busana Baru', 500000.00, 'BANK', 'Amanah Solusi', 'Beli kain prada emas & aksesoris bros siger');
+INSERT INTO `laporan_pengeluaran` (`no_transaksi`, `tanggal`, `kategori_beban`, `nominal`, `metode_pembayaran`, `pic_staf`, `keterangan`) VALUES
+('BKK-00214', '2026-11-10', 'Laundry & Perawatan', 150000.00, 'TUNAI', 'Ahmad Rivaldy', 'Laundry kilat 10 paket busana tari pasca acara'),
+('BKK-00215', '2026-11-12', 'Gaji Staf & Asisten Rias', 350000.00, 'TUNAI', 'Ivan', 'Honor kru penata rias wisuda'),
+('BKK-00216', '2026-11-15', 'Pengadaan Stok Busana Baru', 500000.00, 'BANK', 'Amanah Solusi', 'Beli kain prada emas & aksesoris bros siger');
+
+
+-- =============================================================================
+-- 13. TRIGGERS (Dibuat SETELAH Seeder Selesai Agar Tidak Menabrak Seeder)
+-- =============================================================================
+DELIMITER $$
+
+-- Trigger 1: Otomatis kurangi stok siap sewa saat transaksi baru dibuat di aplikasi
+CREATE TRIGGER `trg_after_insert_detail_booking`
+AFTER INSERT ON `detail_booking`
+FOR EACH ROW
+BEGIN
+  UPDATE `produk`
+  SET 
+    `stok_siap` = GREATEST(CAST(`stok_siap` AS SIGNED) - NEW.jumlah, 0),
+    `stok_disewa` = `stok_disewa` + NEW.jumlah
+  WHERE `id_produk` = NEW.id_produk;
+END$$
+
+-- Trigger 2: Otomatis update status booking & rekam kas masuk saat ada pembayaran baru di aplikasi
+CREATE TRIGGER `trg_after_insert_pembayaran_transaksi`
+AFTER INSERT ON `pembayaran_transaksi`
+FOR EACH ROW
+BEGIN
+  -- Update akumulasi pembayaran pada booking
+  UPDATE `booking`
+  SET 
+    `total_bayar` = `total_bayar` + NEW.jumlah_bayar,
+    `sisa_tagihan` = GREATEST(`total_tagihan` - (`total_bayar` + NEW.jumlah_bayar), 0.00),
+    `metode_bayar_terakhir` = NEW.metode_bayar,
+    `status_pembayaran` = IF((`total_tagihan` - (`total_bayar` + NEW.jumlah_bayar)) <= 0, 'LUNAS', 'DP')
+  WHERE `id_booking` = NEW.id_booking;
+
+  -- Otomatis masukkan ke buku kas laporan_pemasukan
+  INSERT INTO `laporan_pemasukan` (
+    `no_transaksi`, `id_booking`, `tanggal`, `kategori_pemasukan`, `nominal`, `metode_pembayaran`, `id_user`, `keterangan`
+  ) VALUES (
+    CONCAT('BKK-', LPAD(FLOOR(RAND() * 90000 + 10000), 5, '0')),
+    NEW.id_booking,
+    DATE(NEW.tgl_bayar),
+    IF(NEW.jenis_pembayaran = 'DP', 'Sewa Busana (DP 25%)', 'Sewa Busana (Pelunasan)'),
+    NEW.jumlah_bayar,
+    NEW.metode_bayar,
+    NEW.id_user,
+    CONCAT('Penerimaan kas dari pembayaran ', NEW.no_bukti_bayar)
+  );
+END$$
+
+DELIMITER ;
 
 -- Selesai
