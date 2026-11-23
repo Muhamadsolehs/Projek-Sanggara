@@ -48,3 +48,8 @@ Route::get('/kategori', [KategoriController::class, 'index']);
 // Laporan Keuangan
 Route::get('/laporan/pemasukan', [LaporanController::class, 'pemasukan']);
 Route::get('/laporan/pengeluaran', [LaporanController::class, 'pengeluaran']);
+Route::get('/laporan/pengeluaran/{id}', [LaporanController::class, 'showPengeluaran']);
+Route::post('/laporan/pengeluaran', [LaporanController::class, 'storePengeluaran']);
+Route::put('/laporan/pengeluaran/{id}', [LaporanController::class, 'updatePengeluaran']);
+Route::post('/laporan/pengeluaran/{id}', [LaporanController::class, 'updatePengeluaran']); // fallback
+Route::delete('/laporan/pengeluaran/{id}', [LaporanController::class, 'destroyPengeluaran']);

@@ -12,12 +12,7 @@ function toggleSidebar() {
   } catch (e) {}
 }
 
-let lastNavToggleTime = 0;
 function toggleNavGroup(element) {
-  const now = Date.now();
-  if (now - lastNavToggleTime < 250) return; // Mencegah pemanggilan ganda dalam 250ms (double-toggle)
-  lastNavToggleTime = now;
-
   const group = element ? (element.closest('.nav-group') || element.parentElement) : null;
   if (group) {
     group.classList.toggle('open');
@@ -37,18 +32,25 @@ window.toggleNavGroup = toggleNavGroup;
   } catch (e) {}
 })();
 
+// Delegated single click listener for collapsible sidebar submenus (Laporan & Analisa)
+document.addEventListener('click', function(e) {
+  const trigger = e.target.closest('.nav-group > .nav-item');
+  if (!trigger) return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  const group = trigger.closest('.nav-group');
+  if (group) {
+    group.classList.toggle('open');
+  }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
-  // Handle collapsible sidebar submenus (Laporan & Analisa)
-  // Menghapus atribut inline onclick untuk mencegah double-toggle dan memasang handler tunggal
+  // Pastikan tidak ada inline onclick tersisa yang memicu eksekusi ganda
   document.querySelectorAll('.nav-group > .nav-item').forEach(item => {
     item.removeAttribute('onclick');
-    item.onclick = function(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      toggleNavGroup(this);
-    };
+    item.onclick = null;
   });
 
   // Auto-expand nav-group if current URL is inside submenu
@@ -57,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentFile) {
       document.querySelectorAll('.subnav-item').forEach(link => {
         const href = link.getAttribute('href');
-        if (href && href.includes(currentFile)) {
+        if (href && (href === currentFile || href.endsWith('/' + currentFile))) {
           link.classList.add('active');
           const group = link.closest('.nav-group');
           if (group) group.classList.add('open');

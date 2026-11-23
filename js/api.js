@@ -159,6 +159,52 @@ const SanggaraAPI = {
     });
     if (!res.ok) throw new Error('Gagal memuat laporan pengeluaran');
     return await res.json();
+  },
+
+  async getPengeluaranDetail(id) {
+    const res = await fetch(`${this.baseUrl}/laporan/pengeluaran/${id}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error(`Pengeluaran #${id} tidak ditemukan`);
+    return await res.json();
+  },
+
+  async tambahPengeluaran(payload) {
+    const res = await fetch(`${this.baseUrl}/laporan/pengeluaran`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menambahkan pengeluaran');
+    return data;
+  },
+
+  async updatePengeluaran(id, payload) {
+    const res = await fetch(`${this.baseUrl}/laporan/pengeluaran/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal memperbarui pengeluaran');
+    return data;
+  },
+
+  async deletePengeluaran(id) {
+    const res = await fetch(`${this.baseUrl}/laporan/pengeluaran/${id}`, {
+      method: 'DELETE',
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menghapus pengeluaran');
+    return data;
   }
 };
 
