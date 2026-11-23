@@ -130,6 +130,13 @@ img, svg {
   left: 0;
   z-index: 50;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.04);
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: margin-left;
+}
+
+/* Sidebar Closed State */
+body.sidebar-closed .app-sidebar {
+  margin-left: calc(-1 * var(--sidebar-width));
 }
 
 .sidebar-header {
@@ -279,7 +286,7 @@ img, svg {
   background-color: var(--color-white);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   border-bottom: 1px solid var(--color-border-light);
   gap: 20px;
   position: sticky;
@@ -288,10 +295,51 @@ img, svg {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-header-sidebar-toggle {
+  color: var(--color-primary);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-header-sidebar-toggle:hover {
+  background-color: var(--color-primary-light);
+}
+
+.header-brand-logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--color-primary);
+  display: none;
+  align-items: center;
+  text-decoration: none;
+}
+
+.header-brand-logo span {
+  color: #059669;
+}
+
+body.sidebar-closed .header-brand-logo {
+  display: inline-flex;
+}
+
 .header-actions {
   display: flex;
   align-items: center;
   gap: 16px;
+  margin-left: auto;
 }
 
 .btn-icon-badge {
@@ -701,6 +749,9 @@ img, svg {
 @media (max-width: 1024px) {
   .app-sidebar {
     width: var(--sidebar-collapsed-width);
+  }
+  body.sidebar-closed .app-sidebar {
+    margin-left: calc(-1 * var(--sidebar-collapsed-width));
   }
   .brand-logo, .nav-label, .nav-arrow, .nav-sublist {
     display: none !important;
