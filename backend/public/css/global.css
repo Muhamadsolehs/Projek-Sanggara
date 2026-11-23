@@ -216,6 +216,11 @@ html.sidebar-closed .app-sidebar {
   transition: background var(--transition-fast), color var(--transition-fast);
   cursor: pointer;
   position: relative;
+  user-select: none;
+}
+
+.nav-item > * {
+  pointer-events: none;
 }
 
 .nav-item:hover {
@@ -262,7 +267,7 @@ html.sidebar-closed .app-sidebar {
 }
 
 .nav-group.open .nav-sublist {
-  display: flex;
+  display: flex !important;
 }
 
 .subnav-item {
@@ -776,23 +781,6 @@ html.sidebar-closed .header-brand-logo {
    Responsive Breakpoints
    -------------------------------------------------------------------------- */
 @media (max-width: 1024px) {
-  .app-sidebar {
-    width: var(--sidebar-collapsed-width);
-  }
-  body.sidebar-closed .app-sidebar {
-    margin-left: calc(-1 * var(--sidebar-collapsed-width));
-  }
-  .brand-logo, .nav-label, .nav-arrow, .nav-sublist {
-    display: none !important;
-  }
-  .sidebar-header {
-    padding: 0 16px;
-    justify-content: center;
-  }
-  .nav-item {
-    justify-content: center;
-    padding: 12px;
-  }
   .content-body {
     padding: 20px 16px;
   }
