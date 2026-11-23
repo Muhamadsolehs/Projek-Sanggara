@@ -38,6 +38,10 @@ Route::post('/kasir/checkout', [KasirController::class, 'checkout']);
 
 // Master Data: Produk, Pelanggan, Kategori
 Route::get('/produk', [ProdukController::class, 'index']);
+Route::get('/produk/{id}', [ProdukController::class, 'show']);
+Route::put('/produk/{id}', [ProdukController::class, 'update']);
+Route::post('/produk/{id}', [ProdukController::class, 'update']); // fallback for multipart/form
+Route::delete('/produk/{id}', [ProdukController::class, 'destroy']);
 Route::get('/pelanggan', [PelangganController::class, 'index']);
 Route::get('/kategori', [KategoriController::class, 'index']);
 

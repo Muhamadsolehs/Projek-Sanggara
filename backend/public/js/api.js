@@ -94,6 +94,38 @@ const SanggaraAPI = {
     return await res.json();
   },
 
+  async getProdukDetail(id) {
+    const res = await fetch(`${this.baseUrl}/produk/${id}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error(`Produk #${id} tidak ditemukan`);
+    return await res.json();
+  },
+
+  async updateProduk(id, payload) {
+    const res = await fetch(`${this.baseUrl}/produk/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal memperbarui produk');
+    return data;
+  },
+
+  async deleteProduk(id) {
+    const res = await fetch(`${this.baseUrl}/produk/${id}`, {
+      method: 'DELETE',
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menghapus produk');
+    return data;
+  },
+
   async getPelanggan(params = {}) {
     const query = new URLSearchParams(params).toString();
     const res = await fetch(`${this.baseUrl}/pelanggan${query ? '?' + query : ''}`, {

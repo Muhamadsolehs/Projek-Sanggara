@@ -153,7 +153,7 @@
             <table class="data-table produk-table">
               <thead>
                 <tr>
-                  <th>NO</th>
+                  <th style="width: 50px;">NO</th>
                   <th>NAMA BARANG</th>
                   <th>KATEGORI</th>
                   <th>KUALITAS</th>
@@ -161,6 +161,7 @@
                   <th>FOTO</th>
                   <th>HARGA SEWA</th>
                   <th>STATUS</th>
+                  <th style="text-align: center; width: 140px;">AKSI</th>
                 </tr>
               </thead>
               <tbody id="produkTableBody">
@@ -189,21 +190,148 @@
     </div>
   </div>
 
+  <!-- Modal 1: Lihat Detail Produk -->
+  <div class="modal-overlay" id="detailProdukModal">
+    <div class="modal-card-box">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Detail Produk</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('detailProdukModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-card-body">
+        <div style="display: flex; gap: 18px; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+          <div style="width: 72px; height: 72px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+            <img id="detailFoto" src="../image/logo.png" alt="Produk" style="width: 48px; height: 48px; object-fit: contain;">
+          </div>
+          <div>
+            <span class="badge badge-info" id="detailKategoriBadge" style="font-size: 11px; margin-bottom: 4px;">Kategori</span>
+            <h4 id="detailNamaProduk" style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 2px 0;">Nama Barang</h4>
+            <span id="detailKodeProduk" style="font-size: 12px; color: #64748b; font-weight: 500;">Kode: -</span>
+          </div>
+        </div>
+
+        <div class="detail-row-item">
+          <span class="detail-label">Kualitas Busana</span>
+          <span class="detail-value" id="detailKualitas">-</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Tarif Sewa / Hari</span>
+          <span class="detail-value" id="detailHargaSewa" style="color: #00b87c; font-size: 14px;">Rp 0</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Denda Keterlambatan</span>
+          <span class="detail-value" id="detailDenda">Rp 0 / hari</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Kesiapan Stok Siap</span>
+          <span class="detail-value" id="detailStokSiap" style="color: #00b87c;">0 Unit</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Sedang Disewa</span>
+          <span class="detail-value" id="detailStokDisewa">0 Unit</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Total Stok Inventaris</span>
+          <span class="detail-value" id="detailStokTotal">0 Unit</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-label">Status Produk</span>
+          <span class="detail-value" id="detailStatusBadge">TERSEDIA</span>
+        </div>
+      </div>
+      <div class="modal-card-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('detailProdukModal')">Tutup</button>
+        <button type="button" class="btn btn-primary" id="btnEditFromDetail" style="padding: 8px 20px;">Edit Produk</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Edit Produk -->
+  <div class="modal-overlay" id="editProdukModal">
+    <div class="modal-card-box">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Edit Data Produk</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('editProdukModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <form id="formEditProduk" onsubmit="submitEditProduk(event)">
+        <input type="hidden" id="editProdukId">
+        <div class="modal-card-body" style="display: flex; flex-direction: column; gap: 14px;">
+          <div class="form-group">
+            <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Nama Barang <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="editNamaBarang" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Kategori</label>
+              <select id="editKategoriSelect" class="form-control-select" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;">
+                <option value="1">Kostum Tari</option>
+                <option value="2">Baju Pengantin Adat</option>
+                <option value="3">Kebaya & Wisuda</option>
+                <option value="4">Aksesoris</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Kualitas</label>
+              <input type="text" id="editKualitasInput" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" placeholder="Grade A">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Stok Siap</label>
+              <input type="number" id="editStokSiapInput" min="0" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" required>
+            </div>
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Total Stok</label>
+              <input type="number" id="editStokTotalInput" min="1" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Harga Sewa (Rp) <span style="color:#ef4444;">*</span></label>
+              <input type="number" id="editHargaSewaInput" min="0" step="1000" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" required>
+            </div>
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Status</label>
+              <select id="editStatusSelect" class="form-control-select" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;">
+                <option value="tersedia">Tersedia</option>
+                <option value="habis">Habis</option>
+                <option value="maintenance">Maintenance</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-card-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('editProdukModal')">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitEditProduk" style="padding: 8px 22px;">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
+    let rawProdukList = [];
+
     async function loadProdukData(params = {}) {
       const tbody = document.getElementById('produkTableBody');
       const emptyState = document.getElementById('produkEmptyState');
       if (!tbody) return;
 
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: #888;">Memuat data produk dari database...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 24px; color: #888;">Memuat data produk dari database...</td></tr>`;
 
       try {
         const res = await SanggaraAPI.getProduk(params);
         if (res.status === 'success' && res.data && res.data.length > 0) {
+          rawProdukList = res.data;
           if (emptyState) emptyState.style.display = 'none';
           tbody.innerHTML = res.data.map((p, idx) => `
             <tr>
-              <td style="font-weight: 600; color: #666;">${idx + 1}</td>
+              <td style="font-weight: 600; color: #666; text-align: center;">${idx + 1}</td>
               <td>
                 <div style="font-weight: 600; color: #1e293b;">${p.nama_produk}</div>
                 <div style="font-size: 11.5px; color: #94a3b8;">${p.kode_produk}</div>
@@ -224,6 +352,22 @@
                   ${p.status.toUpperCase()}
                 </span>
               </td>
+              <td style="text-align: center;">
+                <div class="table-action-btns">
+                  <!-- Tombol Lihat -->
+                  <button type="button" class="btn-action-icon btn-action-view" onclick="viewProduk(${p.id_produk})" title="Lihat Detail Produk" aria-label="Lihat">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </button>
+                  <!-- Tombol Edit -->
+                  <button type="button" class="btn-action-icon btn-action-edit" onclick="openEditProdukModal(${p.id_produk})" title="Edit Produk" aria-label="Edit">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  </button>
+                  <!-- Tombol Hapus -->
+                  <button type="button" class="btn-action-icon btn-action-delete" onclick="deleteProdukAction(${p.id_produk}, '${p.nama_produk.replace(/'/g, "\\'")}')" title="Hapus Produk" aria-label="Hapus">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                  </button>
+                </div>
+              </td>
             </tr>
           `).join('');
         } else {
@@ -232,7 +376,122 @@
         }
       } catch (e) {
         console.error('Gagal memuat produk:', e);
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: #ef4444;">Gagal memuat data dari database. Silakan pastikan server backend berjalan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 24px; color: #ef4444;">Gagal memuat data dari database. Silakan pastikan server backend berjalan.</td></tr>`;
+      }
+    }
+
+    // Modal Control Functions
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('active');
+    }
+
+    // 1. LIHAT DETAIL PRODUK
+    async function viewProduk(id) {
+      try {
+        const p = rawProdukList.find(item => item.id_produk === id) || (await SanggaraAPI.getProdukDetail(id)).data;
+        if (!p) return;
+
+        document.getElementById('detailNamaProduk').textContent = p.nama_produk;
+        document.getElementById('detailKodeProduk').textContent = `Kode: ${p.kode_produk}`;
+        document.getElementById('detailKategoriBadge').textContent = p.kategori;
+        document.getElementById('detailKualitas').textContent = p.kualitas || '-';
+        document.getElementById('detailHargaSewa').textContent = p.harga_formatted || ('Rp ' + Number(p.harga_sewa).toLocaleString('id-ID'));
+        document.getElementById('detailDenda').textContent = (p.denda_formatted || 'Rp 15.000') + ' / hari';
+        document.getElementById('detailStokSiap').textContent = `${p.stok_siap} Unit`;
+        document.getElementById('detailStokDisewa').textContent = `${p.stok_disewa || 0} Unit`;
+        document.getElementById('detailStokTotal').textContent = `${p.stok_total} Unit`;
+        
+        const badge = document.getElementById('detailStatusBadge');
+        badge.textContent = p.status.toUpperCase();
+        badge.className = p.status === 'tersedia' ? 'badge badge-success' : 'badge badge-danger';
+
+        const btnEdit = document.getElementById('btnEditFromDetail');
+        btnEdit.onclick = () => {
+          closeModal('detailProdukModal');
+          openEditProdukModal(id);
+        };
+
+        document.getElementById('detailProdukModal').classList.add('active');
+      } catch (e) {
+        alert('Gagal mengambil rincian produk: ' + e.message);
+      }
+    }
+
+    // 2. BUKA MODAL EDIT PRODUK
+    async function openEditProdukModal(id) {
+      try {
+        const p = rawProdukList.find(item => item.id_produk === id) || (await SanggaraAPI.getProdukDetail(id)).data;
+        if (!p) return;
+
+        document.getElementById('editProdukId').value = p.id_produk;
+        document.getElementById('editNamaBarang').value = p.nama_produk;
+        document.getElementById('editKualitasInput').value = p.kualitas || '';
+        document.getElementById('editStokSiapInput').value = p.stok_siap;
+        document.getElementById('editStokTotalInput').value = p.stok_total;
+        document.getElementById('editHargaSewaInput').value = p.harga_sewa;
+        
+        const statusSelect = document.getElementById('editStatusSelect');
+        if (statusSelect) statusSelect.value = p.status;
+
+        const katSelect = document.getElementById('editKategoriSelect');
+        if (katSelect && p.id_kategori) katSelect.value = p.id_kategori;
+
+        document.getElementById('editProdukModal').classList.add('active');
+      } catch (e) {
+        alert('Gagal memuat formulir edit: ' + e.message);
+      }
+    }
+
+    // 3. SUBMIT EDIT PRODUK
+    async function submitEditProduk(e) {
+      e.preventDefault();
+      const id = document.getElementById('editProdukId').value;
+      const btn = document.getElementById('btnSubmitEditProduk');
+      const originalText = btn.textContent;
+      btn.textContent = 'Menyimpan...';
+      btn.disabled = true;
+
+      const payload = {
+        nama_produk: document.getElementById('editNamaBarang').value,
+        id_kategori: parseInt(document.getElementById('editKategoriSelect').value),
+        kualitas: document.getElementById('editKualitasInput').value,
+        stok_siap: parseInt(document.getElementById('editStokSiapInput').value),
+        stok_total: parseInt(document.getElementById('editStokTotalInput').value),
+        harga_sewa: parseFloat(document.getElementById('editHargaSewaInput').value),
+        status: document.getElementById('editStatusSelect').value,
+      };
+
+      try {
+        const res = await SanggaraAPI.updateProduk(id, payload);
+        if (res.status === 'success') {
+          closeModal('editProdukModal');
+          loadProdukData();
+        } else {
+          alert('Gagal memperbarui: ' + (res.message || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // 4. HAPUS PRODUK
+    async function deleteProdukAction(id, namaProduk) {
+      const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus produk "${namaProduk}" dari database?`);
+      if (!confirmDelete) return;
+
+      try {
+        const res = await SanggaraAPI.deleteProduk(id);
+        if (res.status === 'success') {
+          loadProdukData();
+        } else {
+          alert('Gagal menghapus: ' + (res.message || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
       }
     }
 
