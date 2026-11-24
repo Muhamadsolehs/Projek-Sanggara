@@ -94,6 +94,51 @@ const SanggaraAPI = {
     return await res.json();
   },
 
+  async getBookingKalender(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/booking/kalender${query ? '?' + query : ''}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat data kalender booking');
+    return await res.json();
+  },
+
+  async getBooking(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/booking${query ? '?' + query : ''}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat data tabel booking');
+    return await res.json();
+  },
+
+  async getBookingDetail(id) {
+    const res = await fetch(`${this.baseUrl}/booking/${id}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat detail booking');
+    return await res.json();
+  },
+
+  async deleteBooking(id) {
+    const res = await fetch(`${this.baseUrl}/booking/${id}`, {
+      method: 'DELETE',
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menghapus data booking');
+    return data;
+  },
+
+  async getPesanan(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/pesanan${query ? '?' + query : ''}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat data pesanan');
+    return await res.json();
+  },
+
   async getProduk(params = {}) {
     const query = new URLSearchParams(params).toString();
     const res = await fetch(`${this.baseUrl}/produk${query ? '?' + query : ''}`, {
@@ -141,6 +186,23 @@ const SanggaraAPI = {
       headers: { 'Accept': 'application/json' }
     });
     if (!res.ok) throw new Error('Gagal memuat data pelanggan');
+    return await res.json();
+  },
+
+  async getKecamatan(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/kecamatan${query ? '?' + query : ''}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat data 17 kecamatan');
+    return await res.json();
+  },
+
+  async getAnalisaPelanggan() {
+    const res = await fetch(`${this.baseUrl}/analisa/pelanggan`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat data analisa pelanggan');
     return await res.json();
   },
 

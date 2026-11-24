@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\ProdukController;
 use App\Http\Controllers\Api\PelangganController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\LaporanController;
+use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\KecamatanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,18 +28,27 @@ Route::get('/ping', function () {
 
 // Dashboard & Analytics
 Route::get('/dashboard', [DashboardController::class, 'index']);
+Route::get('/analisa/pelanggan', [KecamatanController::class, 'analisa']);
 
 // Data Nota Transaksi Kasir
 Route::get('/nota', [DataNotaController::class, 'index']);
 Route::get('/nota/{id}', [DataNotaController::class, 'show']);
 Route::post('/nota/bayar', [DataNotaController::class, 'bayar']);
 
-// Kasir (POS)
+// Kasir (POS) & Booking Kalender
 Route::get('/kasir/produk', [KasirController::class, 'getProduk']);
 Route::get('/kasir/booked-dates', [KasirController::class, 'getBookedDates']);
+Route::get('/booking/kalender', [KasirController::class, 'getBookedDates']);
 Route::post('/kasir/checkout', [KasirController::class, 'checkout']);
 
-// Master Data: Produk, Pelanggan, Kategori
+// Booking & Pesanan Tabel
+Route::get('/booking', [BookingController::class, 'index']);
+Route::get('/booking/{id}', [BookingController::class, 'show']);
+Route::delete('/booking/{id}', [BookingController::class, 'destroy']);
+Route::get('/pesanan', [BookingController::class, 'pesanan']);
+
+// Master Data: Produk, Pelanggan, Kategori, Kecamatan
+Route::get('/kecamatan', [KecamatanController::class, 'index']);
 Route::get('/produk', [ProdukController::class, 'index']);
 Route::get('/produk/{id}', [ProdukController::class, 'show']);
 Route::put('/produk/{id}', [ProdukController::class, 'update']);

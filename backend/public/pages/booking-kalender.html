@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/booking-kalender.css">
   <script src="../js/global.js"></script>
+  <script src="../js/api.js"></script>
 </head>
 <body>
   <div class="app-container">
@@ -122,7 +123,7 @@
             </div>
 
             <div class="calendar-top-actions">
-              <button class="btn btn-outline-muted">
+              <button type="button" class="btn btn-outline-muted" id="btnToday" onclick="goToToday()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                 <span>Hari Ini</span>
               </button>
@@ -134,7 +135,7 @@
           <div class="calendar-toolbar">
             <div class="search-input-wrapper" style="width: 320px;">
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" class="search-input" placeholder="Cari ...">
+              <input type="text" class="search-input" id="searchCalInput" placeholder="Cari pelanggan, busana, nota..." oninput="filterCalendarEvents()">
             </div>
 
             <div class="calendar-filter-group">
@@ -142,18 +143,29 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                 <span>Filter Kalender:</span>
               </div>
-              <select class="calendar-select">
-                <option>Desember</option>
-                <option>November</option>
+              <select class="calendar-select" id="monthSelect" onchange="onMonthYearChange()">
+                <option value="1">Januari</option>
+                <option value="2">Februari</option>
+                <option value="3">Maret</option>
+                <option value="4">April</option>
+                <option value="5">Mei</option>
+                <option value="6">Juni</option>
+                <option value="7">Juli</option>
+                <option value="8">Agustus</option>
+                <option value="9">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12" selected>Desember</option>
               </select>
-              <select class="calendar-select">
-                <option>2026</option>
-                <option>2025</option>
+              <select class="calendar-select" id="yearSelect" onchange="onMonthYearChange()">
+                <option value="2025">2025</option>
+                <option value="2026" selected>2026</option>
+                <option value="2027">2027</option>
               </select>
-              <button class="calendar-nav-btn" aria-label="Previous Month">
+              <button type="button" class="calendar-nav-btn" id="btnPrevMonth" onclick="prevMonth()" aria-label="Previous Month" title="Bulan Sebelumnya">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
               </button>
-              <button class="calendar-nav-btn" aria-label="Next Month">
+              <button type="button" class="calendar-nav-btn" id="btnNextMonth" onclick="nextMonth()" aria-label="Next Month" title="Bulan Berikutnya">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </button>
             </div>
@@ -171,239 +183,263 @@
               <div class="weekday-col weekday-sabtu">Sabtu</div>
             </div>
 
-            <div class="calendar-days-grid">
-              <!-- Week 1 -->
-              <div class="cal-day-cell muted-day">
-                <span class="day-number">29</span>
-                <span class="day-cell-id"></span>
-              </div>
-              <div class="cal-day-cell muted-day">
-                <span class="day-number">30</span>
-                <span class="day-cell-id"></span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">1</span>
-                <div class="event-pills-stack">
-                  <div class="event-pill event-ambil">
-                    <div class="event-pill-left">
-                      <span class="event-num-circle">1</span>
-                      <span class="event-tag-sub">Sewa SBF</span>
-                      <span>Ambil: Cordelia</span>
-                    </div>
-                    <span class="event-dot-indicator"></span>
-                  </div>
-                </div>
-                <span class="day-cell-id">#1</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">2</span>
-                <div class="event-pills-stack">
-                  <div class="event-pill event-pakai">
-                    <div class="event-pill-left">
-                      <span class="event-num-circle">2</span>
-                      <span class="event-tag-sub">Sewa SBF</span>
-                      <span>Pakai: Cordelia</span>
-                    </div>
-                    <span class="event-dot-indicator"></span>
-                  </div>
-                </div>
-                <span class="day-cell-id">#2</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">3</span>
-                <div class="event-pills-stack">
-                  <div class="event-pill event-kembali">
-                    <div class="event-pill-left">
-                      <span class="event-num-circle">3</span>
-                      <span class="event-tag-sub">Sewa SBF</span>
-                      <span>Kembali: Cordel</span>
-                    </div>
-                    <span class="event-dot-indicator"></span>
-                  </div>
-                </div>
-                <span class="day-cell-id">#3</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">4</span>
-                <span class="day-cell-id">#4</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">5</span>
-                <span class="day-cell-id">#5</span>
-              </div>
-
-              <!-- Week 2 -->
-              <div class="cal-day-cell">
-                <span class="day-number">6</span>
-                <span class="day-cell-id">#6</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">7</span>
-                <span class="day-cell-id">#7</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">8</span>
-                <span class="day-cell-id">#8</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">9</span>
-                <span class="day-cell-id">#9</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">10</span>
-                <div class="event-pills-stack">
-                  <div class="event-pill event-ambil">
-                    <div class="event-pill-left">
-                      <span>Ambil: Ibu Sarah</span>
-                    </div>
-                    <span class="event-dot-indicator"></span>
-                  </div>
-                </div>
-                <span class="day-cell-id">#10</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">11</span>
-                <div class="event-pills-stack">
-                  <div class="event-pill event-pakai">
-                    <div class="event-pill-left">
-                      <span>Pakai: Ibu Sarah</span>
-                    </div>
-                    <span class="event-dot-indicator"></span>
-                  </div>
-                </div>
-                <span class="day-cell-id">#11</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">12</span>
-                <div class="event-pills-stack">
-                  <div class="event-pill event-kembali">
-                    <div class="event-pill-left">
-                      <span>Kembali: Ibu Sa</span>
-                    </div>
-                    <span class="event-dot-indicator"></span>
-                  </div>
-                </div>
-                <span class="day-cell-id">#12</span>
-              </div>
-
-              <!-- Week 3 -->
-              <div class="cal-day-cell">
-                <span class="day-number">13</span>
-                <span class="day-cell-id">#13</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">14</span>
-                <span class="day-cell-id">#14</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">15</span>
-                <span class="day-cell-id">#15</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">16</span>
-                <span class="day-cell-id">#16</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">17</span>
-                <span class="day-cell-id">#17</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">18</span>
-                <span class="day-cell-id">#18</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">19</span>
-                <span class="day-cell-id">#19</span>
-              </div>
-
-              <!-- Week 4 -->
-              <div class="cal-day-cell">
-                <span class="day-number">20</span>
-                <div class="event-pills-stack">
-                  <div class="event-pill event-ambil">
-                    <div class="event-pill-left">
-                      <span>Ambil: Reza Kur</span>
-                    </div>
-                    <span class="event-dot-indicator"></span>
-                  </div>
-                </div>
-                <span class="day-cell-id">#20</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">21</span>
-                <div class="event-pills-stack">
-                  <div class="event-pill event-pakai">
-                    <div class="event-pill-left">
-                      <span>Pakai: Reza Kun</span>
-                    </div>
-                    <span class="event-dot-indicator"></span>
-                  </div>
-                </div>
-                <span class="day-cell-id">#21</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">22</span>
-                <div class="event-pills-stack">
-                  <div class="event-pill event-kembali">
-                    <div class="event-pill-left">
-                      <span>Kembali: Reza K</span>
-                    </div>
-                    <span class="event-dot-indicator"></span>
-                  </div>
-                </div>
-                <span class="day-cell-id">#22</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">23</span>
-                <span class="day-cell-id">#23</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">24</span>
-                <span class="day-cell-id">#24</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">25</span>
-                <span class="day-cell-id">#25</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">26</span>
-                <span class="day-cell-id">#26</span>
-              </div>
-
-              <!-- Week 5 -->
-              <div class="cal-day-cell">
-                <span class="day-number">27</span>
-                <span class="day-cell-id">#27</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">28</span>
-                <span class="day-cell-id">#28</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">29</span>
-                <span class="day-cell-id">#29</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">30</span>
-                <span class="day-cell-id">#30</span>
-              </div>
-              <div class="cal-day-cell">
-                <span class="day-number">31</span>
-                <span class="day-cell-id">#31</span>
-              </div>
-              <div class="cal-day-cell muted-day">
-                <span class="day-number">1</span>
-                <span class="day-cell-id"></span>
-              </div>
-              <div class="cal-day-cell muted-day">
-                <span class="day-number">2</span>
-                <span class="day-cell-id"></span>
-              </div>
+            <div class="calendar-days-grid" id="calendarDaysGrid">
+              <!-- Grid dinamis di-render via JavaScript dari API backend real -->
             </div>
           </div>
         </div>
       </main>
     </div>
   </div>
+
+  <!-- MODAL: DETAIL BOOKING KALENDER (Ketika Event Pill Diklik) -->
+  <div class="modal-backdrop-overlay" id="bookingDetailModal" onclick="if(event.target===this) closeBookingDetailModal()">
+    <div class="modal-card-custom" style="background:#fff; border-radius:18px; width:450px; max-width:92vw; padding:24px; box-shadow:0 20px 45px rgba(15,23,42,0.2); border:1px solid #e2e8f0; animation:calPopIn 0.2s ease;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; border-bottom:1px solid #f1f5f9; padding-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div id="modalTypeBadge" style="padding:4px 12px; border-radius:20px; font-size:11.5px; font-weight:700; text-transform:uppercase;">Ambil</div>
+          <h4 id="modalNotaTitle" style="margin:0; font-size:15px; font-weight:700; color:#1e293b;">CS/01/...</h4>
+        </div>
+        <button type="button" onclick="closeBookingDetailModal()" style="background:none; border:none; cursor:pointer; color:#94a3b8; font-size:22px; line-height:1;">&times;</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:14px; font-size:13px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="color:#64748b;">Nama Peminjam / Pelanggan:</span>
+          <strong id="modalCustName" style="color:#1e293b; font-size:13.5px;">-</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <span style="color:#64748b;">Busana / Pakaian Sewa:</span>
+          <strong id="modalProdName" style="color:#1e293b; text-align:right; max-width:260px; line-height:1.4;">-</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="color:#64748b;">Tanggal & Fase:</span>
+          <span id="modalDatePhase" style="font-weight:600; color:#0f172a;">-</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="color:#64748b;">Status Pembayaran:</span>
+          <span id="modalPaymentBadge" style="padding:3px 10px; border-radius:6px; font-weight:700; font-size:11.5px;">-</span>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:22px; border-top:1px solid #f1f5f9; padding-top:16px;">
+        <button type="button" class="btn btn-outline-muted" onclick="closeBookingDetailModal()" style="font-size:12.5px; padding:8px 18px;">Tutup</button>
+        <a id="modalDetailBtn" href="booking-tabel.html" class="btn btn-primary" style="font-size:12.5px; padding:8px 20px;">Buka di Tabel Nota</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Calendar JavaScript Engine -->
+  <script>
+    const MONTH_NAMES_ID = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const MONTH_SHORT_ID = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+    ];
+
+    let activeYear = 2026;
+    let activeMonth = 12; // 1-12
+    let calendarBookings = {}; // keyed by YYYY-MM-DD
+    let searchKeyword = '';
+
+    async function loadCalendarData() {
+      try {
+        const res = await SanggaraAPI.getBookingKalender({
+          month: activeMonth,
+          year: activeYear
+        });
+        if (res && res.status === 'success' && res.data) {
+          calendarBookings = res.data;
+        } else {
+          calendarBookings = {};
+        }
+      } catch (err) {
+        console.warn('Gagal memuat kalender booking dari API:', err);
+        calendarBookings = {};
+      }
+      renderDaysGrid();
+    }
+
+    function renderDaysGrid() {
+      const grid = document.getElementById('calendarDaysGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const monthIndex = activeMonth - 1; // 0-indexed
+      const firstDay = new Date(activeYear, monthIndex, 1).getDay(); // 0 is Sunday
+      const daysInMonth = new Date(activeYear, activeMonth, 0).getDate();
+      const prevMonthDays = new Date(activeYear, monthIndex, 0).getDate();
+
+      // 1. Padding hari dari bulan sebelumnya
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell muted-day';
+        cell.innerHTML = `
+          <span class="day-number">${prevMonthDays - i}</span>
+          <span class="day-cell-id"></span>
+        `;
+        grid.appendChild(cell);
+      }
+
+      // 2. Hari-hari bulan aktif
+      for (let day = 1; day <= daysInMonth; day++) {
+        const mStr = String(activeMonth).padStart(2, '0');
+        const dStr = String(day).padStart(2, '0');
+        const dateKey = `${activeYear}-${mStr}-${dStr}`;
+
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell';
+
+        let innerHTML = `<span class="day-number">${day}</span>`;
+
+        const dayData = calendarBookings[dateKey];
+        if (dayData && dayData.events && dayData.events.length > 0) {
+          let events = dayData.events;
+          if (searchKeyword.trim() !== '') {
+            const kw = searchKeyword.toLowerCase();
+            events = events.filter(e => 
+              (e.customer && e.customer.toLowerCase().includes(kw)) ||
+              (e.produk && e.produk.toLowerCase().includes(kw)) ||
+              (e.no_nota && e.no_nota.toLowerCase().includes(kw))
+            );
+          }
+
+          if (events.length > 0) {
+            innerHTML += '<div class="event-pills-stack">';
+            events.forEach((ev, idx) => {
+              const typeClass = `event-${ev.type}`;
+              const numCircle = idx + 1;
+              const shortCust = ev.customer.length > 13 ? ev.customer.substring(0, 12) + '..' : ev.customer;
+              const typeLabel = ev.type_label || (ev.type.charAt(0).toUpperCase() + ev.type.slice(1));
+
+              innerHTML += `
+                <div class="event-pill ${typeClass}" title="${typeLabel}: ${ev.customer} (${ev.produk})" onclick='openBookingDetailModal(${JSON.stringify(ev)}, "${dateKey}")' style="cursor: pointer;">
+                  <div class="event-pill-left">
+                    <span class="event-num-circle">${numCircle}</span>
+                    <span class="event-tag-sub">Sewa SBF</span>
+                    <span>${typeLabel}: ${shortCust}</span>
+                  </div>
+                  <span class="event-dot-indicator"></span>
+                </div>
+              `;
+            });
+            innerHTML += '</div>';
+          }
+        }
+
+        innerHTML += `<span class="day-cell-id">#${day}</span>`;
+        cell.innerHTML = innerHTML;
+        grid.appendChild(cell);
+      }
+
+      // 3. Padding hari ke bulan berikutnya
+      const totalCells = firstDay + daysInMonth;
+      const nextMonthPadding = (totalCells % 7 === 0) ? 0 : 7 - (totalCells % 7);
+      for (let n = 1; n <= nextMonthPadding; n++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell muted-day';
+        cell.innerHTML = `
+          <span class="day-number">${n}</span>
+          <span class="day-cell-id"></span>
+        `;
+        grid.appendChild(cell);
+      }
+    }
+
+    function onMonthYearChange() {
+      activeMonth = parseInt(document.getElementById('monthSelect').value, 10);
+      activeYear = parseInt(document.getElementById('yearSelect').value, 10);
+      loadCalendarData();
+    }
+
+    function prevMonth() {
+      activeMonth--;
+      if (activeMonth < 1) {
+        activeMonth = 12;
+        activeYear--;
+      }
+      document.getElementById('monthSelect').value = activeMonth;
+      document.getElementById('yearSelect').value = activeYear;
+      loadCalendarData();
+    }
+
+    function nextMonth() {
+      activeMonth++;
+      if (activeMonth > 12) {
+        activeMonth = 1;
+        activeYear++;
+      }
+      document.getElementById('monthSelect').value = activeMonth;
+      document.getElementById('yearSelect').value = activeYear;
+      loadCalendarData();
+    }
+
+    function goToToday() {
+      activeYear = 2026;
+      activeMonth = 12;
+      document.getElementById('monthSelect').value = activeMonth;
+      document.getElementById('yearSelect').value = activeYear;
+      loadCalendarData();
+    }
+
+    function filterCalendarEvents() {
+      searchKeyword = document.getElementById('searchCalInput').value;
+      renderDaysGrid();
+    }
+
+    function openBookingDetailModal(ev, dateKey) {
+      document.getElementById('modalNotaTitle').textContent = ev.no_nota || 'Detail Booking';
+      document.getElementById('modalCustName').textContent = ev.customer || '-';
+      document.getElementById('modalProdName').textContent = ev.produk || '-';
+      document.getElementById('modalDatePhase').textContent = `${dateKey} (${ev.type_label})`;
+
+      const typeBadge = document.getElementById('modalTypeBadge');
+      typeBadge.textContent = ev.type_label;
+      if (ev.type === 'ambil') {
+        typeBadge.style.backgroundColor = '#d1fae5';
+        typeBadge.style.color = '#00875a';
+      } else if (ev.type === 'pakai') {
+        typeBadge.style.backgroundColor = '#e0f2fe';
+        typeBadge.style.color = '#0369a1';
+      } else {
+        typeBadge.style.backgroundColor = '#fef3c7';
+        typeBadge.style.color = '#b45309';
+      }
+
+      const payBadge = document.getElementById('modalPaymentBadge');
+      payBadge.textContent = ev.status_pembayaran || 'DP';
+      if (ev.status_pembayaran === 'LUNAS') {
+        payBadge.style.backgroundColor = '#dcfce7';
+        payBadge.style.color = '#15803d';
+      } else {
+        payBadge.style.backgroundColor = '#fef9c3';
+        payBadge.style.color = '#854d0e';
+      }
+
+      document.getElementById('bookingDetailModal').classList.add('active');
+    }
+
+    function closeBookingDetailModal() {
+      const modal = document.getElementById('bookingDetailModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function initBookingCalendar() {
+      const mSel = document.getElementById('monthSelect');
+      const ySel = document.getElementById('yearSelect');
+      if (mSel) mSel.value = activeMonth;
+      if (ySel) ySel.value = activeYear;
+      loadCalendarData();
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initBookingCalendar);
+    } else {
+      initBookingCalendar();
+    }
+  </script>
 </body>
 </html>

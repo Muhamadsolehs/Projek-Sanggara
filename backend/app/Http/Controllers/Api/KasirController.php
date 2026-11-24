@@ -283,20 +283,38 @@ class KasirController extends Controller
                         $infoTitle = "{$dayNum} {$mId} • Pengembalian Barang";
                     }
 
-                    $bookedDates[$dateStr] = [
-                        'date' => $dateStr,
-                        'day' => (int)$dayNum,
+                    $eventData = [
+                        'id_booking' => $b->id_booking,
+                        'no_nota' => $b->no_nota,
+                        'no_booking' => $b->no_booking,
                         'type' => $type,
                         'type_label' => $typeLabel,
                         'customer' => $custName,
                         'produk' => $productNames,
-                        'no_nota' => $b->no_nota,
                         'status_sewa' => $b->status_sewa,
                         'status_pembayaran' => $b->status_pembayaran,
-                        'info_title' => $infoTitle,
-                        'info_sub' => "Peminjam: {$custName} ({$productNames})",
                         'badge' => $dpBadge,
                     ];
+
+                    if (!isset($bookedDates[$dateStr])) {
+                        $bookedDates[$dateStr] = [
+                            'date' => $dateStr,
+                            'day' => (int)$dayNum,
+                            'type' => $type,
+                            'type_label' => $typeLabel,
+                            'customer' => $custName,
+                            'produk' => $productNames,
+                            'no_nota' => $b->no_nota,
+                            'status_sewa' => $b->status_sewa,
+                            'status_pembayaran' => $b->status_pembayaran,
+                            'info_title' => $infoTitle,
+                            'info_sub' => "Peminjam: {$custName} ({$productNames})",
+                            'badge' => $dpBadge,
+                            'events' => [],
+                        ];
+                    }
+
+                    $bookedDates[$dateStr]['events'][] = $eventData;
                 }
             }
 

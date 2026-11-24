@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -289,9 +289,9 @@
                 <div class="customer-select-control">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                   <select id="customerSelect">
-                    <option value="siti">Siti Nurhaliza — Lowokwaru (0812-9988-7711)</option>
+                    <option value="siti">Siti Nurhaliza — Kec. Purwakarta (0812-9988-7711)</option>
                     <option value="cordelia">Cordelia — Kec. Purwakarta (0818-0223-8821)</option>
-                    <option value="sarah">Ibu Sarah — Babakancikao (0877-1234-5678)</option>
+                    <option value="sarah">Ibu Sarah — Kec. Babakancikao (0877-1234-5678)</option>
                   </select>
                 </div>
               </div>
@@ -403,10 +403,23 @@
           <label class="modal-form-label">Alamat</label>
           <div class="modal-dual-selects">
             <select class="modal-form-select" id="newCustomerKec">
-              <option value="Purwakarta">Kecamatan Purwakarta</option>
               <option value="Babakancikao">Kecamatan Babakancikao</option>
+              <option value="Bojong">Kecamatan Bojong</option>
+              <option value="Bungursari">Kecamatan Bungursari</option>
+              <option value="Campaka">Kecamatan Campaka</option>
+              <option value="Cibatu">Kecamatan Cibatu</option>
+              <option value="Darangdan">Kecamatan Darangdan</option>
               <option value="Jatiluhur">Kecamatan Jatiluhur</option>
-              <option value="Lowokwaru">Kecamatan Lowokwaru</option>
+              <option value="Kiarapedes">Kecamatan Kiarapedes</option>
+              <option value="Maniis">Kecamatan Maniis</option>
+              <option value="Pasawahan">Kecamatan Pasawahan</option>
+              <option value="Plered">Kecamatan Plered</option>
+              <option value="Pondoksalam">Kecamatan Pondoksalam</option>
+              <option value="Purwakarta" selected>Kecamatan Purwakarta</option>
+              <option value="Sukasari">Kecamatan Sukasari</option>
+              <option value="Sukatani">Kecamatan Sukatani</option>
+              <option value="Tegalwaru">Kecamatan Tegalwaru</option>
+              <option value="Wanayasa">Kecamatan Wanayasa</option>
             </select>
             <select class="modal-form-select" id="newCustomerKel">
               <option value="Nagri Kaler">Kelurahan Nagri Kaler</option>
@@ -1125,7 +1138,7 @@
       loadAndRenderCalendar();
     }
 
-    window.addEventListener('DOMContentLoaded', async () => {
+    async function initKasirPage() {
       // 1. Muat katalog produk & pelanggan asli dari database jika backend aktif
       await loadKasirRealCatalog();
 
@@ -1138,7 +1151,13 @@
 
       // 3. Preload data kalender booking
       loadAndRenderCalendar();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initKasirPage);
+    } else {
+      initKasirPage();
+    }
   </script>
 </body>
 </html>
