@@ -157,28 +157,32 @@ const SanggaraAPI = {
   },
 
   async tambahProduk(payload) {
-    const res = await fetch(`${this.baseUrl}/produk`, {
+    const isFormData = typeof FormData !== 'undefined' && payload instanceof FormData;
+    const options = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' })
       },
-      body: JSON.stringify(payload)
-    });
+      body: isFormData ? payload : JSON.stringify(payload)
+    };
+    const res = await fetch(`${this.baseUrl}/produk`, options);
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Gagal menambahkan produk');
     return data;
   },
 
   async updateProduk(id, payload) {
-    const res = await fetch(`${this.baseUrl}/produk/${id}`, {
-      method: 'PUT',
+    const isFormData = typeof FormData !== 'undefined' && payload instanceof FormData;
+    const options = {
+      method: isFormData ? 'POST' : 'PUT',
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' })
       },
-      body: JSON.stringify(payload)
-    });
+      body: isFormData ? payload : JSON.stringify(payload)
+    };
+    const res = await fetch(`${this.baseUrl}/produk/${id}`, options);
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Gagal memperbarui produk');
     return data;

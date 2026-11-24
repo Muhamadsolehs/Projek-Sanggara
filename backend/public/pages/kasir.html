@@ -590,7 +590,8 @@
               catKey: catKey,
               price: p.harga_sewa,
               grade: p.kualitas,
-              stock: p.stok_siap
+              stock: p.stok_siap,
+              foto_url: p.foto_url || null
             };
           });
 
@@ -610,9 +611,9 @@
         const tint = tintClasses[idx % tintClasses.length];
         return `
           <div class="product-card" data-category="${p.catKey}" data-id="${p.id}" data-name="${p.name}" data-cat-name="${p.category}" data-price="${p.price}" data-stock="${p.stock}">
-            <div class="product-visual-box ${tint}">
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3c0 .77.29 1.48.77 2L2 14l3 3 7-5 7 5 3-3-7.77-7A3 3 0 0 0 15 5a3 3 0 0 0-3-3z"></path></svg>
-              <span class="product-stock-badge">Stok: ${p.stock}</span>
+            <div class="product-visual-box ${tint}" style="position: relative; overflow: hidden;">
+              ${p.foto_url ? `<img src="${p.foto_url}" alt="${p.name}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">` : `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3c0 .77.29 1.48.77 2L2 14l3 3 7-5 7 5 3-3-7.77-7A3 3 0 0 0 15 5a3 3 0 0 0-3-3z"></path></svg>`}
+              <span class="product-stock-badge" style="z-index: 2;">Stok: ${p.stock}</span>
             </div>
             <div class="product-info-block">
               <span class="product-cat-tag">${p.category}</span>

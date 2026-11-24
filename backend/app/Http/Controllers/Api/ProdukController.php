@@ -46,6 +46,8 @@ class ProdukController extends Controller
                     'stok_disewa' => $p->stok_disewa,
                     'stok_cuci' => $p->stok_cuci,
                     'stok_rusak' => $p->stok_rusak,
+                    'foto_url' => $p->foto_url,
+                    'foto_produk' => $p->foto_produk,
                     'status' => $p->status,
                 ];
             });
@@ -110,6 +112,10 @@ class ProdukController extends Controller
             $validated['denda_per_hari'] = isset($validated['denda_per_hari']) ? (float)$validated['denda_per_hari'] : round($validated['harga_sewa'] * 0.15);
             $validated['status'] = !empty($validated['status']) ? strtolower($validated['status']) : 'tersedia';
 
+            if ($request->hasFile('foto_produk') || $request->filled('foto_produk')) {
+                $validated['foto_produk'] = $this->handleFotoUpload($request);
+            }
+
             $produk = Produk::create($validated);
 
             return response()->json([
@@ -172,14 +178,33 @@ class ProdukController extends Controller
                 'stok_total' => 'sometimes|nullable|integer|min:0',
                 'stok_siap' => 'sometimes|nullable|integer|min:0',
                 'status' => 'sometimes|required|string|in:tersedia,habis,maintenance',
+                'foto_produk' => 'nullable',
+                'hapus_foto' => 'nullable',
             ]);
+
+            if ($request->hasFile('foto_produk') || $request->has('foto_produk') || $request->has('hapus_foto')) {
+                $validated['foto_produk'] = $this->handleFotoUpload($request, $p);
+            }
 
             $p->update($validated);
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Data produk berhasil diperbarui',
-                'data' => $p
+                'data' => [
+                    'id_produk' => $p->id_produk,
+                    'kode_produk' => $p->kode_produk,
+                    'nama_produk' => $p->nama_produk,
+                    'kategori' => $p->kategori ? $p->kategori->nama_kategori : '-',
+                    'kualitas' => $p->kualitas,
+                    'harga_sewa' => (float)$p->harga_sewa,
+                    'harga_formatted' => 'Rp ' . number_format($p->harga_sewa, 0, ',', '.'),
+                    'stok_total' => $p->stok_total,
+                    'stok_siap' => $p->stok_siap,
+                    'status' => $p->status,
+                    'foto_url' => $p->foto_url,
+                    'foto_produk' => $p->foto_produk,
+                ]
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -187,6 +212,73 @@ class ProdukController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Helper untuk upload dan penyimpanan foto produk (file multipart atau base64)
+     */
+    private function handleFotoUpload(Request $request, ?Produk $produk = null)
+    {
+        // 1. File Upload (multipart/form-data)
+        if ($request->hasFile('foto_produk')) {
+            $file = $request->file('foto_produk');
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $id = $produk ? $produk->id_produk : ((Produk::max('id_produk') ?? 0) + 1);
+            $filename = 'prod_' . $id . '_' . time() . '.' . $ext;
+            
+            $publicUploadDir = public_path('uploads/produk');
+            if (!file_exists($publicUploadDir)) {
+                @mkdir($publicUploadDir, 0777, true);
+            }
+            $file->move($publicUploadDir, $filename);
+            
+            $rootUploadDir = base_path('../uploads/produk');
+            if (!file_exists($rootUploadDir)) {
+                @mkdir($rootUploadDir, 0777, true);
+            }
+            @copy($publicUploadDir . DIRECTORY_SEPARATOR . $filename, $rootUploadDir . DIRECTORY_SEPARATOR . $filename);
+            
+            return 'uploads/produk/' . $filename;
+        }
+
+        // 2. Base64 String Upload (JSON or Form field)
+        if ($request->has('foto_produk') && is_string($request->foto_produk)) {
+            $str = $request->foto_produk;
+            if (preg_match('/^data:image\/(\w+);base64,/', $str, $matches)) {
+                $ext = strtolower($matches[1]);
+                if ($ext === 'jpeg') $ext = 'jpg';
+                $base64Data = substr($str, strpos($str, ',') + 1);
+                $decoded = base64_decode($base64Data);
+                if ($decoded !== false) {
+                    $id = $produk ? $produk->id_produk : ((Produk::max('id_produk') ?? 0) + 1);
+                    $filename = 'prod_' . $id . '_' . time() . '.' . $ext;
+                    $publicUploadDir = public_path('uploads/produk');
+                    if (!file_exists($publicUploadDir)) {
+                        @mkdir($publicUploadDir, 0777, true);
+                    }
+                    file_put_contents($publicUploadDir . DIRECTORY_SEPARATOR . $filename, $decoded);
+                    
+                    $rootUploadDir = base_path('../uploads/produk');
+                    if (!file_exists($rootUploadDir)) {
+                        @mkdir($rootUploadDir, 0777, true);
+                    }
+                    @copy($publicUploadDir . DIRECTORY_SEPARATOR . $filename, $rootUploadDir . DIRECTORY_SEPARATOR . $filename);
+                    
+                    return 'uploads/produk/' . $filename;
+                }
+            } elseif ($str === 'null' || $str === 'delete' || $str === 'hapus' || $str === '') {
+                return null;
+            } else {
+                return $str;
+            }
+        }
+
+        // 3. Permintaan eksplisit hapus foto
+        if ($request->has('hapus_foto') && $request->hapus_foto) {
+            return null;
+        }
+
+        return $produk ? $produk->foto_produk : null;
     }
 
     public function destroy($id)

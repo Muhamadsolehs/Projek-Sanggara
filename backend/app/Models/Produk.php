@@ -29,6 +29,19 @@ class Produk extends Model
         'status',
     ];
 
+    protected $appends = ['foto_url'];
+
+    public function getFotoUrlAttribute()
+    {
+        if (empty($this->foto_produk)) {
+            return null;
+        }
+        if (str_starts_with($this->foto_produk, 'http://') || str_starts_with($this->foto_produk, 'https://') || str_starts_with($this->foto_produk, 'data:')) {
+            return $this->foto_produk;
+        }
+        return '/' . ltrim($this->foto_produk, '/');
+    }
+
     protected function casts(): array
     {
         return [

@@ -43,6 +43,7 @@ class KasirController extends Controller
                     'harga_sewa' => (float)$p->harga_sewa,
                     'harga_formatted' => 'Rp ' . number_format($p->harga_sewa, 0, ',', '.'),
                     'stok_siap' => $p->stok_siap,
+                    'foto_url' => $p->foto_url,
                     'foto_produk' => $p->foto_produk,
                     'status' => $p->status,
                 ];

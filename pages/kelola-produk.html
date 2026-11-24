@@ -269,6 +269,29 @@
       <form id="formEditProduk" onsubmit="submitEditProduk(event)">
         <input type="hidden" id="editProdukId">
         <div class="modal-card-body" style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Foto Produk Upload & Preview Section -->
+          <div class="form-group">
+            <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 8px; display: block;">Foto Produk</label>
+            <div style="display: flex; gap: 14px; align-items: center; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 12px 14px;">
+              <div style="width: 58px; height: 58px; border-radius: 8px; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <img id="editFotoPreview" src="../image/logo.png" alt="Preview Foto" style="width: 100%; height: 100%; object-fit: contain;">
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+                  <label for="editFotoInput" class="btn" style="background: #e6faf2; color: #00b87c; border: 1px solid #a7f3d0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin: 0;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <span>Pilih / Ganti Foto</span>
+                  </label>
+                  <button type="button" id="btnHapusFoto" onclick="hapusFotoEditAction()" style="display: none; background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 6px; cursor: pointer;">
+                    Hapus Foto
+                  </button>
+                </div>
+                <input type="file" id="editFotoInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;" onchange="handleFotoProdukChange(event)">
+                <div id="editFotoInfo" style="font-size: 11.5px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Format: PNG, JPG, JPEG, atau WebP (Maks. 2MB)</div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group">
             <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Nama Barang <span style="color:#ef4444;">*</span></label>
             <input type="text" id="editNamaBarang" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" required>
@@ -353,7 +376,7 @@
               </td>
               <td>
                 <div style="width: 36px; height: 36px; border-radius: 6px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #e2e8f0;">
-                  <img src="${p.foto_url || '../image/logo.png'}" alt="Foto" style="width: 24px; height: 24px; object-fit: contain;">
+                  <img src="${p.foto_url || '../image/logo.png'}" alt="Foto" style="width: 100%; height: 100%; object-fit: ${p.foto_url ? 'cover' : 'contain'};">
                 </div>
               </td>
               <td style="font-weight: 700; color: #00b87c; font-size: 13.5px;">${p.harga_formatted}</td>
@@ -396,11 +419,58 @@
       if (modal) modal.classList.remove('active');
     }
 
+    // Variable State Foto Produk
+    let selectedFotoFile = null;
+    let fotoStatus = 'keep'; // 'keep', 'change', 'remove'
+
+    function handleFotoProdukChange(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        SanggaraModal.alert('File yang dipilih harus berupa gambar (PNG, JPG, JPEG, WebP)', { type: 'warning', title: 'Format Tidak Sesuai' });
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        SanggaraModal.alert('Ukuran gambar terlalu besar (Maksimal 2MB)', { type: 'warning', title: 'Ukuran Terlalu Besar' });
+        return;
+      }
+
+      selectedFotoFile = file;
+      fotoStatus = 'change';
+
+      const preview = document.getElementById('editFotoPreview');
+      preview.src = URL.createObjectURL(file);
+      preview.style.objectFit = 'cover';
+
+      document.getElementById('editFotoInfo').textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      document.getElementById('btnHapusFoto').style.display = 'inline-block';
+    }
+
+    function hapusFotoEditAction() {
+      selectedFotoFile = null;
+      fotoStatus = 'remove';
+      document.getElementById('editFotoInput').value = '';
+      const preview = document.getElementById('editFotoPreview');
+      preview.src = '../image/logo.png';
+      preview.style.objectFit = 'contain';
+      document.getElementById('editFotoInfo').textContent = 'Foto akan dihapus setelah perubahan disimpan';
+      document.getElementById('btnHapusFoto').style.display = 'none';
+    }
+
     // 1. LIHAT DETAIL PRODUK
     async function viewProduk(id) {
       try {
         const p = rawProdukList.find(item => item.id_produk === id) || (await SanggaraAPI.getProdukDetail(id)).data;
         if (!p) return;
+
+        const imgDetail = document.getElementById('detailFoto');
+        if (imgDetail) {
+          imgDetail.src = p.foto_url || '../image/logo.png';
+          imgDetail.style.objectFit = p.foto_url ? 'cover' : 'contain';
+          imgDetail.style.width = '100%';
+          imgDetail.style.height = '100%';
+        }
 
         document.getElementById('detailNamaProduk').textContent = p.nama_produk;
         document.getElementById('detailKodeProduk').textContent = `Kode: ${p.kode_produk}`;
@@ -447,6 +517,26 @@
         const katSelect = document.getElementById('editKategoriSelect');
         if (katSelect && p.id_kategori) katSelect.value = p.id_kategori;
 
+        // Reset Foto Input & Preview
+        selectedFotoFile = null;
+        fotoStatus = 'keep';
+        document.getElementById('editFotoInput').value = '';
+        const preview = document.getElementById('editFotoPreview');
+        const btnHapus = document.getElementById('btnHapusFoto');
+        const fotoInfo = document.getElementById('editFotoInfo');
+
+        if (p.foto_url) {
+          preview.src = p.foto_url;
+          preview.style.objectFit = 'cover';
+          btnHapus.style.display = 'inline-block';
+          fotoInfo.textContent = 'Foto produk saat ini (klik tombol untuk mengganti)';
+        } else {
+          preview.src = '../image/logo.png';
+          preview.style.objectFit = 'contain';
+          btnHapus.style.display = 'none';
+          fotoInfo.textContent = 'Format: PNG, JPG, JPEG, atau WebP (Maks. 2MB)';
+        }
+
         document.getElementById('editProdukModal').classList.add('active');
       } catch (e) {
         alert('Gagal memuat formulir edit: ' + e.message);
@@ -462,26 +552,33 @@
       btn.textContent = 'Menyimpan...';
       btn.disabled = true;
 
-      const payload = {
-        nama_produk: document.getElementById('editNamaBarang').value,
-        id_kategori: parseInt(document.getElementById('editKategoriSelect').value),
-        kualitas: document.getElementById('editKualitasInput').value,
-        stok_siap: parseInt(document.getElementById('editStokSiapInput').value),
-        stok_total: parseInt(document.getElementById('editStokTotalInput').value),
-        harga_sewa: parseFloat(document.getElementById('editHargaSewaInput').value),
-        status: document.getElementById('editStatusSelect').value,
-      };
+      const formData = new FormData();
+      formData.append('nama_produk', document.getElementById('editNamaBarang').value.trim());
+      formData.append('id_kategori', parseInt(document.getElementById('editKategoriSelect').value));
+      formData.append('kualitas', document.getElementById('editKualitasInput').value.trim());
+      formData.append('stok_siap', parseInt(document.getElementById('editStokSiapInput').value));
+      formData.append('stok_total', parseInt(document.getElementById('editStokTotalInput').value));
+      formData.append('harga_sewa', parseFloat(document.getElementById('editHargaSewaInput').value));
+      formData.append('status', document.getElementById('editStatusSelect').value);
+
+      if (fotoStatus === 'change' && selectedFotoFile) {
+        formData.append('foto_produk', selectedFotoFile);
+      } else if (fotoStatus === 'remove') {
+        formData.append('hapus_foto', '1');
+        formData.append('foto_produk', 'delete');
+      }
 
       try {
-        const res = await SanggaraAPI.updateProduk(id, payload);
+        const res = await SanggaraAPI.updateProduk(id, formData);
         if (res.status === 'success') {
+          SanggaraModal.toast('Data produk & foto berhasil diperbarui', 'success');
           closeModal('editProdukModal');
           loadProdukData();
         } else {
-          alert('Gagal memperbarui: ' + (res.message || 'Terjadi kesalahan'));
+          SanggaraModal.alert('Gagal memperbarui: ' + (res.message || 'Terjadi kesalahan'), { type: 'danger' });
         }
       } catch (err) {
-        alert('Error: ' + err.message);
+        SanggaraModal.alert('Error: ' + err.message, { type: 'danger' });
       } finally {
         btn.textContent = originalText;
         btn.disabled = false;
