@@ -11,7 +11,9 @@ class ProdukController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Produk::with('kategori');
+            $query = Produk::with('kategori')
+                ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+                ->orderByDesc('id_produk');
 
             if ($request->has('kategori') && !empty($request->kategori)) {
                 $query->where('id_kategori', $request->kategori);

@@ -11,7 +11,6 @@ class LaporanPengeluaran extends Model
 
     protected $table = 'laporan_pengeluaran';
     protected $primaryKey = 'id_pengeluaran';
-    const UPDATED_AT = null;
 
     protected $fillable = [
         'no_transaksi',

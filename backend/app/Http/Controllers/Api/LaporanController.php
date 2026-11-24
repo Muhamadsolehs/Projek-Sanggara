@@ -12,7 +12,9 @@ class LaporanController extends Controller
     public function pemasukan(Request $request)
     {
         try {
-            $query = LaporanPemasukan::with(['booking', 'user'])->orderBy('tanggal', 'desc');
+            $query = LaporanPemasukan::with(['booking', 'user'])
+                ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+                ->orderByDesc('id_pemasukan');
 
             if ($request->has('kategori') && !empty($request->kategori)) {
                 $query->where('kategori_pemasukan', $request->kategori);
@@ -159,7 +161,8 @@ class LaporanController extends Controller
     public function pengeluaran(Request $request)
     {
         try {
-            $query = LaporanPengeluaran::orderBy('tanggal', 'desc');
+            $query = LaporanPengeluaran::orderByRaw('COALESCE(updated_at, created_at) DESC')
+                ->orderByDesc('id_pengeluaran');
 
             if ($request->has('kategori') && !empty($request->kategori)) {
                 $query->where('kategori_beban', $request->kategori);

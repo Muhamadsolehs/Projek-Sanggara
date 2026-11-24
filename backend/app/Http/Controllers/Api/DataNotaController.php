@@ -17,7 +17,9 @@ class DataNotaController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Booking::with(['pelanggan', 'user'])->orderBy('id_booking', 'asc');
+            $query = Booking::with(['pelanggan', 'user'])
+                ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+                ->orderByDesc('id_booking');
 
             // Pencarian kata kunci (no_nota, nama pelanggan, nama kasir)
             if ($request->has('q') && !empty($request->q)) {

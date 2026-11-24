@@ -12,7 +12,11 @@ class KategoriController extends Controller
     public function index()
     {
         try {
-            $kategori = Kategori::withCount('produk')->get()->map(function ($k) {
+            $kategori = Kategori::withCount('produk')
+                ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+                ->orderByDesc('id_kategori')
+                ->get()
+                ->map(function ($k) {
                 return [
                     'id_kategori' => $k->id_kategori,
                     'nama_kategori' => $k->nama_kategori,

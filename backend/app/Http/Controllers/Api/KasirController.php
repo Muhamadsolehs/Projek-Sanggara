@@ -20,7 +20,9 @@ class KasirController extends Controller
     public function getProduk(Request $request)
     {
         try {
-            $query = Produk::with('kategori')->where('status', 'tersedia');
+            $query = Produk::with('kategori')->where('status', 'tersedia')
+                ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+                ->orderByDesc('id_produk');
 
             if ($request->has('kategori') && !empty($request->kategori)) {
                 $query->where('id_kategori', $request->kategori);

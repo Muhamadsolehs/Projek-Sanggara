@@ -17,7 +17,9 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Booking::with(['pelanggan', 'details.produk'])->orderBy('id_booking', 'desc');
+            $query = Booking::with(['pelanggan', 'details.produk'])
+                ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+                ->orderByDesc('id_booking');
 
             // Pencarian kata kunci (no_booking, no_nota, nama pelanggan)
             if ($request->has('q') && !empty($request->q)) {
@@ -86,7 +88,9 @@ class BookingController extends Controller
     public function pesanan(Request $request)
     {
         try {
-            $query = DetailBooking::with(['booking.pelanggan', 'produk.kategori'])->orderBy('id_detail', 'desc');
+            $query = DetailBooking::with(['booking.pelanggan', 'produk.kategori'])
+                ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+                ->orderByDesc('id_detail');
 
             if ($request->has('q') && !empty($request->q)) {
                 $q = $request->q;

@@ -11,7 +11,6 @@ class DetailBooking extends Model
 
     protected $table = 'detail_booking';
     protected $primaryKey = 'id_detail';
-    public $timestamps = false;
 
     protected $fillable = [
         'id_booking',

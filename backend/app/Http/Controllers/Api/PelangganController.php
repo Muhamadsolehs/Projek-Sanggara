@@ -11,7 +11,9 @@ class PelangganController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Pelanggan::with('kecamatan');
+            $query = Pelanggan::with('kecamatan')
+                ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+                ->orderByDesc('id_pelanggan');
 
             if ($request->has('q') && !empty($request->q)) {
                 $q = $request->q;
