@@ -156,6 +156,20 @@ const SanggaraAPI = {
     return await res.json();
   },
 
+  async tambahProduk(payload) {
+    const res = await fetch(`${this.baseUrl}/produk`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menambahkan produk');
+    return data;
+  },
+
   async updateProduk(id, payload) {
     const res = await fetch(`${this.baseUrl}/produk/${id}`, {
       method: 'PUT',

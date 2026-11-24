@@ -60,6 +60,69 @@ class ProdukController extends Controller
         }
     }
 
+    public function store(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'nama_produk' => 'required|string|max:150',
+                'id_kategori' => 'nullable|integer',
+                'kategori' => 'nullable|string',
+                'kualitas' => 'nullable|string|max:60',
+                'harga_sewa' => 'required|numeric|min:0',
+                'denda_per_hari' => 'nullable|numeric|min:0',
+                'stok_total' => 'nullable|integer|min:0',
+                'stok_siap' => 'nullable|integer|min:0',
+                'status' => 'nullable|string',
+                'deskripsi' => 'nullable|string',
+            ]);
+
+            // Auto-resolve id_kategori jika dikirim nama atau slug
+            if (empty($validated['id_kategori']) && !empty($request->kategori)) {
+                $kat = \App\Models\Kategori::where('nama_kategori', 'like', "%{$request->kategori}%")
+                    ->orWhere('slug', 'like', "%{$request->kategori}%")
+                    ->first();
+                if ($kat) {
+                    $validated['id_kategori'] = $kat->id_kategori;
+                }
+            }
+            if (empty($validated['id_kategori'])) {
+                $firstKat = \App\Models\Kategori::first();
+                $validated['id_kategori'] = $firstKat ? $firstKat->id_kategori : 1;
+            }
+
+            // Auto-generate kode_produk jika kosong
+            if (empty($request->kode_produk)) {
+                $nextId = (Produk::max('id_produk') ?? 0) + 1;
+                $validated['kode_produk'] = 'PRD-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
+            } else {
+                $validated['kode_produk'] = $request->kode_produk;
+            }
+
+            // Atur default stok & status
+            $stok = isset($validated['stok_total']) ? (int)$validated['stok_total'] : 1;
+            $validated['stok_total'] = $stok;
+            $validated['stok_siap'] = isset($validated['stok_siap']) ? (int)$validated['stok_siap'] : $stok;
+            $validated['stok_disewa'] = 0;
+            $validated['stok_cuci'] = 0;
+            $validated['stok_rusak'] = 0;
+            $validated['denda_per_hari'] = isset($validated['denda_per_hari']) ? (float)$validated['denda_per_hari'] : round($validated['harga_sewa'] * 0.15);
+            $validated['status'] = !empty($validated['status']) ? strtolower($validated['status']) : 'tersedia';
+
+            $produk = Produk::create($validated);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Produk baru berhasil ditambahkan',
+                'data' => $produk
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menambahkan produk: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function show($id)
     {
         try {

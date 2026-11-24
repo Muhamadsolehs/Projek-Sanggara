@@ -50,6 +50,7 @@ Route::get('/pesanan', [BookingController::class, 'pesanan']);
 // Master Data: Produk, Pelanggan, Kategori, Kecamatan
 Route::get('/kecamatan', [KecamatanController::class, 'index']);
 Route::get('/produk', [ProdukController::class, 'index']);
+Route::post('/produk', [ProdukController::class, 'store']);
 Route::get('/produk/{id}', [ProdukController::class, 'show']);
 Route::put('/produk/{id}', [ProdukController::class, 'update']);
 Route::post('/produk/{id}', [ProdukController::class, 'update']); // fallback for multipart/form

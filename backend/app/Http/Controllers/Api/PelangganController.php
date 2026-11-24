@@ -84,11 +84,30 @@ class PelangganController extends Controller
             $validated = $request->validate([
                 'nama_pelanggan' => 'required|string|max:100',
                 'no_telepon' => 'required|string|max:30',
-                'alamat_lengkap' => 'required|string',
+                'alamat_lengkap' => 'nullable|string',
                 'nama_kecamatan' => 'nullable|string|max:100',
                 'id_kecamatan' => 'nullable|integer',
                 'kelurahan_desa' => 'nullable|string|max:100',
             ]);
+
+            // Jika alamat_lengkap kosong, buatkan dari kelurahan & kecamatan
+            if (empty($validated['alamat_lengkap'])) {
+                $kec = $request->nama_kecamatan ?? 'Purwakarta';
+                $kel = $request->kelurahan_desa ?? '';
+                $validated['alamat_lengkap'] = trim("{$kel}, Kec. {$kec}", ', ');
+                if (empty($validated['alamat_lengkap'])) {
+                    $validated['alamat_lengkap'] = 'Kabupaten Purwakarta';
+                }
+            }
+
+            // Cari id_kecamatan jika hanya nama kecamatan yang dikirim
+            if (empty($validated['id_kecamatan']) && !empty($request->nama_kecamatan)) {
+                $kecObj = \App\Models\Kecamatan::where('nama_kecamatan', 'like', "%{$request->nama_kecamatan}%")->first();
+                if ($kecObj) {
+                    $validated['id_kecamatan'] = $kecObj->id_kecamatan;
+                    $validated['nama_kecamatan'] = $kecObj->nama_kecamatan;
+                }
+            }
 
             if (empty($request->kode_pelanggan)) {
                 $nextId = (Pelanggan::max('id_pelanggan') ?? 0) + 1;

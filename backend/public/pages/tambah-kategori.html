@@ -8,6 +8,8 @@
   <title>Tambah Kategori - Sanggara Management System</title>
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/tambah-kategori.css">
+  <script src="../js/global.js"></script>
+  <script src="../js/api.js"></script>
 </head>
 <body>
   <div class="modal-page-layout">
@@ -26,33 +28,77 @@
     <!-- Modal Form Body -->
     <main class="modal-body-container">
       <div class="form-modal-card">
-        <form class="form-stack" action="kelola-kategori.html" method="get">
+        <form class="form-stack" id="formTambahKategori" onsubmit="submitTambahKategori(event)">
           <!-- Nama Kategori -->
           <div class="form-group">
             <div class="form-field-header">
-              <label class="form-field-label">Nama Kategori<span class="required-asterisk">*</span></label>
-              <span class="field-counter">15/25</span>
+              <label class="form-field-label" for="inputNamaKategori">Nama Kategori<span class="required-asterisk">*</span></label>
+              <span class="field-counter" id="namaKategoriCounter">0/100</span>
             </div>
-            <input type="text" class="form-control-input" placeholder="Masukkan nama kategori" required>
+            <input type="text" id="inputNamaKategori" class="form-control-input" placeholder="Masukkan nama kategori (contoh: Kostum Tari Modern)" required oninput="updateCounter(this, 'namaKategoriCounter', 100)">
           </div>
 
-          <!-- Nomor Deskripsi -->
+          <!-- Deskripsi Kategori -->
           <div class="form-group">
             <div class="form-field-header">
-              <label class="form-field-label">Nomor Deskripsi<span class="required-asterisk">*</span></label>
-              <span class="field-counter">0/50</span>
+              <label class="form-field-label" for="inputDeskripsiKategori">Deskripsi Kategori</label>
+              <span class="field-counter" id="deskripsiKategoriCounter">0/200</span>
             </div>
-            <input type="text" class="form-control-input" placeholder="Masukkan deskripsi kategori" required>
+            <textarea id="inputDeskripsiKategori" class="form-control-input" style="height: auto; min-height: 80px; padding: 10px; resize: vertical;" placeholder="Deskripsi jenis koleksi busana/kostum dalam kategori ini..." oninput="updateCounter(this, 'deskripsiKategoriCounter', 200)"></textarea>
           </div>
 
           <!-- Actions -->
           <div class="form-footer-actions">
             <a href="kelola-kategori.html" class="btn btn-text">Batal</a>
-            <button type="submit" class="btn btn-primary" style="padding: 9px 24px;">Simpan</button>
+            <button type="submit" id="btnSubmitKategori" class="btn btn-primary" style="padding: 9px 26px;">Simpan ke Database</button>
           </div>
         </form>
       </div>
     </main>
   </div>
+
+  <script>
+    function updateCounter(input, counterId, max) {
+      const counter = document.getElementById(counterId);
+      if (counter) counter.textContent = `${input.value.length}/${max}`;
+    }
+
+    async function submitTambahKategori(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitKategori');
+
+      const nama = document.getElementById('inputNamaKategori').value.trim();
+      const deskripsi = document.getElementById('inputDeskripsiKategori').value.trim();
+
+      if (!nama) {
+        alert('Silakan masukkan nama kategori');
+        return;
+      }
+
+      const payload = {
+        nama_kategori: nama,
+        deskripsi: deskripsi || null
+      };
+
+      try {
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Menyimpan...';
+        }
+
+        const res = await SanggaraAPI.tambahKategori(payload);
+        alert(res.message || 'Kategori baru berhasil disimpan ke database!');
+        window.location.href = 'kelola-kategori.html';
+      } catch (err) {
+        console.error('Gagal menambahkan kategori:', err);
+        alert('Gagal menambahkan kategori ke database: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Simpan ke Database';
+        }
+      }
+    }
+  </script>
 </body>
 </html>

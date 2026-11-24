@@ -8,6 +8,8 @@
   <title>Tambah Barang - Sanggara Management System</title>
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/tambah-produk.css">
+  <script src="../js/global.js"></script>
+  <script src="../js/api.js"></script>
 </head>
 <body>
   <div class="modal-page-layout">
@@ -26,78 +28,157 @@
     <!-- Modal Form Body -->
     <main class="modal-body-container">
       <div class="form-modal-card">
-        <form class="form-stack" action="kelola-produk.html" method="get">
+        <form class="form-stack" id="formTambahProduk" onsubmit="submitTambahProduk(event)">
           <!-- Nama Barang -->
           <div class="form-group">
             <div class="form-field-header">
-              <label class="form-field-label">Nama Barang<span class="required-asterisk">*</span></label>
-              <span class="field-counter">15/25</span>
+              <label class="form-field-label" for="inputNamaBarang">Nama Barang<span class="required-asterisk">*</span></label>
+              <span class="field-counter" id="namaCounter">0/150</span>
             </div>
-            <input type="text" class="form-control-input" placeholder="Masukkan nama barang" required>
+            <input type="text" id="inputNamaBarang" class="form-control-input" placeholder="Masukkan nama busana / kostum / aksesoris" required oninput="updateCounter(this, 'namaCounter', 150)">
           </div>
 
           <!-- Kategori -->
           <div class="form-group">
             <div class="form-field-header">
-              <label class="form-field-label">Kategori<span class="required-asterisk">*</span></label>
-              <span class="field-counter">0/50</span>
+              <label class="form-field-label" for="inputKategoriBarang">Kategori<span class="required-asterisk">*</span></label>
             </div>
-            <select class="form-control-select" required>
-              <option value="">Pilih</option>
-              <option value="pengantin">Baju Pengantin</option>
-              <option value="tari">Kostum Tari</option>
-              <option value="kebaya">Kebaya Wisuda</option>
+            <select class="form-control-select" id="inputKategoriBarang" required>
+              <option value="">Pilih Kategori</option>
+              <option value="1">Kostum Tari</option>
+              <option value="2">Baju Pengantin Adat</option>
+              <option value="3">Kebaya & Wisuda</option>
+              <option value="4">Aksesoris & Perhiasan</option>
             </select>
           </div>
 
           <!-- Kualitas -->
           <div class="form-group">
             <div class="form-field-header">
-              <label class="form-field-label">Kualitas</label>
-              <span class="field-counter">0/50</span>
+              <label class="form-field-label" for="inputKualitasBarang">Kualitas / Grade</label>
             </div>
-            <select class="form-control-select">
-              <option value="">Pilih</option>
-              <option value="premium">Premium</option>
-              <option value="standar">Standar</option>
+            <select class="form-control-select" id="inputKualitasBarang">
+              <option value="Grade A (Sutra)">Grade A (Sutra)</option>
+              <option value="Grade A (Lengkap)">Grade A (Lengkap)</option>
+              <option value="Grade B (Standar)">Grade B (Standar)</option>
+              <option value="Premium Eksklusif">Premium Eksklusif</option>
+              <option value="Kuningan Tebal">Kuningan Tebal</option>
             </select>
           </div>
 
           <!-- Stok & Harga Sewa -->
           <div class="form-grid-2cols">
             <div class="form-group">
-              <label class="form-field-label">Stok</label>
-              <input type="number" class="form-control-input" placeholder="0">
+              <label class="form-field-label" for="inputStokBarang">Stok Total<span class="required-asterisk">*</span></label>
+              <input type="number" id="inputStokBarang" class="form-control-input" placeholder="Contoh: 10" min="1" value="1" required>
             </div>
             <div class="form-group">
-              <label class="form-field-label">Harga sewa</label>
-              <input type="text" class="form-control-input" placeholder="Rp 0">
+              <label class="form-field-label" for="inputHargaSewaBarang">Harga Sewa / Hari (Rp)<span class="required-asterisk">*</span></label>
+              <input type="number" id="inputHargaSewaBarang" class="form-control-input" placeholder="Contoh: 150000" min="0" step="5000" required>
             </div>
           </div>
 
           <!-- Status -->
           <div class="form-group">
-            <label class="form-field-label">Status</label>
-            <input type="text" class="form-control-input" placeholder="Tersedia">
+            <label class="form-field-label" for="inputStatusBarang">Status Kesiapan</label>
+            <select class="form-control-select" id="inputStatusBarang">
+              <option value="tersedia" selected>Tersedia (Siap Sewa)</option>
+              <option value="habis">Habis</option>
+              <option value="maintenance">Maintenance / Perbaikan</option>
+            </select>
           </div>
 
-          <!-- Foto -->
+          <!-- Deskripsi Produk -->
           <div class="form-group">
-            <label class="form-field-label">Foto</label>
-            <p class="upload-subtext">Format gambar .jpg .jpeg .png dan ukuran minimum 100 × 100 (Untuk gambar optimal gunakan ukuran minimum 1000 × 1000 px).</p>
-            <div class="upload-dropzone">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            </div>
+            <label class="form-field-label" for="inputDeskripsiBarang">Deskripsi / Catatan Barang</label>
+            <textarea id="inputDeskripsiBarang" class="form-control-input" style="height: auto; min-height: 72px; padding: 10px; resize: vertical;" placeholder="Deskripsi kelengkapan busana, warna, ukuran..."></textarea>
           </div>
 
           <!-- Actions -->
           <div class="form-footer-actions">
             <a href="kelola-produk.html" class="btn btn-text">Batal</a>
-            <button type="submit" class="btn btn-primary" style="padding: 9px 24px;">Simpan</button>
+            <button type="submit" id="btnSubmitProduk" class="btn btn-primary" style="padding: 9px 26px;">Simpan ke Database</button>
           </div>
         </form>
       </div>
     </main>
   </div>
+
+  <script>
+    function updateCounter(input, counterId, max) {
+      const counter = document.getElementById(counterId);
+      if (counter) counter.textContent = `${input.value.length}/${max}`;
+    }
+
+    // Muat kategori aktual dari database
+    async function loadKategoriOptions() {
+      try {
+        const select = document.getElementById('inputKategoriBarang');
+        if (!select) return;
+        const res = await SanggaraAPI.getKategori();
+        if (res.status === 'success' && res.data && res.data.length > 0) {
+          select.innerHTML = '<option value="">Pilih Kategori</option>' + res.data.map(k => `
+            <option value="${k.id_kategori}">${k.nama_kategori}</option>
+          `).join('');
+        }
+      } catch (e) {
+        console.warn('Gagal memuat kategori dari API, menggunakan opsi default');
+      }
+    }
+
+    async function submitTambahProduk(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitProduk');
+
+      const nama = document.getElementById('inputNamaBarang').value.trim();
+      const idKat = parseInt(document.getElementById('inputKategoriBarang').value) || null;
+      const kualitas = document.getElementById('inputKualitasBarang').value;
+      const stok = parseInt(document.getElementById('inputStokBarang').value) || 1;
+      const harga = parseFloat(document.getElementById('inputHargaSewaBarang').value) || 0;
+      const status = document.getElementById('inputStatusBarang').value || 'tersedia';
+      const deskripsi = document.getElementById('inputDeskripsiBarang').value.trim();
+
+      if (!nama) {
+        alert('Silakan masukkan nama barang terlebih dahulu');
+        return;
+      }
+      if (!idKat) {
+        alert('Silakan pilih kategori barang');
+        return;
+      }
+
+      const payload = {
+        nama_produk: nama,
+        id_kategori: idKat,
+        kualitas: kualitas,
+        stok_total: stok,
+        stok_siap: stok,
+        harga_sewa: harga,
+        status: status,
+        deskripsi: deskripsi || null
+      };
+
+      try {
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Menyimpan...';
+        }
+
+        const res = await SanggaraAPI.tambahProduk(payload);
+        alert(res.message || 'Produk baru berhasil disimpan ke database!');
+        window.location.href = 'kelola-produk.html';
+      } catch (err) {
+        console.error('Gagal menyimpan produk:', err);
+        alert('Gagal menambahkan produk ke database: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Simpan ke Database';
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadKategoriOptions);
+  </script>
 </body>
 </html>

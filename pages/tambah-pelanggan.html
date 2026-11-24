@@ -8,6 +8,8 @@
   <title>Tambah Pelanggan - Sanggara Management System</title>
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/tambah-pelanggan.css">
+  <script src="../js/global.js"></script>
+  <script src="../js/api.js"></script>
 </head>
 <body>
   <div class="modal-page-layout">
@@ -26,30 +28,29 @@
     <!-- Modal Form Body -->
     <main class="modal-body-container">
       <div class="form-modal-card">
-        <form class="form-stack" action="kelola-pelanggan.html" method="get">
+        <form class="form-stack" id="formTambahPelanggan" onsubmit="submitTambahPelanggan(event)">
           <!-- Nama Konsumen -->
           <div class="form-group">
             <div class="form-field-header">
-              <label class="form-field-label">Nama Konsumen<span class="required-asterisk">*</span></label>
-              <span class="field-counter">15/25</span>
+              <label class="form-field-label" for="inputNamaPelanggan">Nama Konsumen<span class="required-asterisk">*</span></label>
+              <span class="field-counter" id="namaPelangganCounter">0/100</span>
             </div>
-            <input type="text" class="form-control-input" placeholder="Masukkan nama konsumen" required>
+            <input type="text" id="inputNamaPelanggan" class="form-control-input" placeholder="Masukkan nama konsumen" required oninput="updateCounter(this, 'namaPelangganCounter', 100)">
           </div>
 
           <!-- Nomor Telepon -->
           <div class="form-group">
             <div class="form-field-header">
-              <label class="form-field-label">Nomor Telepon<span class="required-asterisk">*</span></label>
-              <span class="field-counter">0/50</span>
+              <label class="form-field-label" for="inputNoTelepon">Nomor Telepon<span class="required-asterisk">*</span></label>
+              <span class="field-counter" id="telpPelangganCounter">0/30</span>
             </div>
-            <input type="tel" class="form-control-input" placeholder="08xxxxxxxxxx" required>
+            <input type="tel" id="inputNoTelepon" class="form-control-input" placeholder="08xxxxxxxxxx" required oninput="updateCounter(this, 'telpPelangganCounter', 30)">
           </div>
 
-          <!-- Alamat -->
+          <!-- Alamat (Kecamatan & Kelurahan) -->
           <div class="form-group">
             <div class="form-field-header">
-              <label class="form-field-label">Alamat</label>
-              <span class="field-counter">0/50</span>
+              <label class="form-field-label" for="inputKecamatan">Wilayah (Purwakarta)<span class="required-asterisk">*</span></label>
             </div>
             <div class="alamat-dual-select">
               <select class="form-control-select" id="inputKecamatan" required>
@@ -72,23 +73,85 @@
                 <option value="Tegalwaru">Kec. Tegalwaru</option>
                 <option value="Wanayasa">Kec. Wanayasa</option>
               </select>
-              <select class="form-control-select">
-                <option value="">Pilih Kelurahan / Desa</option>
-                <option value="nagri-kaler">Nagri Kaler</option>
-                <option value="nagri-kidul">Nagri Kidul</option>
-                <option value="cihideung">Cihideung</option>
-              </select>
+              <input type="text" id="inputKelurahan" class="form-control-input" placeholder="Kelurahan / Desa (Contoh: Nagri Kaler)">
             </div>
+          </div>
+
+          <!-- Alamat Lengkap / Jalan -->
+          <div class="form-group">
+            <div class="form-field-header">
+              <label class="form-field-label" for="inputAlamatLengkap">Alamat Lengkap / Jalan</label>
+              <span class="field-counter" id="alamatPelangganCounter">0/200</span>
+            </div>
+            <textarea id="inputAlamatLengkap" class="form-control-input" style="height: auto; min-height: 70px; padding: 10px; resize: vertical;" placeholder="Nama jalan, nomor rumah, RT/RW..." oninput="updateCounter(this, 'alamatPelangganCounter', 200)"></textarea>
           </div>
 
           <!-- Actions -->
           <div class="form-footer-actions">
             <a href="kelola-pelanggan.html" class="btn btn-text">Batal</a>
-            <button type="submit" class="btn btn-primary" style="padding: 9px 24px;">Simpan</button>
+            <button type="submit" id="btnSubmitPelanggan" class="btn btn-primary" style="padding: 9px 26px;">Simpan ke Database</button>
           </div>
         </form>
       </div>
     </main>
   </div>
+
+  <script>
+    function updateCounter(input, counterId, max) {
+      const counter = document.getElementById(counterId);
+      if (counter) counter.textContent = `${input.value.length}/${max}`;
+    }
+
+    async function submitTambahPelanggan(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitPelanggan');
+
+      const nama = document.getElementById('inputNamaPelanggan').value.trim();
+      const telp = document.getElementById('inputNoTelepon').value.trim();
+      const kecamatan = document.getElementById('inputKecamatan').value;
+      const kelurahan = document.getElementById('inputKelurahan').value.trim();
+      const alamatLengkap = document.getElementById('inputAlamatLengkap').value.trim();
+
+      if (!nama) {
+        alert('Silakan masukkan nama konsumen');
+        return;
+      }
+      if (!telp) {
+        alert('Silakan masukkan nomor telepon konsumen');
+        return;
+      }
+      if (!kecamatan) {
+        alert('Silakan pilih kecamatan');
+        return;
+      }
+
+      const payload = {
+        nama_pelanggan: nama,
+        no_telepon: telp,
+        nama_kecamatan: kecamatan,
+        kelurahan_desa: kelurahan || null,
+        alamat_lengkap: alamatLengkap || (kelurahan ? `${kelurahan}, Kec. ${kecamatan}` : `Kec. ${kecamatan}, Purwakarta`)
+      };
+
+      try {
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Menyimpan...';
+        }
+
+        const res = await SanggaraAPI.tambahPelanggan(payload);
+        alert(res.message || 'Data pelanggan berhasil disimpan ke database!');
+        window.location.href = 'kelola-pelanggan.html';
+      } catch (err) {
+        console.error('Gagal menambahkan pelanggan:', err);
+        alert('Gagal menambahkan pelanggan ke database: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Simpan ke Database';
+        }
+      }
+    }
+  </script>
 </body>
 </html>
