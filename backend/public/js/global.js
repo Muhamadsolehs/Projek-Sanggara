@@ -118,6 +118,14 @@ const SanggaraModal = {
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>`;
+      case 'logout':
+        return `<div class="sanggara-icon-circle sanggara-icon-danger" style="background-color: #fee2e2; color: #ef4444;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </div>`;
       case 'danger':
       case 'delete':
       case 'error':
@@ -201,12 +209,14 @@ const SanggaraModal = {
     const actionsEl = document.getElementById('sanggaraDialogActions');
 
     const msgLower = String(message).toLowerCase();
+    const isLogout = options.type === 'logout' || msgLower.includes('keluar') || msgLower.includes('logout');
     const isDelete = options.type === 'danger' || options.type === 'delete' || msgLower.includes('hapus');
-    const type = options.type || (isDelete ? 'danger' : 'warning');
-    const title = options.title || (isDelete ? 'Konfirmasi Hapus' : 'Konfirmasi Tindakan');
-    const confirmText = options.confirmText || (isDelete ? 'Ya, Hapus' : 'Ya, Lanjutkan');
+    const type = options.type || (isLogout ? 'logout' : (isDelete ? 'danger' : 'warning'));
+    const defaultTitle = isLogout ? 'Konfirmasi Logout' : (isDelete ? 'Konfirmasi Hapus' : 'Konfirmasi Tindakan');
+    const title = options.title || defaultTitle;
+    const confirmText = options.confirmText || (isLogout ? 'Ya, Keluar' : (isDelete ? 'Ya, Hapus' : 'Ya, Lanjutkan'));
     const cancelText = options.cancelText || 'Batal';
-    const confirmBtnClass = isDelete ? 'sanggara-dialog-btn-danger' : 'sanggara-dialog-btn-primary';
+    const confirmBtnClass = (isDelete || isLogout) ? 'sanggara-dialog-btn-danger' : 'sanggara-dialog-btn-primary';
 
     iconEl.innerHTML = this.getIcon(type);
     titleEl.textContent = title;
@@ -293,3 +303,98 @@ if (typeof window !== 'undefined') {
     return SanggaraModal.alert(msg);
   };
 }
+
+
+/* ==========================================================================
+   FITUR LOGOUT PENGGUNA (USER PROFILE MENU)
+   Menampilkan popup validasi konfirmasi logout bertema Sanggara (bisa dicancel)
+   ========================================================================== */
+
+let isLogoutModalOpen = false;
+
+async function handleUserLogout(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  if (isLogoutModalOpen) return;
+  isLogoutModalOpen = true;
+
+  try {
+    const confirmed = await SanggaraModal.confirm('Apakah Anda yakin ingin keluar dari sistem Sanggara?', {
+      title: 'Konfirmasi Logout',
+      type: 'logout',
+      confirmText: 'Ya, Keluar',
+      cancelText: 'Batal'
+    });
+
+    if (!confirmed) {
+      // Pengguna membatalkan logout (popup ditutup tanpa keluar)
+      return;
+    }
+
+    // Bersihkan sesi pengguna
+    try {
+      localStorage.removeItem('sanggara_token');
+      localStorage.removeItem('sanggara_user');
+      sessionStorage.clear();
+    } catch (err) {}
+
+    SanggaraModal.toast('Anda telah berhasil keluar dari sistem.', 'success');
+
+    // Redirect ke halaman login setelah jeda singkat
+    setTimeout(() => {
+      const isPagesDir = window.location.pathname.includes('/pages/');
+      window.location.href = isPagesDir ? 'login.html' : 'pages/login.html';
+    }, 600);
+  } finally {
+    isLogoutModalOpen = false;
+  }
+}
+
+window.handleUserLogout = handleUserLogout;
+
+// Set atribut aksesibilitas dan tooltip pada elemen user profile
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.user-profile, .btn-user-more').forEach(el => {
+    el.setAttribute('title', 'Klik untuk Keluar / Logout');
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+  });
+});
+
+// Listener klik delegasi untuk elemen profile user di header
+document.addEventListener('click', function(e) {
+  const profileTrigger = e.target.closest('.user-profile, .btn-user-more');
+  if (profileTrigger) {
+    handleUserLogout(e);
+  }
+});
+
+
+/* ==========================================================================
+   AUTO-INJECT APP FOOTER
+   Memastikan setiap halaman memiliki footer dengan jarak proporsional
+   ========================================================================== */
+
+function ensureAppFooter() {
+  const main = document.querySelector('.app-main');
+  if (!main) return;
+
+  let footer = main.querySelector('.app-footer');
+  if (!footer) {
+    footer = document.createElement('footer');
+    footer.className = 'app-footer';
+    footer.innerHTML = `
+      <div class="footer-left">
+        <span>&copy; 2026 <strong>Sanggar Bunda Febri (SBF)</strong> &bull; Sanggara Management System</span>
+      </div>
+      <div class="footer-right">
+        <span>Powered by <strong>Pratama Solusi Teknologi</strong></span>
+      </div>
+    `;
+    main.appendChild(footer);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', ensureAppFooter);

@@ -212,6 +212,22 @@ const SanggaraAPI = {
     return await res.json();
   },
 
+  async getDistricts(regency = '3214') {
+    const res = await fetch(`${this.baseUrl}/regions/districts?regency=${regency}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat data kecamatan');
+    return await res.json();
+  },
+
+  async getVillages(districtId) {
+    const res = await fetch(`${this.baseUrl}/regions/villages/${districtId}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('Gagal memuat data kelurahan/desa');
+    return await res.json();
+  },
+
   async getAnalisaPelanggan() {
     const res = await fetch(`${this.baseUrl}/analisa/pelanggan`, {
       headers: { 'Accept': 'application/json' }

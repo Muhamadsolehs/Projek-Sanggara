@@ -381,58 +381,55 @@
           </div>
         </div>
       </main>
+
+      <!-- App Footer -->
+      <footer class="app-footer">
+        <div class="footer-left">
+          <span>&copy; 2026 <strong>Sanggar Bunda Febri (SBF)</strong> &bull; Sanggara Management System</span>
+        </div>
+        <div class="footer-right">
+          <span>Powered by <strong>Pratama Solusi Teknologi</strong></span>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <!-- MODAL: TAMBAH PELANGGAN BARU (Image 6) -->
+  <!-- MODAL: TAMBAH PELANGGAN BARU -->
   <div class="modal-backdrop-overlay" id="customerModalBackdrop" onclick="if(event.target===this) closeCustomerModal()">
     <div class="customer-modal-card">
-      <h3 class="customer-modal-title">Tambah Pelanggan Baru</h3>
+      <div class="customer-modal-header">
+        <h3 class="customer-modal-title">Tambah Pelanggan Baru</h3>
+        <button type="button" class="btn-close-modal-x" onclick="closeCustomerModal()" aria-label="Tutup" title="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
 
-      <form class="customer-modal-form" onsubmit="saveCustomer(event)">
+      <form class="customer-modal-form" id="customerModalForm" onsubmit="saveCustomer(event)">
         <div class="modal-form-group">
-          <label class="modal-form-label">Nama konsumen</label>
-          <input type="text" id="newCustomerName" class="modal-form-input" placeholder="Nama lengkap" required>
+          <label class="modal-form-label" for="newCustomerName">Nama konsumen <span style="color: var(--color-red);">*</span></label>
+          <input type="text" id="newCustomerName" class="modal-form-input" placeholder="Nama lengkap konsumen" required>
         </div>
 
         <div class="modal-form-group">
-          <label class="modal-form-label">Nomor Telepon</label>
+          <label class="modal-form-label" for="newCustomerPhone">Nomor Telepon <span style="color: var(--color-red);">*</span></label>
           <input type="tel" id="newCustomerPhone" class="modal-form-input" placeholder="08xxxxxxxxxx" required>
         </div>
 
         <div class="modal-form-group">
-          <label class="modal-form-label">Alamat</label>
+          <label class="modal-form-label" for="newCustomerKec">Alamat <span style="color: var(--color-red);">*</span></label>
           <div class="modal-dual-selects">
-            <select class="modal-form-select" id="newCustomerKec">
-              <option value="Babakancikao">Kecamatan Babakancikao</option>
-              <option value="Bojong">Kecamatan Bojong</option>
-              <option value="Bungursari">Kecamatan Bungursari</option>
-              <option value="Campaka">Kecamatan Campaka</option>
-              <option value="Cibatu">Kecamatan Cibatu</option>
-              <option value="Darangdan">Kecamatan Darangdan</option>
-              <option value="Jatiluhur">Kecamatan Jatiluhur</option>
-              <option value="Kiarapedes">Kecamatan Kiarapedes</option>
-              <option value="Maniis">Kecamatan Maniis</option>
-              <option value="Pasawahan">Kecamatan Pasawahan</option>
-              <option value="Plered">Kecamatan Plered</option>
-              <option value="Pondoksalam">Kecamatan Pondoksalam</option>
-              <option value="Purwakarta" selected>Kecamatan Purwakarta</option>
-              <option value="Sukasari">Kecamatan Sukasari</option>
-              <option value="Sukatani">Kecamatan Sukatani</option>
-              <option value="Tegalwaru">Kecamatan Tegalwaru</option>
-              <option value="Wanayasa">Kecamatan Wanayasa</option>
+            <select class="modal-form-select" id="newCustomerKec" onchange="onDistrictChange()" required>
+              <option value="3214100" data-name="Purwakarta" selected>Kecamatan Purwakarta</option>
             </select>
-            <select class="modal-form-select" id="newCustomerKel">
-              <option value="Nagri Kaler">Kelurahan Nagri Kaler</option>
-              <option value="Nagri Kidul">Kelurahan Nagri Kidul</option>
-              <option value="Cihideung">Kelurahan Cihideung</option>
+            <select class="modal-form-select" id="newCustomerKel" required>
+              <option value="Nagri Kaler" selected>Kelurahan Nagri Kaler</option>
             </select>
           </div>
         </div>
 
         <div class="modal-actions-footer">
           <button type="button" class="btn btn-text" onclick="closeCustomerModal()">Batal</button>
-          <button type="submit" class="btn btn-primary" style="padding: 9px 26px;">Simpan</button>
+          <button type="submit" id="btnSubmitNewCustomer" class="btn btn-primary" style="padding: 9px 26px;">Simpan</button>
         </div>
       </form>
     </div>
@@ -809,31 +806,164 @@
       btn.classList.add('active');
     }
 
+    // OGAN LOPIAN REGION API INTEGRATION (Regency 3214 - Kabupaten Purwakarta)
+    let oganDistrictsList = [];
+
+    async function loadOganDistricts() {
+      const kecSelect = document.getElementById('newCustomerKec');
+      if (!kecSelect) return;
+
+      try {
+        const res = await SanggaraAPI.getDistricts('3214');
+        if (res.status === 'success' && res.data && res.data.length > 0) {
+          oganDistrictsList = res.data;
+          kecSelect.innerHTML = res.data.map(d => `
+            <option value="${d.id}" data-name="${d.name}" ${d.name.toLowerCase() === 'purwakarta' ? 'selected' : ''}>
+              ${d.label || ('Kecamatan ' + d.name)}
+            </option>
+          `).join('');
+
+          const selectedOption = kecSelect.options[kecSelect.selectedIndex];
+          const districtId = selectedOption ? selectedOption.value : 3214100;
+          await loadOganVillages(districtId);
+        }
+      } catch (err) {
+        console.warn('Gagal memuat kecamatan dari API Ogan, fallback aktif:', err);
+        await loadOganVillages(3214100);
+      }
+    }
+
+    async function onDistrictChange() {
+      const kecSelect = document.getElementById('newCustomerKec');
+      const districtId = kecSelect ? kecSelect.value : 3214100;
+      await loadOganVillages(districtId);
+    }
+
+    async function loadOganVillages(districtId) {
+      const kelSelect = document.getElementById('newCustomerKel');
+      if (!kelSelect) return;
+
+      kelSelect.disabled = true;
+      kelSelect.innerHTML = '<option value="" disabled selected>Memuat kelurahan/desa...</option>';
+
+      try {
+        const res = await SanggaraAPI.getVillages(districtId);
+        if (res.status === 'success' && res.data && res.data.length > 0) {
+          kelSelect.innerHTML = res.data.map(v => {
+            const isNagriKaler = v.name.toLowerCase() === 'nagri kaler';
+            return `<option value="${v.name}" ${isNagriKaler ? 'selected' : ''}>${v.label || v.name}</option>`;
+          }).join('');
+
+          if (!kelSelect.value && res.data[0]) {
+            kelSelect.value = res.data[0].name;
+          }
+        } else {
+          kelSelect.innerHTML = '<option value="Pusat Wilayah">Pusat Wilayah</option>';
+        }
+      } catch (err) {
+        console.warn('Gagal memuat kelurahan dari API Ogan, fallback aktif:', err);
+        kelSelect.innerHTML = `
+          <option value="Nagri Kaler" selected>Kelurahan Nagri Kaler</option>
+          <option value="Nagri Kidul">Kelurahan Nagri Kidul</option>
+          <option value="Cipaisan">Kelurahan Cipaisan</option>
+          <option value="Ciseureuh">Kelurahan Ciseureuh</option>
+        `;
+      } finally {
+        kelSelect.disabled = false;
+      }
+    }
+
     // Customer Modal Controls
     function openCustomerModal() {
-      document.getElementById('customerModalBackdrop').classList.add('active');
+      const modal = document.getElementById('customerModalBackdrop');
+      if (modal) {
+        modal.classList.add('active');
+        if (!oganDistrictsList || oganDistrictsList.length === 0) {
+          loadOganDistricts();
+        }
+        const inputName = document.getElementById('newCustomerName');
+        if (inputName) setTimeout(() => inputName.focus(), 150);
+      }
     }
 
     function closeCustomerModal() {
-      document.getElementById('customerModalBackdrop').classList.remove('active');
+      const modal = document.getElementById('customerModalBackdrop');
+      if (modal) modal.classList.remove('active');
     }
 
-    function saveCustomer(e) {
+    async function saveCustomer(e) {
       e.preventDefault();
-      const name = document.getElementById('newCustomerName').value;
-      const phone = document.getElementById('newCustomerPhone').value;
-      const kec = document.getElementById('newCustomerKec').value;
+      const nameInput = document.getElementById('newCustomerName');
+      const phoneInput = document.getElementById('newCustomerPhone');
+      const kecSelect = document.getElementById('newCustomerKec');
+      const kelSelect = document.getElementById('newCustomerKel');
+      const btnSubmit = document.getElementById('btnSubmitNewCustomer');
 
-      if (!name) return;
+      const name = nameInput ? nameInput.value.trim() : '';
+      const phone = phoneInput ? phoneInput.value.trim() : '';
+      const selectedKecOpt = kecSelect ? kecSelect.options[kecSelect.selectedIndex] : null;
+      const kecName = selectedKecOpt ? (selectedKecOpt.getAttribute('data-name') || selectedKecOpt.text.replace(/^Kecamatan\s*/i, '')) : 'Purwakarta';
+      const kelName = kelSelect ? kelSelect.value : '';
 
-      const select = document.getElementById('customerSelect');
-      const newOption = document.createElement('option');
-      newOption.value = name.toLowerCase().replace(/\s+/g, '-');
-      newOption.textContent = `${name} — ${kec} (${phone})`;
-      newOption.selected = true;
+      if (!name) {
+        SanggaraModal.alert('Silakan masukkan nama konsumen terlebih dahulu.', { type: 'warning', title: 'Data Belum Lengkap' });
+        if (nameInput) nameInput.focus();
+        return;
+      }
 
-      select.appendChild(newOption);
-      closeCustomerModal();
+      if (!phone) {
+        SanggaraModal.alert('Silakan masukkan nomor telepon konsumen.', { type: 'warning', title: 'Data Belum Lengkap' });
+        if (phoneInput) phoneInput.focus();
+        return;
+      }
+
+      const payload = {
+        nama_pelanggan: name,
+        no_telepon: phone,
+        nama_kecamatan: kecName,
+        kelurahan_desa: kelName || null,
+        alamat_lengkap: kelName ? `${kelName}, Kec. ${kecName}` : `Kec. ${kecName}, Purwakarta`
+      };
+
+      const originalBtnText = btnSubmit ? btnSubmit.textContent : 'Simpan';
+      try {
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.textContent = 'Menyimpan...';
+        }
+
+        const res = await SanggaraAPI.tambahPelanggan(payload);
+        const newCustomer = res.data;
+
+        // Tambahkan ke dropdown kasir dan langsung jadikan aktif/terpilih
+        const select = document.getElementById('customerSelect');
+        if (select) {
+          const newOption = document.createElement('option');
+          newOption.value = newCustomer.id_pelanggan;
+          newOption.textContent = `${newCustomer.nama_pelanggan} — ${newCustomer.kecamatan || ('Kec. ' + kecName)} (${newCustomer.no_telepon})`;
+          newOption.selected = true;
+          select.appendChild(newOption);
+          select.value = newCustomer.id_pelanggan;
+        }
+
+        // Reset form modal
+        if (nameInput) nameInput.value = '';
+        if (phoneInput) phoneInput.value = '';
+
+        closeCustomerModal();
+        SanggaraModal.toast(`Pelanggan "${newCustomer.nama_pelanggan}" berhasil disimpan ke database!`, 'success');
+      } catch (err) {
+        console.error('Gagal menambahkan pelanggan:', err);
+        SanggaraModal.alert('Gagal menyimpan pelanggan ke database: ' + (err.message || 'Terjadi kesalahan'), {
+          type: 'danger',
+          title: 'Gagal Menyimpan'
+        });
+      } finally {
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = originalBtnText;
+        }
+      }
     }
 
     // Proceed to Nota / Receipt (Tersimpan ke Database Real via API)
@@ -1164,6 +1294,9 @@
 
       // 3. Preload data kalender booking
       loadAndRenderCalendar();
+
+      // 4. Preload data wilayah 17 Kecamatan Purwakarta dari API Ogan Lopian
+      loadOganDistricts();
     }
 
     if (document.readyState === 'loading') {

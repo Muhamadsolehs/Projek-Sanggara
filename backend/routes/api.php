@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\KecamatanController;
+use App\Http\Controllers\Api\RegionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,8 @@ Route::get('/pesanan', [BookingController::class, 'pesanan']);
 
 // Master Data: Produk, Pelanggan, Kategori, Kecamatan
 Route::get('/kecamatan', [KecamatanController::class, 'index']);
+Route::get('/regions/districts', [RegionController::class, 'getDistricts']);
+Route::get('/regions/villages/{districtId}', [RegionController::class, 'getVillages']);
 Route::get('/produk', [ProdukController::class, 'index']);
 Route::post('/produk', [ProdukController::class, 'store']);
 Route::get('/produk/{id}', [ProdukController::class, 'show']);
