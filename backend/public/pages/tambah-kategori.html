@@ -71,7 +71,7 @@
       const deskripsi = document.getElementById('inputDeskripsiKategori').value.trim();
 
       if (!nama) {
-        alert('Silakan masukkan nama kategori');
+        SanggaraModal.alert('Silakan masukkan nama kategori', { type: 'warning', title: 'Data Belum Lengkap' });
         return;
       }
 
@@ -87,11 +87,18 @@
         }
 
         const res = await SanggaraAPI.tambahKategori(payload);
-        alert(res.message || 'Kategori baru berhasil disimpan ke database!');
+        await SanggaraModal.alert(res.message || 'Kategori baru berhasil disimpan ke database!', {
+          type: 'success',
+          title: 'Berhasil Ditambahkan',
+          buttonText: 'Lihat Data Kategori'
+        });
         window.location.href = 'kelola-kategori.html';
       } catch (err) {
         console.error('Gagal menambahkan kategori:', err);
-        alert('Gagal menambahkan kategori ke database: ' + err.message);
+        SanggaraModal.alert('Gagal menambahkan kategori ke database: ' + err.message, {
+          type: 'danger',
+          title: 'Gagal Menyimpan'
+        });
       } finally {
         if (btn) {
           btn.disabled = false;

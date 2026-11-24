@@ -813,3 +813,198 @@ html.sidebar-closed .header-brand-logo {
     width: 100%;
   }
 }
+
+
+/* ==========================================================================
+   SANGGARA THEMED MODAL & TOAST DIALOG SYSTEM
+   Dialog popup elegan seragam dengan tema Sanggara
+   ========================================================================== */
+
+.sanggara-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.22s;
+}
+
+.sanggara-dialog-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sanggara-dialog-box {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  padding: 32px 28px 26px;
+  text-align: center;
+  transform: scale(0.92) translateY(10px);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: 'Plus Jakarta Sans', var(--font-family);
+}
+
+.sanggara-dialog-overlay.active .sanggara-dialog-box {
+  transform: scale(1) translateY(0);
+}
+
+.sanggara-dialog-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.sanggara-icon-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: sanggaraIconPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes sanggaraIconPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.sanggara-icon-success {
+  background-color: #e6f8f2;
+  color: #00b87c;
+  box-shadow: 0 0 0 8px rgba(0, 184, 124, 0.1);
+}
+
+.sanggara-icon-danger {
+  background-color: #fee2e2;
+  color: #ef4444;
+  box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.1);
+}
+
+.sanggara-icon-warning {
+  background-color: #fef3c7;
+  color: #f59e0b;
+  box-shadow: 0 0 0 8px rgba(245, 158, 11, 0.1);
+}
+
+.sanggara-icon-info {
+  background-color: #e0f2fe;
+  color: #0284c7;
+  box-shadow: 0 0 0 8px rgba(2, 132, 199, 0.1);
+}
+
+.sanggara-dialog-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.sanggara-dialog-message {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #64748b;
+  margin-bottom: 26px;
+  word-break: break-word;
+  padding: 0 4px;
+}
+
+.sanggara-dialog-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.sanggara-dialog-btn {
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  flex: 1;
+}
+
+.sanggara-dialog-btn-primary {
+  background-color: #00b87c;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 184, 124, 0.28);
+}
+
+.sanggara-dialog-btn-primary:hover {
+  background-color: #009e69;
+  transform: translateY(-1px);
+}
+
+.sanggara-dialog-btn-danger {
+  background-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.28);
+}
+
+.sanggara-dialog-btn-danger:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.sanggara-dialog-btn-secondary {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.sanggara-dialog-btn-secondary:hover {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+
+/* Toast Container */
+.sanggara-toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.sanggara-toast {
+  pointer-events: auto;
+  background: #ffffff;
+  color: #1e293b;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sanggara-toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.sanggara-toast-success .sanggara-toast-icon { color: #00b87c; }
+.sanggara-toast-danger .sanggara-toast-icon { color: #ef4444; }
+.sanggara-toast-info .sanggara-toast-icon { color: #0284c7; }

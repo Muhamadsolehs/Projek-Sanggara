@@ -320,18 +320,23 @@
 
     // 4. HAPUS KATEGORI
     async function deleteKategoriAction(id, namaKategori) {
-      const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus kategori "${namaKategori}"?`);
+      const confirmDelete = await SanggaraModal.confirm(`Apakah Anda yakin ingin menghapus kategori "${namaKategori}"?`, {
+        title: 'Hapus Kategori',
+        type: 'danger',
+        confirmText: 'Ya, Hapus'
+      });
       if (!confirmDelete) return;
 
       try {
         const res = await SanggaraAPI.deleteKategori(id);
         if (res.status === 'success') {
+          SanggaraModal.toast('Kategori berhasil dihapus', 'success');
           loadKategoriData();
         } else {
-          alert('Gagal menghapus: ' + (res.message || 'Terjadi kesalahan'));
+          SanggaraModal.alert('Gagal menghapus: ' + (res.message || 'Terjadi kesalahan'), { type: 'danger' });
         }
       } catch (err) {
-        alert('Gagal menghapus kategori: ' + err.message);
+        SanggaraModal.alert('Gagal menghapus kategori: ' + err.message, { type: 'danger' });
       }
     }
 

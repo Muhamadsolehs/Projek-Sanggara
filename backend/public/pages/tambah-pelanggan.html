@@ -113,15 +113,15 @@
       const alamatLengkap = document.getElementById('inputAlamatLengkap').value.trim();
 
       if (!nama) {
-        alert('Silakan masukkan nama konsumen');
+        SanggaraModal.alert('Silakan masukkan nama konsumen', { type: 'warning', title: 'Data Belum Lengkap' });
         return;
       }
       if (!telp) {
-        alert('Silakan masukkan nomor telepon konsumen');
+        SanggaraModal.alert('Silakan masukkan nomor telepon konsumen', { type: 'warning', title: 'Data Belum Lengkap' });
         return;
       }
       if (!kecamatan) {
-        alert('Silakan pilih kecamatan');
+        SanggaraModal.alert('Silakan pilih kecamatan wilayah Purwakarta', { type: 'warning', title: 'Pilih Wilayah' });
         return;
       }
 
@@ -140,11 +140,18 @@
         }
 
         const res = await SanggaraAPI.tambahPelanggan(payload);
-        alert(res.message || 'Data pelanggan berhasil disimpan ke database!');
+        await SanggaraModal.alert(res.message || 'Data pelanggan berhasil disimpan ke database!', {
+          type: 'success',
+          title: 'Berhasil Ditambahkan',
+          buttonText: 'Lihat Data Pelanggan'
+        });
         window.location.href = 'kelola-pelanggan.html';
       } catch (err) {
         console.error('Gagal menambahkan pelanggan:', err);
-        alert('Gagal menambahkan pelanggan ke database: ' + err.message);
+        SanggaraModal.alert('Gagal menambahkan pelanggan ke database: ' + err.message, {
+          type: 'danger',
+          title: 'Gagal Menyimpan'
+        });
       } finally {
         if (btn) {
           btn.disabled = false;

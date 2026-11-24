@@ -361,18 +361,23 @@
 
     // 4. HAPUS PELANGGAN
     async function deletePelangganAction(id, namaPelanggan) {
-      const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus pelanggan "${namaPelanggan}" dari database?`);
+      const confirmDelete = await SanggaraModal.confirm(`Apakah Anda yakin ingin menghapus pelanggan "${namaPelanggan}" dari database?`, {
+        title: 'Hapus Pelanggan',
+        type: 'danger',
+        confirmText: 'Ya, Hapus'
+      });
       if (!confirmDelete) return;
 
       try {
         const res = await SanggaraAPI.deletePelanggan(id);
         if (res.status === 'success') {
+          SanggaraModal.toast('Data pelanggan berhasil dihapus', 'success');
           loadPelangganData();
         } else {
-          alert('Gagal menghapus: ' + (res.message || 'Terjadi kesalahan'));
+          SanggaraModal.alert('Gagal menghapus: ' + (res.message || 'Terjadi kesalahan'), { type: 'danger' });
         }
       } catch (err) {
-        alert('Gagal menghapus pelanggan: ' + err.message);
+        SanggaraModal.alert('Gagal menghapus pelanggan: ' + err.message, { type: 'danger' });
       }
     }
 

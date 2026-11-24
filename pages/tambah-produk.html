@@ -139,11 +139,11 @@
       const deskripsi = document.getElementById('inputDeskripsiBarang').value.trim();
 
       if (!nama) {
-        alert('Silakan masukkan nama barang terlebih dahulu');
+        SanggaraModal.alert('Silakan masukkan nama barang terlebih dahulu', { type: 'warning', title: 'Data Belum Lengkap' });
         return;
       }
       if (!idKat) {
-        alert('Silakan pilih kategori barang');
+        SanggaraModal.alert('Silakan pilih kategori barang', { type: 'warning', title: 'Pilih Kategori' });
         return;
       }
 
@@ -165,11 +165,18 @@
         }
 
         const res = await SanggaraAPI.tambahProduk(payload);
-        alert(res.message || 'Produk baru berhasil disimpan ke database!');
+        await SanggaraModal.alert(res.message || 'Produk baru berhasil disimpan ke database!', {
+          type: 'success',
+          title: 'Berhasil Ditambahkan',
+          buttonText: 'Lihat Daftar Produk'
+        });
         window.location.href = 'kelola-produk.html';
       } catch (err) {
         console.error('Gagal menyimpan produk:', err);
-        alert('Gagal menambahkan produk ke database: ' + err.message);
+        SanggaraModal.alert('Gagal menambahkan produk ke database: ' + err.message, {
+          type: 'danger',
+          title: 'Gagal Menyimpan'
+        });
       } finally {
         if (btn) {
           btn.disabled = false;

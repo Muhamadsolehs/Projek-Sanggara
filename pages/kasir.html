@@ -842,14 +842,14 @@
 
       const customerSelect = document.getElementById('customerSelect');
       if (!customerSelect.value) {
-        alert('Silakan pilih penyewa/pelanggan terlebih dahulu');
+        SanggaraModal.alert('Silakan pilih penyewa / pelanggan terlebih dahulu.', { type: 'warning', title: 'Pilih Pelanggan' });
         customerSelect.focus();
         return;
       }
 
       const bookingDateInput = document.getElementById('bookingDateInput');
       if (!selectedBookingDate && (!bookingDateInput || !bookingDateInput.value)) {
-        alert('Silakan pilih tanggal booking terlebih dahulu melalui kalender');
+        SanggaraModal.alert('Silakan pilih tanggal booking terlebih dahulu melalui kalender.', { type: 'warning', title: 'Pilih Tanggal' });
         openKasirCalendar();
         return;
       }

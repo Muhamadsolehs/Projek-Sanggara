@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -480,18 +480,23 @@
 
     // 4. HAPUS PRODUK
     async function deleteProdukAction(id, namaProduk) {
-      const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus produk "${namaProduk}" dari database?`);
+      const confirmDelete = await SanggaraModal.confirm(`Apakah Anda yakin ingin menghapus produk "${namaProduk}" dari database?`, {
+        title: 'Hapus Produk',
+        type: 'danger',
+        confirmText: 'Ya, Hapus'
+      });
       if (!confirmDelete) return;
 
       try {
         const res = await SanggaraAPI.deleteProduk(id);
         if (res.status === 'success') {
+          SanggaraModal.toast('Produk berhasil dihapus dari database', 'success');
           loadProdukData();
         } else {
-          alert('Gagal menghapus: ' + (res.message || 'Terjadi kesalahan'));
+          SanggaraModal.alert('Gagal menghapus: ' + (res.message || 'Terjadi kesalahan'), { type: 'danger' });
         }
       } catch (err) {
-        alert('Error: ' + err.message);
+        SanggaraModal.alert('Error: ' + err.message, { type: 'danger' });
       }
     }
 

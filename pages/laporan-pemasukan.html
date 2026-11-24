@@ -553,17 +553,20 @@
 
     // 4. HAPUS DATA PEMASUKAN
     async function deletePemasukanAction(id, noTransaksi) {
-      if (!confirm(`Apakah Anda yakin ingin menghapus catatan pemasukan ${noTransaksi}?`)) {
-        return;
-      }
+      const confirmDelete = await SanggaraModal.confirm(`Apakah Anda yakin ingin menghapus catatan pemasukan ${noTransaksi}?`, {
+        title: 'Hapus Catatan Pemasukan',
+        type: 'danger',
+        confirmText: 'Ya, Hapus'
+      });
+      if (!confirmDelete) return;
 
       try {
         const res = await SanggaraAPI.deletePemasukan(id);
-        alert(res.message || 'Catatan pemasukan berhasil dihapus');
+        SanggaraModal.toast(res.message || 'Catatan pemasukan berhasil dihapus', 'success');
         loadPemasukanData();
       } catch (err) {
         console.error('Gagal menghapus pemasukan:', err);
-        alert('Gagal menghapus catatan pemasukan: ' + err.message);
+        SanggaraModal.alert('Gagal menghapus catatan pemasukan: ' + err.message, { type: 'danger' });
       }
     }
 
