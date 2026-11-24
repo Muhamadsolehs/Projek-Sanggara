@@ -120,6 +120,20 @@ const SanggaraAPI = {
     return await res.json();
   },
 
+  async updateBooking(id, data) {
+    const res = await fetch(`${this.baseUrl}/booking/${id}`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || 'Gagal memperbarui data booking');
+    return result;
+  },
+
   async deleteBooking(id) {
     const res = await fetch(`${this.baseUrl}/booking/${id}`, {
       method: 'DELETE',

@@ -168,7 +168,7 @@
                   <th>PICKIN</th>
                   <th>STATUS</th>
                   <th>DENDA</th>
-                  <th style="text-align: center; width: 100px;">AKSI</th>
+                  <th style="text-align: center; width: 140px;">AKSI</th>
                 </tr>
               </thead>
               <tbody id="bookingTableBody">
@@ -270,6 +270,7 @@
       </div>
       <div class="modal-card-footer">
         <button type="button" class="btn btn-secondary" onclick="closeModal('detailBookingModal')">Tutup</button>
+        <button type="button" class="btn btn-primary" id="btnEditFromDetailBooking" style="padding: 8px 20px;">Edit Booking</button>
       </div>
     </div>
   </div>
@@ -300,6 +301,93 @@
     </div>
   </div>
 
+  <!-- Modal 3: Edit Data Booking -->
+  <div class="modal-overlay" id="editBookingModal">
+    <div class="modal-card-box" style="max-width: 540px;">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Edit Data Booking</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('editBookingModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <form id="formEditBooking" onsubmit="submitEditBooking(event)">
+        <input type="hidden" id="editBookingId">
+        <div class="modal-card-body" style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Info Ringkas Booking -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; color: #00b87c; font-size: 15px;" id="editBookingNoTitle">#0000</div>
+              <div style="font-size: 12px; color: #64748b;" id="editBookingNotaTitle">No. Nota: -</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: 600; color: #1e293b; font-size: 13.5px;" id="editBookingKonsumenTitle">-</div>
+              <div style="font-size: 12px; color: #64748b;" id="editBookingTeleponTitle">-</div>
+            </div>
+          </div>
+
+          <!-- Item Sewa -->
+          <div class="detail-row-item" style="padding: 4px 0 8px 0; border-bottom: 1px dashed #e2e8f0;">
+            <span class="detail-label">Item / Busana:</span>
+            <span class="detail-value" id="editBookingItemTitle" style="font-size: 12.5px; max-width: 280px; text-align: right;">-</span>
+          </div>
+
+          <!-- Tanggal Pickup & Pakai -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 4px; display: block;">Tanggal Ambil (Pickup) <span style="color:#ef4444;">*</span></label>
+              <input type="date" id="editBookingPickup" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;" required>
+            </div>
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 4px; display: block;">Tanggal Pakai <span style="color:#ef4444;">*</span></label>
+              <input type="date" id="editBookingPakai" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;" required>
+            </div>
+          </div>
+
+          <!-- Tanggal Pickin & Status Sewa -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 4px; display: block;">Tanggal Kembali (Pickin) <span style="color:#ef4444;">*</span></label>
+              <input type="date" id="editBookingPickin" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;" required>
+            </div>
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 4px; display: block;">Status Sewa <span style="color:#ef4444;">*</span></label>
+              <select id="editBookingStatusSewa" class="form-control-select" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                <option value="booking">Booking</option>
+                <option value="diambil">Diambil</option>
+                <option value="selesai">Selesai (Kembali)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Status Pembayaran & Denda -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 4px; display: block;">Status Pembayaran <span style="color:#ef4444;">*</span></label>
+              <select id="editBookingStatusPembayaran" class="form-control-select" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                <option value="DP">DP (Uang Muka)</option>
+                <option value="LUNAS">LUNAS</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 4px; display: block;">Denda (Rp)</label>
+              <input type="number" id="editBookingDenda" min="0" step="5000" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;" placeholder="0">
+            </div>
+          </div>
+
+          <!-- Catatan -->
+          <div class="form-group">
+            <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 4px; display: block;">Catatan Booking</label>
+            <textarea id="editBookingCatatan" class="form-control-input" style="width: 100%; min-height: 60px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; resize: vertical;" placeholder="Catatan tambahan untuk pesanan/booking ini..."></textarea>
+          </div>
+        </div>
+        <div class="modal-card-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('editBookingModal')">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitEditBooking" style="padding: 8px 22px;">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     let rawBookingList = [];
     let deleteTargetId = null;
@@ -310,17 +398,113 @@
       if (modal) modal.classList.remove('active');
     }
 
-    // Status Badge Formatter
-    function getStatusBadge(status) {
+    // Helper Siklus Status Berikutnya: Booking -> Diambil -> Selesai -> Booking
+    function getNextStatus(curr) {
+      const s = (curr || '').toLowerCase();
+      if (s === 'booking') return 'diambil';
+      if (s === 'diambil') return 'selesai';
+      return 'booking'; // 'selesai' atau 'kembali' berputar kembali ke 'booking'
+    }
+
+    // Status Badge Formatter (Clickable)
+    function renderStatusBadge(status, idBooking = null, isClickable = true) {
       const s = (status || '').toLowerCase();
-      if (s === 'booking') {
-        return '<span class="badge badge-info" style="font-size: 11.5px;">BOOKING</span>';
-      } else if (s === 'diambil') {
-        return '<span class="badge badge-warning" style="font-size: 11.5px;">DIAMBIL</span>';
+      const next = getNextStatus(s);
+      let badgeClass = 'badge-info';
+      let label = 'BOOKING';
+
+      if (s === 'diambil') {
+        badgeClass = 'badge-warning';
+        label = 'DIAMBIL';
       } else if (s === 'selesai' || s === 'kembali') {
-        return '<span class="badge badge-success" style="font-size: 11.5px;">SELESAI</span>';
+        badgeClass = 'badge-success';
+        label = 'SELESAI';
       }
-      return `<span class="badge badge-info" style="font-size: 11.5px;">${(status || '-').toUpperCase()}</span>`;
+
+      if (!isClickable || !idBooking) {
+        return `<span class="badge ${badgeClass}" style="font-size: 11.5px;">${label}</span>`;
+      }
+
+      const nextLabel = next.toUpperCase();
+      return `
+        <span class="badge ${badgeClass} badge-status-clickable" 
+              id="statusBadge-${idBooking}"
+              onclick="cycleBookingStatus(event, ${idBooking})"
+              title="Klik untuk ubah status: ${label} ➔ ${nextLabel}"
+              role="button"
+              tabindex="0">
+          <span class="badge-text">${label}</span>
+          <svg class="badge-cycle-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </span>
+      `;
+    }
+
+    function getStatusBadge(status, idBooking = null) {
+      return renderStatusBadge(status, idBooking, !!idBooking);
+    }
+
+    // Fungsi Klik Mengubah Status Berputar (Booking -> Diambil -> Selesai -> Booking)
+    async function cycleBookingStatus(event, idBooking) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+
+      const b = rawBookingList.find(item => item.id_booking === idBooking);
+      if (!b) return;
+
+      const currentStatus = (b.status || '').toLowerCase();
+      const nextStatus = getNextStatus(currentStatus);
+
+      const badgeEl = document.getElementById(`statusBadge-${idBooking}`);
+      if (badgeEl) {
+        badgeEl.style.pointerEvents = 'none';
+        badgeEl.style.opacity = '0.6';
+      }
+
+      try {
+        const res = await SanggaraAPI.updateBooking(idBooking, { status_sewa: nextStatus });
+        if (res.status === 'success') {
+          b.status = nextStatus;
+
+          // Re-render badge di tabel
+          if (badgeEl && badgeEl.parentElement) {
+            badgeEl.parentElement.innerHTML = renderStatusBadge(nextStatus, idBooking, true);
+          }
+
+          // Sinkronkan juga pada modal detail jika sedang dibuka
+          const modalStatusEl = document.getElementById('modalBookingStatus');
+          if (modalStatusEl && document.getElementById('modalBookingNo')?.textContent === `#${String(b.no_booking).padStart(4, '0')}`) {
+            modalStatusEl.innerHTML = renderStatusBadge(nextStatus, idBooking, true);
+          }
+
+          const labelMap = {
+            'booking': 'BOOKING',
+            'diambil': 'DIAMBIL',
+            'selesai': 'SELESAI'
+          };
+          if (window.SanggaraModal && SanggaraModal.toast) {
+            SanggaraModal.toast(`Status #${String(b.no_booking).padStart(4, '0')} diubah ke ${labelMap[nextStatus] || nextStatus.toUpperCase()}`, 'success');
+          }
+        } else {
+          alert('Gagal mengubah status: ' + (res.message || 'Terjadi kesalahan'));
+          if (badgeEl) {
+            badgeEl.style.pointerEvents = 'auto';
+            badgeEl.style.opacity = '1';
+          }
+        }
+      } catch (err) {
+        console.error('Gagal cycle status:', err);
+        alert('Gagal mengubah status booking: ' + err.message);
+        if (badgeEl) {
+          badgeEl.style.pointerEvents = 'auto';
+          badgeEl.style.opacity = '1';
+        }
+      }
     }
 
     // Load Data Booking dari Backend API
@@ -353,7 +537,7 @@
               <td style="font-size: 12.5px; color: #334155;">${b.pickup}</td>
               <td style="font-size: 12.5px; color: #334155; font-weight: 600;">${b.pakai}</td>
               <td style="font-size: 12.5px; color: #334155;">${b.pickin}</td>
-              <td>${getStatusBadge(b.status)}</td>
+              <td>${renderStatusBadge(b.status, b.id_booking, true)}</td>
               <td style="font-size: 12.5px; font-weight: ${b.denda > 0 ? '700' : '500'}; color: ${b.denda > 0 ? '#e11d48' : '#64748b'};">
                 ${b.denda_formatted || 'Rp 0'}
               </td>
@@ -362,6 +546,10 @@
                   <!-- Tombol Lihat Detail -->
                   <button type="button" class="btn-action-icon btn-action-view" onclick="viewBooking(${b.id_booking})" title="Lihat Detail Booking" aria-label="Lihat">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </button>
+                  <!-- Tombol Edit Booking -->
+                  <button type="button" class="btn-action-icon btn-action-edit" onclick="openEditBookingModal(${b.id_booking})" title="Edit Data Booking" aria-label="Edit">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                   </button>
                   <!-- Tombol Hapus -->
                   <button type="button" class="btn-action-icon btn-action-delete" onclick="openDeleteBookingModal(${b.id_booking}, '#${String(b.no_booking).padStart(4, '0')} - ${b.nama_konsumen.replace(/'/g, "\\'")}')" title="Hapus Booking" aria-label="Hapus">
@@ -396,12 +584,122 @@
       document.getElementById('modalBookingPickup').textContent = b.pickup;
       document.getElementById('modalBookingPakai').textContent = b.pakai;
       document.getElementById('modalBookingPickin').textContent = b.pickin;
-      document.getElementById('modalBookingStatus').innerHTML = getStatusBadge(b.status);
+      document.getElementById('modalBookingStatus').innerHTML = renderStatusBadge(b.status, b.id_booking, true);
       document.getElementById('modalBookingPembayaran').innerHTML = `<span class="badge ${b.status_pembayaran === 'LUNAS' ? 'badge-success' : 'badge-warning'}">${b.status_pembayaran || 'DP'}</span>`;
       document.getElementById('modalBookingTotal').textContent = b.total_tagihan_formatted || 'Rp 0';
       document.getElementById('modalBookingDenda').textContent = b.denda_formatted || 'Rp 0';
 
+      const btnEdit = document.getElementById('btnEditFromDetailBooking');
+      if (btnEdit) {
+        btnEdit.onclick = () => {
+          closeModal('detailBookingModal');
+          openEditBookingModal(id);
+        };
+      }
+
       document.getElementById('detailBookingModal').classList.add('active');
+    }
+
+    // Helper Konversi Tanggal ke Format YYYY-MM-DD untuk Input Date
+    function formatToInputDate(val) {
+      if (!val || val === '-') return '';
+      if (val.includes('T')) return val.split('T')[0];
+      if (val.includes('/')) {
+        const parts = val.split('/');
+        if (parts.length === 3) {
+          return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+      }
+      return val;
+    }
+
+    // Modal: Buka Form Edit Data Booking
+    async function openEditBookingModal(id) {
+      try {
+        let b = rawBookingList.find(item => item.id_booking === id);
+        let fullDetail = null;
+        try {
+          const res = await SanggaraAPI.getBookingDetail(id);
+          if (res.status === 'success' && res.data) {
+            fullDetail = res.data;
+          }
+        } catch (_) {}
+
+        if (!b && !fullDetail) return;
+
+        document.getElementById('editBookingId').value = id;
+        document.getElementById('editBookingNoTitle').textContent = `#${String(b ? b.no_booking : fullDetail.no_booking).padStart(4, '0')}`;
+        document.getElementById('editBookingNotaTitle').textContent = `No. Nota: ${(b ? b.no_nota : fullDetail.no_nota) || '-'}`;
+        document.getElementById('editBookingKonsumenTitle').textContent = (b ? b.nama_konsumen : (fullDetail.pelanggan ? fullDetail.pelanggan.nama_pelanggan : 'Pelanggan'));
+        document.getElementById('editBookingTeleponTitle').textContent = (b ? b.telepon : (fullDetail.pelanggan ? fullDetail.pelanggan.no_telepon : '-')) || '-';
+        document.getElementById('editBookingItemTitle').textContent = (b ? b.item : 'Busana Sewa') || '-';
+
+        // Tanggal
+        const rawPickup = fullDetail ? fullDetail.tgl_ambil : b.pickup;
+        const rawPakai = fullDetail ? fullDetail.tgl_pakai : b.pakai;
+        const rawPickin = fullDetail ? fullDetail.tgl_kembali_rencana : b.pickin;
+
+        document.getElementById('editBookingPickup').value = formatToInputDate(rawPickup);
+        document.getElementById('editBookingPakai').value = formatToInputDate(rawPakai);
+        document.getElementById('editBookingPickin').value = formatToInputDate(rawPickin);
+
+        // Status Sewa
+        const currentStatus = (b ? b.status : fullDetail.status_sewa || '').toLowerCase();
+        document.getElementById('editBookingStatusSewa').value = (currentStatus === 'kembali' ? 'selesai' : currentStatus) || 'booking';
+
+        // Status Pembayaran
+        const currentBayar = (b ? b.status_pembayaran : fullDetail.status_pembayaran || 'DP').toUpperCase();
+        document.getElementById('editBookingStatusPembayaran').value = currentBayar === 'LUNAS' ? 'LUNAS' : 'DP';
+
+        // Denda & Catatan
+        document.getElementById('editBookingDenda').value = fullDetail ? (fullDetail.denda_keterlambatan || 0) : (b ? (b.denda || 0) : 0);
+        document.getElementById('editBookingCatatan').value = fullDetail ? (fullDetail.catatan || '') : '';
+
+        document.getElementById('editBookingModal').classList.add('active');
+      } catch (err) {
+        console.error('Gagal membuka form edit booking:', err);
+        alert('Gagal memuat formulir edit: ' + err.message);
+      }
+    }
+
+    // Submit Perubahan Data Booking
+    async function submitEditBooking(e) {
+      e.preventDefault();
+      const id = document.getElementById('editBookingId').value;
+      const btn = document.getElementById('btnSubmitEditBooking');
+      const originalText = btn.textContent;
+      btn.textContent = 'Menyimpan...';
+      btn.disabled = true;
+
+      const payload = {
+        tgl_ambil: document.getElementById('editBookingPickup').value,
+        tgl_pakai: document.getElementById('editBookingPakai').value,
+        tgl_kembali_rencana: document.getElementById('editBookingPickin').value,
+        status_sewa: document.getElementById('editBookingStatusSewa').value,
+        status_pembayaran: document.getElementById('editBookingStatusPembayaran').value,
+        denda_keterlambatan: parseFloat(document.getElementById('editBookingDenda').value) || 0,
+        catatan: document.getElementById('editBookingCatatan').value.trim()
+      };
+
+      try {
+        const res = await SanggaraAPI.updateBooking(id, payload);
+        if (res.status === 'success') {
+          if (window.SanggaraModal && SanggaraModal.toast) {
+            SanggaraModal.toast('Data booking berhasil diperbarui', 'success');
+          } else {
+            alert('Data booking berhasil diperbarui');
+          }
+          closeModal('editBookingModal');
+          loadBookingData(getCurrentParams());
+        } else {
+          alert('Gagal memperbarui: ' + (res.message || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
     }
 
     // Modal: Buka Konfirmasi Hapus

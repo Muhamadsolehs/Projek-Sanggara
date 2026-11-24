@@ -45,6 +45,8 @@ Route::post('/kasir/checkout', [KasirController::class, 'checkout']);
 // Booking & Pesanan Tabel
 Route::get('/booking', [BookingController::class, 'index']);
 Route::get('/booking/{id}', [BookingController::class, 'show']);
+Route::put('/booking/{id}', [BookingController::class, 'update']);
+Route::post('/booking/{id}', [BookingController::class, 'update']);
 Route::delete('/booking/{id}', [BookingController::class, 'destroy']);
 Route::get('/pesanan', [BookingController::class, 'pesanan']);
 

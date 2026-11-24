@@ -180,6 +180,86 @@ class BookingController extends Controller
     }
 
     /**
+     * Memperbarui data booking
+     */
+    public function update(Request $request, $id)
+    {
+        try {
+            $booking = Booking::with('details')->findOrFail($id);
+
+            $validated = $request->validate([
+                'tgl_ambil' => 'sometimes|required|date',
+                'tgl_pakai' => 'sometimes|required|date',
+                'tgl_kembali_rencana' => 'sometimes|required|date',
+                'tgl_kembali_aktual' => 'nullable|date',
+                'status_sewa' => 'sometimes|required|string|in:booking,diambil,selesai,kembali,batal',
+                'status_pembayaran' => 'sometimes|required|string|in:LUNAS,DP,BELUM LUNAS',
+                'denda_keterlambatan' => 'nullable|numeric|min:0',
+                'denda_kerusakan' => 'nullable|numeric|min:0',
+                'catatan' => 'nullable|string',
+            ]);
+
+            // Jika status berubah menjadi selesai/kembali
+            if (isset($validated['status_sewa']) && in_array(strtolower($validated['status_sewa']), ['selesai', 'kembali'])) {
+                if (empty($validated['tgl_kembali_aktual']) && empty($booking->tgl_kembali_aktual)) {
+                    $validated['tgl_kembali_aktual'] = now()->toDateString();
+                }
+
+                // Jika sebelumnya belum selesai, kembalikan stok siap produk
+                if (!in_array(strtolower($booking->status_sewa), ['selesai', 'kembali'])) {
+                    foreach ($booking->details as $detail) {
+                        $p = Produk::find($detail->id_produk);
+                        if ($p) {
+                            $p->stok_siap = min($p->stok_total, $p->stok_siap + $detail->jumlah);
+                            $p->stok_disewa = max(0, $p->stok_disewa - $detail->jumlah);
+                            $p->save();
+                        }
+                    }
+                }
+            } elseif (isset($validated['status_sewa']) && in_array(strtolower($booking->status_sewa), ['selesai', 'kembali']) && !in_array(strtolower($validated['status_sewa']), ['selesai', 'kembali'])) {
+                // Jika status dibatalkan dari selesai kembali ke booking/diambil
+                $validated['tgl_kembali_aktual'] = null;
+                foreach ($booking->details as $detail) {
+                    $p = Produk::find($detail->id_produk);
+                    if ($p) {
+                        $p->stok_siap = max(0, $p->stok_siap - $detail->jumlah);
+                        $p->stok_disewa = $p->stok_disewa + $detail->jumlah;
+                        $p->save();
+                    }
+                }
+            }
+
+            if (isset($validated['denda_keterlambatan']) || isset($validated['denda_kerusakan'])) {
+                $dendaTelat = isset($validated['denda_keterlambatan']) ? (float)$validated['denda_keterlambatan'] : (float)$booking->denda_keterlambatan;
+                $dendaRusak = isset($validated['denda_kerusakan']) ? (float)$validated['denda_kerusakan'] : (float)$booking->denda_kerusakan;
+                $validated['total_denda'] = $dendaTelat + $dendaRusak;
+            }
+
+            // Hitung durasi sewa hari jika tanggal berubah
+            $tglAmbil = $validated['tgl_ambil'] ?? $booking->tgl_ambil;
+            $tglKembali = $validated['tgl_kembali_rencana'] ?? $booking->tgl_kembali_rencana;
+            if ($tglAmbil && $tglKembali) {
+                $start = \Carbon\Carbon::parse($tglAmbil);
+                $end = \Carbon\Carbon::parse($tglKembali);
+                $validated['durasi_sewa_hari'] = max(1, $start->diffInDays($end));
+            }
+
+            $booking->update($validated);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data booking berhasil diperbarui',
+                'data' => $booking->fresh(['pelanggan', 'details.produk'])
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui booking: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Menghapus 1 booking
      */
     public function destroy($id)
