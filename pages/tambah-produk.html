@@ -190,9 +190,16 @@
       const nama = document.getElementById('inputNamaBarang').value.trim();
       const idKat = parseInt(document.getElementById('inputKategoriBarang').value) || null;
       const kualitas = document.getElementById('inputKualitasBarang').value;
-      const stok = parseInt(document.getElementById('inputStokBarang').value) || 1;
+      const stok = parseInt(document.getElementById('inputStokBarang').value) || 0;
       const harga = parseFloat(document.getElementById('inputHargaSewaBarang').value) || 0;
-      const status = document.getElementById('inputStatusBarang').value || 'tersedia';
+      let status = document.getElementById('inputStatusBarang').value || 'tersedia';
+      if (status !== 'maintenance') {
+        if (stok <= 0) {
+          status = 'habis';
+        } else if (status === 'habis' && stok > 0) {
+          status = 'tersedia';
+        }
+      }
       const deskripsi = document.getElementById('inputDeskripsiBarang').value.trim();
 
       if (!nama) {
@@ -245,7 +252,24 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', loadKategoriOptions);
+    document.addEventListener('DOMContentLoaded', () => {
+      loadKategoriOptions();
+
+      const inputStok = document.getElementById('inputStokBarang');
+      const inputStatus = document.getElementById('inputStatusBarang');
+      if (inputStok && inputStatus) {
+        inputStok.addEventListener('input', () => {
+          const val = parseInt(inputStok.value);
+          if (inputStatus.value !== 'maintenance') {
+            if (isNaN(val) || val <= 0) {
+              inputStatus.value = 'habis';
+            } else if (inputStatus.value === 'habis' && val > 0) {
+              inputStatus.value = 'tersedia';
+            }
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>

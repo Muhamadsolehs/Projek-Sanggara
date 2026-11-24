@@ -32,6 +32,14 @@ class ProdukController extends Controller
             }
 
             $produk = $query->get()->map(function ($p) {
+                $status = $p->status;
+                if ($status !== 'maintenance') {
+                    if ((int)$p->stok_siap <= 0) {
+                        $status = 'habis';
+                    } elseif ($status === 'habis' && (int)$p->stok_siap > 0) {
+                        $status = 'tersedia';
+                    }
+                }
                 return [
                     'id_produk' => $p->id_produk,
                     'kode_produk' => $p->kode_produk,
@@ -48,7 +56,7 @@ class ProdukController extends Controller
                     'stok_rusak' => $p->stok_rusak,
                     'foto_url' => $p->foto_url,
                     'foto_produk' => $p->foto_produk,
-                    'status' => $p->status,
+                    'status' => $status,
                 ];
             });
 
@@ -111,6 +119,11 @@ class ProdukController extends Controller
             $validated['stok_rusak'] = 0;
             $validated['denda_per_hari'] = isset($validated['denda_per_hari']) ? (float)$validated['denda_per_hari'] : round($validated['harga_sewa'] * 0.15);
             $validated['status'] = !empty($validated['status']) ? strtolower($validated['status']) : 'tersedia';
+            if ($validated['status'] !== 'maintenance') {
+                if ((int)$validated['stok_siap'] <= 0) {
+                    $validated['status'] = 'habis';
+                }
+            }
 
             if ($request->hasFile('foto_produk') || $request->filled('foto_produk')) {
                 $validated['foto_produk'] = $this->handleFotoUpload($request);
@@ -135,6 +148,14 @@ class ProdukController extends Controller
     {
         try {
             $p = Produk::with('kategori')->findOrFail($id);
+            $status = $p->status;
+            if ($status !== 'maintenance') {
+                if ((int)$p->stok_siap <= 0) {
+                    $status = 'habis';
+                } elseif ($status === 'habis' && (int)$p->stok_siap > 0) {
+                    $status = 'tersedia';
+                }
+            }
             return response()->json([
                 'status' => 'success',
                 'data' => [
@@ -154,7 +175,7 @@ class ProdukController extends Controller
                     'stok_cuci' => $p->stok_cuci,
                     'stok_rusak' => $p->stok_rusak,
                     'foto_url' => $p->foto_url,
-                    'status' => $p->status,
+                    'status' => $status,
                 ]
             ]);
         } catch (\Exception $e) {
@@ -184,6 +205,17 @@ class ProdukController extends Controller
 
             if ($request->hasFile('foto_produk') || $request->has('foto_produk') || $request->has('hapus_foto')) {
                 $validated['foto_produk'] = $this->handleFotoUpload($request, $p);
+            }
+
+            if (isset($validated['stok_siap'])) {
+                $targetStatus = $validated['status'] ?? $p->status;
+                if ($targetStatus !== 'maintenance') {
+                    if ((int)$validated['stok_siap'] <= 0) {
+                        $validated['status'] = 'habis';
+                    } elseif ($targetStatus === 'habis' && (int)$validated['stok_siap'] > 0) {
+                        $validated['status'] = 'tersedia';
+                    }
+                }
             }
 
             $p->update($validated);

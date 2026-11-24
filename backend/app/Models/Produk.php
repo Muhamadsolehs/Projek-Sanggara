@@ -55,6 +55,20 @@ class Produk extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function ($produk) {
+            // Otomatis sinkronisasi status ketika stok habis atau kembali tersedia
+            if ($produk->status !== 'maintenance') {
+                if ((int)$produk->stok_siap <= 0) {
+                    $produk->status = 'habis';
+                } elseif ($produk->status === 'habis' && (int)$produk->stok_siap > 0) {
+                    $produk->status = 'tersedia';
+                }
+            }
+        });
+    }
+
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
