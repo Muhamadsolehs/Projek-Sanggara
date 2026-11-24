@@ -315,6 +315,52 @@ const SanggaraAPI = {
     return await res.json();
   },
 
+  async getPemasukanDetail(id) {
+    const res = await fetch(`${this.baseUrl}/laporan/pemasukan/${id}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error(`Pemasukan #${id} tidak ditemukan`);
+    return await res.json();
+  },
+
+  async tambahPemasukan(payload) {
+    const res = await fetch(`${this.baseUrl}/laporan/pemasukan`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menambahkan pemasukan');
+    return data;
+  },
+
+  async updatePemasukan(id, payload) {
+    const res = await fetch(`${this.baseUrl}/laporan/pemasukan/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal memperbarui pemasukan');
+    return data;
+  },
+
+  async deletePemasukan(id) {
+    const res = await fetch(`${this.baseUrl}/laporan/pemasukan/${id}`, {
+      method: 'DELETE',
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal menghapus pemasukan');
+    return data;
+  },
+
   async getLaporanPengeluaran(params = {}) {
     const query = new URLSearchParams(params).toString();
     const res = await fetch(`${this.baseUrl}/laporan/pengeluaran${query ? '?' + query : ''}`, {

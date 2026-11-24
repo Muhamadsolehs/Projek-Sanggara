@@ -117,15 +117,16 @@
               <h2 class="page-title">Data Pemasukan</h2>
               <div class="date-range-badge">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span>01 April 2022 - 10 September 2022</span>
+                <span id="totalNominalSummary">Memuat total pemasukan...</span>
               </div>
             </div>
             <div class="page-header-actions">
-              <button class="btn btn-outline-primary">
+              <button class="btn btn-outline-primary" onclick="alert('Laporan pemasukan kas siap diekspor.')">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 <span>Ekspor Laporan</span>
               </button>
-              <button class="btn btn-primary">
+              <button class="btn btn-primary" onclick="openTambahPemasukanModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 <span>Tambah Pemasukan</span>
               </button>
             </div>
@@ -135,12 +136,12 @@
           <div class="toolbar-container">
             <div class="search-input-wrapper">
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" id="searchPemasukanInput" class="search-input" placeholder="Cari nomor transaksi, kasir, keterangan...">
+              <input type="text" id="searchPemasukanInput" class="search-input" placeholder="Cari nomor transaksi, kasir, keterangan, kategori...">
             </div>
 
             <div class="date-filter-picker">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-              <span id="pemasukanPeriodeLabel">Semua Periode Transaksi</span>
+              <span id="pemasukanPeriodeLabel">Semua Periode Pemasukan</span>
             </div>
           </div>
 
@@ -155,7 +156,7 @@
                   <th>KASIR</th>
                   <th>METODE PEMBAYARAN</th>
                   <th>KETERANGAN</th>
-                  <th style="text-align: right;">AKSI</th>
+                  <th style="text-align: center; width: 140px;">AKSI</th>
                 </tr>
               </thead>
               <tbody id="pemasukanTableBody">
@@ -168,11 +169,190 @@
     </div>
   </div>
 
+  <!-- =========================================================================
+       MODALS: LIHAT, EDIT, TAMBAH PEMASUKAN
+       ========================================================================= -->
+
+  <!-- Modal 1: Detail Pemasukan (Lihat) -->
+  <div class="modal-overlay" id="detailPemasukanModal" onclick="if(event.target===this) closeModal('detailPemasukanModal')">
+    <div class="modal-card-box">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Detail Pemasukan Kas</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('detailPemasukanModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-card-body">
+        <div style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <span class="badge badge-success" id="detailKategoriBadge" style="font-size: 11.5px; margin-bottom: 6px; display: inline-block;">Sewa Busana</span>
+            <h4 id="detailNoTransaksi" style="font-size: 18px; font-weight: 800; color: #00b87c; margin: 2px 0;">BKM-00000</h4>
+            <span id="detailTanggal" style="font-size: 12.5px; color: #64748b; font-weight: 500;">Tanggal: -</span>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 11.5px; color: #94a3b8; font-weight: 600;">NOMINAL PEMASUKAN</div>
+            <div id="detailNominal" style="font-size: 20px; font-weight: 800; color: #00b87c;">Rp 0</div>
+          </div>
+        </div>
+
+        <div class="detail-row-item">
+          <span class="detail-row-label">Metode Pembayaran</span>
+          <span class="detail-row-val" id="detailMetodeBayar">TUNAI</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-row-label">Kasir / Penerima</span>
+          <span class="detail-row-val" id="detailKasir">-</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-row-label">No. Booking Terkait</span>
+          <span class="detail-row-val" id="detailNoBooking">-</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-row-label">Nama Pelanggan</span>
+          <span class="detail-row-val" id="detailNamaPelanggan">-</span>
+        </div>
+        <div class="detail-row-item">
+          <span class="detail-row-label">Keterangan / Catatan</span>
+          <span class="detail-row-val" id="detailKeterangan" style="max-width: 260px; word-break: break-word;">-</span>
+        </div>
+      </div>
+      <div class="modal-card-footer">
+        <button type="button" class="btn btn-outline-primary" onclick="closeModal('detailPemasukanModal')" style="padding: 8px 18px; font-size: 13px;">Tutup</button>
+        <button type="button" class="btn btn-primary" id="btnEditFromDetail" style="padding: 8px 20px; font-size: 13px; background-color: #059669; border-color: #059669;">Edit Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Edit Data Pemasukan -->
+  <div class="modal-overlay" id="editPemasukanModal" onclick="if(event.target===this) closeModal('editPemasukanModal')">
+    <div class="modal-card-box">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Edit Data Pemasukan</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('editPemasukanModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <form id="formEditPemasukan" onsubmit="submitEditPemasukan(event)">
+        <div class="modal-card-body">
+          <input type="hidden" id="editPemasukanId">
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Nomor Transaksi</label>
+            <input type="text" id="editNoTransaksi" class="search-input" style="width: 100%; background: #f8fafc; font-weight: 700; color: #00b87c;" readonly>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div>
+              <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Tanggal Transaksi</label>
+              <input type="date" id="editTanggal" class="search-input" style="width: 100%;" required>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Metode Pembayaran</label>
+              <select id="editMetodeBayar" class="search-input" style="width: 100%; height: 38px;">
+                <option value="TUNAI">TUNAI</option>
+                <option value="BANK">TRANSFER BANK</option>
+                <option value="QRIS">QRIS</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Kategori Pemasukan</label>
+            <select id="editKategoriPemasukan" class="search-input" style="width: 100%; height: 38px;" required>
+              <option value="Sewa Busana">Sewa Busana</option>
+              <option value="Pelunasan Sewa">Pelunasan Sewa</option>
+              <option value="Denda Keterlambatan">Denda Keterlambatan</option>
+              <option value="Jasa Rias & Tata Busana">Jasa Rias & Tata Busana</option>
+              <option value="Penjualan Aksesoris">Penjualan Aksesoris</option>
+              <option value="Pemasukan Lain-lain">Pemasukan Lain-lain</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Nominal (Rp)</label>
+            <input type="number" id="editNominal" min="0" step="500" class="search-input" style="width: 100%; font-weight: 700; color: #00b87c;" required>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Keterangan / Catatan</label>
+            <textarea id="editKeterangan" rows="3" class="search-input" style="width: 100%; height: auto; padding: 10px; resize: vertical;" placeholder="Keterangan transaksi pemasukan..."></textarea>
+          </div>
+        </div>
+        <div class="modal-card-footer">
+          <button type="button" class="btn btn-outline-primary" onclick="closeModal('editPemasukanModal')" style="padding: 8px 18px; font-size: 13px;">Batal</button>
+          <button type="submit" id="btnSubmitEditPemasukan" class="btn btn-primary" style="padding: 8px 22px; font-size: 13px;">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: Tambah Data Pemasukan -->
+  <div class="modal-overlay" id="tambahPemasukanModal" onclick="if(event.target===this) closeModal('tambahPemasukanModal')">
+    <div class="modal-card-box">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Tambah Pemasukan Kas Baru</h3>
+        <button type="button" class="btn-close-x" onclick="closeModal('tambahPemasukanModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <form id="formTambahPemasukan" onsubmit="submitTambahPemasukan(event)">
+        <div class="modal-card-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div>
+              <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Tanggal Transaksi</label>
+              <input type="date" id="tambahTanggal" class="search-input" style="width: 100%;" required>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Metode Pembayaran</label>
+              <select id="tambahMetodeBayar" class="search-input" style="width: 100%; height: 38px;">
+                <option value="TUNAI" selected>TUNAI</option>
+                <option value="BANK">TRANSFER BANK</option>
+                <option value="QRIS">QRIS</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Kategori Pemasukan</label>
+            <select id="tambahKategoriPemasukan" class="search-input" style="width: 100%; height: 38px;" required>
+              <option value="Sewa Busana" selected>Sewa Busana</option>
+              <option value="Pelunasan Sewa">Pelunasan Sewa</option>
+              <option value="Denda Keterlambatan">Denda Keterlambatan</option>
+              <option value="Jasa Rias & Tata Busana">Jasa Rias & Tata Busana</option>
+              <option value="Penjualan Aksesoris">Penjualan Aksesoris</option>
+              <option value="Pemasukan Lain-lain">Pemasukan Lain-lain</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Nominal Pemasukan (Rp)</label>
+            <input type="number" id="tambahNominal" min="0" step="500" class="search-input" style="width: 100%; font-weight: 700; color: #00b87c;" placeholder="Contoh: 150000" required>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px;">Keterangan / Catatan</label>
+            <textarea id="tambahKeterangan" rows="3" class="search-input" style="width: 100%; height: auto; padding: 10px; resize: vertical;" placeholder="Keterangan transaksi kas masuk..."></textarea>
+          </div>
+        </div>
+        <div class="modal-card-footer">
+          <button type="button" class="btn btn-outline-primary" onclick="closeModal('tambahPemasukanModal')" style="padding: 8px 18px; font-size: 13px;">Batal</button>
+          <button type="submit" id="btnSubmitTambahPemasukan" class="btn btn-primary" style="padding: 8px 22px; font-size: 13px;">Simpan Pemasukan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     let allPemasukan = [];
 
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('active');
+    }
+
     async function loadPemasukanData(params = {}) {
       const tbody = document.getElementById('pemasukanTableBody');
+      const totalSummary = document.getElementById('totalNominalSummary');
       if (!tbody) return;
 
       tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: #888;">Memuat data mutasi kas masuk dari database...</td></tr>`;
@@ -182,8 +362,13 @@
         if (res.status === 'success' && res.data && res.data.length > 0) {
           allPemasukan = res.data;
           renderPemasukanTable(allPemasukan);
+          if (totalSummary) {
+            totalSummary.textContent = `Total Pemasukan: ${res.total_nominal_formatted} (${allPemasukan.length} Transaksi)`;
+          }
         } else {
+          allPemasukan = [];
           tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 28px; color: #64748b;">Belum ada catatan mutasi kas pemasukan.</td></tr>`;
+          if (totalSummary) totalSummary.textContent = 'Total: Rp 0 (0 Transaksi)';
         }
       } catch (e) {
         console.error('Gagal memuat pemasukan:', e);
@@ -210,13 +395,176 @@
             <span class="badge badge-info" style="font-size: 11.5px;">${item.metode_pembayaran || 'TUNAI'}</span>
           </td>
           <td style="color: #64748b; font-size: 12.5px;">${item.keterangan || item.kategori_pemasukan || '-'}</td>
-          <td style="text-align: right;">
-            <button class="action-btn" title="Lihat Detail" style="color: #00b87c;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            </button>
+          <td style="text-align: center;">
+            <div class="table-action-btns">
+              <!-- Tombol Lihat -->
+              <button type="button" class="btn-action-icon btn-action-view" onclick="viewPemasukan(${item.id_pemasukan})" title="Lihat Detail Pemasukan" aria-label="Lihat">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+              <!-- Tombol Edit -->
+              <button type="button" class="btn-action-icon btn-action-edit" onclick="openEditPemasukanModal(${item.id_pemasukan})" title="Edit Pemasukan" aria-label="Edit">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+              <!-- Tombol Hapus -->
+              <button type="button" class="btn-action-icon btn-action-delete" onclick="deletePemasukanAction(${item.id_pemasukan}, '${item.no_transaksi}')" title="Hapus Pemasukan" aria-label="Hapus">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+              </button>
+            </div>
           </td>
         </tr>
       `).join('');
+    }
+
+    // 1. LIHAT DETAIL PEMASUKAN
+    async function viewPemasukan(id) {
+      try {
+        let item = allPemasukan.find(p => p.id_pemasukan === id);
+        if (!item) {
+          const res = await SanggaraAPI.getPemasukanDetail(id);
+          if (res && res.data) item = res.data;
+        }
+        if (!item) return;
+
+        document.getElementById('detailNoTransaksi').textContent = item.no_transaksi || '-';
+        document.getElementById('detailTanggal').textContent = 'Tanggal: ' + (item.tanggal || '-');
+        document.getElementById('detailKategoriBadge').textContent = item.kategori_pemasukan || 'Sewa Busana';
+        document.getElementById('detailNominal').textContent = item.nominal_formatted || ('Rp ' + Number(item.nominal || 0).toLocaleString('id-ID'));
+        document.getElementById('detailMetodeBayar').textContent = item.metode_pembayaran || 'TUNAI';
+        document.getElementById('detailKasir').textContent = item.kasir || '-';
+        document.getElementById('detailNoBooking').textContent = item.no_booking || (item.id_booking ? ('#' + item.id_booking) : '-');
+        document.getElementById('detailNamaPelanggan').textContent = item.nama_pelanggan || 'Pelanggan';
+        document.getElementById('detailKeterangan').textContent = item.keterangan || '-';
+
+        const btnEdit = document.getElementById('btnEditFromDetail');
+        if (btnEdit) {
+          btnEdit.onclick = () => {
+            closeModal('detailPemasukanModal');
+            openEditPemasukanModal(id);
+          };
+        }
+
+        // Tampilkan modal seketika
+        document.getElementById('detailPemasukanModal').classList.add('active');
+
+        // Ambil info relasi booking & nama pelanggan bila belum terisi
+        if (!item.nama_pelanggan) {
+          SanggaraAPI.getPemasukanDetail(id).then(res => {
+            if (res && res.data) {
+              if (res.data.nama_pelanggan) document.getElementById('detailNamaPelanggan').textContent = res.data.nama_pelanggan;
+              if (res.data.no_booking) document.getElementById('detailNoBooking').textContent = res.data.no_booking;
+            }
+          }).catch(() => {});
+        }
+      } catch (err) {
+        console.error('Gagal mengambil detail pemasukan:', err);
+        alert('Gagal memuat detail data: ' + err.message);
+      }
+    }
+
+    // 2. MODAL EDIT DATA PEMASUKAN
+    async function openEditPemasukanModal(id) {
+      try {
+        let item = allPemasukan.find(p => p.id_pemasukan === id);
+        if (!item) {
+          const res = await SanggaraAPI.getPemasukanDetail(id);
+          if (res && res.data) item = res.data;
+        }
+        if (!item) return;
+
+        document.getElementById('editPemasukanId').value = item.id_pemasukan;
+        document.getElementById('editNoTransaksi').value = item.no_transaksi;
+        document.getElementById('editTanggal').value = item.tanggal;
+        document.getElementById('editMetodeBayar').value = item.metode_pembayaran || 'TUNAI';
+        document.getElementById('editKategoriPemasukan').value = item.kategori_pemasukan || 'Sewa Busana';
+        document.getElementById('editNominal').value = item.nominal;
+        document.getElementById('editKeterangan').value = item.keterangan || '';
+
+        document.getElementById('editPemasukanModal').classList.add('active');
+      } catch (err) {
+        console.error('Gagal memuat form edit:', err);
+        alert('Gagal membuka form edit: ' + err.message);
+      }
+    }
+
+    async function submitEditPemasukan(e) {
+      e.preventDefault();
+      const id = document.getElementById('editPemasukanId').value;
+      const btn = document.getElementById('btnSubmitEditPemasukan');
+
+      const payload = {
+        tanggal: document.getElementById('editTanggal').value,
+        metode_pembayaran: document.getElementById('editMetodeBayar').value,
+        kategori_pemasukan: document.getElementById('editKategoriPemasukan').value,
+        nominal: parseFloat(document.getElementById('editNominal').value) || 0,
+        keterangan: document.getElementById('editKeterangan').value,
+      };
+
+      try {
+        if (btn) btn.disabled = true;
+        const res = await SanggaraAPI.updatePemasukan(id, payload);
+        alert(res.message || 'Catatan pemasukan berhasil diperbarui');
+        closeModal('editPemasukanModal');
+        loadPemasukanData();
+      } catch (err) {
+        console.error('Gagal memperbarui pemasukan:', err);
+        alert('Gagal memperbarui catatan pemasukan: ' + err.message);
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    // 3. MODAL TAMBAH DATA PEMASUKAN
+    function openTambahPemasukanModal() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('tambahTanggal').value = today;
+      document.getElementById('tambahMetodeBayar').value = 'TUNAI';
+      document.getElementById('tambahKategoriPemasukan').value = 'Sewa Busana';
+      document.getElementById('tambahNominal').value = '';
+      document.getElementById('tambahKeterangan').value = '';
+
+      document.getElementById('tambahPemasukanModal').classList.add('active');
+    }
+
+    async function submitTambahPemasukan(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitTambahPemasukan');
+
+      const payload = {
+        tanggal: document.getElementById('tambahTanggal').value,
+        metode_pembayaran: document.getElementById('tambahMetodeBayar').value,
+        kategori_pemasukan: document.getElementById('tambahKategoriPemasukan').value,
+        nominal: parseFloat(document.getElementById('tambahNominal').value) || 0,
+        keterangan: document.getElementById('tambahKeterangan').value,
+      };
+
+      try {
+        if (btn) btn.disabled = true;
+        const res = await SanggaraAPI.tambahPemasukan(payload);
+        alert(res.message || 'Catatan pemasukan berhasil ditambahkan');
+        closeModal('tambahPemasukanModal');
+        loadPemasukanData();
+      } catch (err) {
+        console.error('Gagal menambah pemasukan:', err);
+        alert('Gagal menambah catatan pemasukan: ' + err.message);
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    // 4. HAPUS DATA PEMASUKAN
+    async function deletePemasukanAction(id, noTransaksi) {
+      if (!confirm(`Apakah Anda yakin ingin menghapus catatan pemasukan ${noTransaksi}?`)) {
+        return;
+      }
+
+      try {
+        const res = await SanggaraAPI.deletePemasukan(id);
+        alert(res.message || 'Catatan pemasukan berhasil dihapus');
+        loadPemasukanData();
+      } catch (err) {
+        console.error('Gagal menghapus pemasukan:', err);
+        alert('Gagal menghapus catatan pemasukan: ' + err.message);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -232,6 +580,7 @@
             const filtered = allPemasukan.filter(p => 
               (p.no_transaksi && p.no_transaksi.toLowerCase().includes(val)) ||
               (p.kasir && p.kasir.toLowerCase().includes(val)) ||
+              (p.kategori_pemasukan && p.kategori_pemasukan.toLowerCase().includes(val)) ||
               (p.keterangan && p.keterangan.toLowerCase().includes(val)) ||
               (p.metode_pembayaran && p.metode_pembayaran.toLowerCase().includes(val))
             );
