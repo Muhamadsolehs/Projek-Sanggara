@@ -526,6 +526,27 @@ html.sidebar-closed .header-brand-logo {
 }
 
 /* --------------------------------------------------------------------------
+   Global Modal Backdrop & Overlays (Standar Semua Modal di Aplikasi)
+   -------------------------------------------------------------------------- */
+.modal-backdrop-overlay,
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop-overlay.active,
+.modal-overlay.active {
+  display: flex !important;
+}
+
+/* --------------------------------------------------------------------------
    Card Component
    -------------------------------------------------------------------------- */
 .card {

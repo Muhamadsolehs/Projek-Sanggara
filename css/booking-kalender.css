@@ -225,3 +225,38 @@
 .event-kembali .event-num-circle { background-color: #f59e0b; }
 .event-kembali .event-tag-sub { background-color: #fef3c7; color: #b45309; }
 .event-kembali .event-dot-indicator { background-color: #f59e0b; }
+
+/* ==========================================================================
+   MODAL DETAIL BOOKING KALENDER (POPUP OVERLAY)
+   ========================================================================== */
+.modal-backdrop-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop-overlay.active {
+  display: flex !important;
+}
+
+.modal-card-custom {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  width: 460px;
+  max-width: 92vw;
+  padding: 26px 28px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  border: 1px solid var(--color-border);
+  animation: calPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes calPopIn {
+  from { opacity: 0; transform: scale(0.95) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
