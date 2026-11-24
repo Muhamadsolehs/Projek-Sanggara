@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -237,9 +237,13 @@
     let allRankingData = [];
     let currentViewMode = 'all'; // 'all' atau 'top5'
     let currentFilterKec = '';
+    let isLoadingAnalisa = false;
 
     // Ambil Data Analisa Pelanggan dari API Laravel
     async function loadAnalisaPelanggan() {
+      if (isLoadingAnalisa) return;
+      isLoadingAnalisa = true;
+
       const container = document.getElementById('kecamatanBarsContainer');
       try {
         const res = await SanggaraAPI.getAnalisaPelanggan();
@@ -260,6 +264,8 @@
         if (container) {
           container.innerHTML = `<div style="text-align: center; padding: 24px; color: #ef4444;">Gagal memuat data dari database. Silakan pastikan server backend aktif.</div>`;
         }
+      } finally {
+        isLoadingAnalisa = false;
       }
     }
 
@@ -378,7 +384,7 @@
 
     // Inisialisasi saat halaman dimuat
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => loadAnalisaPelanggan());
+      document.addEventListener('DOMContentLoaded', loadAnalisaPelanggan);
     } else {
       loadAnalisaPelanggan();
     }
