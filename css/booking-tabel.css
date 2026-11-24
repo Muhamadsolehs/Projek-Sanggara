@@ -85,6 +85,19 @@
   box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
 }
 
+/* Produk Sewa (Cart / Package) */
+.btn-action-products {
+  color: #7c3aed;
+  background-color: #f5f3ff;
+  border-color: #ede9fe;
+}
+.btn-action-products:hover {
+  background-color: #7c3aed;
+  color: #ffffff;
+  border-color: #7c3aed;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.25);
+}
+
 /* Hapus (Delete) */
 .btn-action-delete {
   color: #e11d48;
@@ -256,4 +269,134 @@
   color: #1e293b;
   font-weight: 600;
   text-align: right;
+}
+
+/* ==========================================================================
+   Popup Card: Daftar Produk Pesanan Sewa
+   ========================================================================== */
+.produk-sewa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.produk-sewa-item-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.produk-sewa-item-card:hover {
+  border-color: #80dcba;
+  box-shadow: 0 4px 12px rgba(0, 184, 124, 0.08);
+  transform: translateY(-1px);
+}
+
+.produk-sewa-thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.produk-sewa-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.produk-sewa-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.produk-sewa-name {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 14px;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.produk-sewa-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.produk-sewa-kondisi {
+  font-size: 11px;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.produk-sewa-pricing {
+  text-align: right;
+  flex-shrink: 0;
+  padding-left: 8px;
+}
+
+.produk-sewa-qty {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0284c7;
+  background: #e0f2fe;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.produk-sewa-subtotal {
+  font-weight: 800;
+  color: #00b87c;
+  font-size: 14px;
+}
+
+.produk-sewa-rate {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.btn-item-link {
+  background: #e6faf2;
+  color: #00b87c;
+  border: 1px solid #a7f3d0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-item-link:hover {
+  background: #00b87c;
+  color: #ffffff;
+  border-color: #00b87c;
 }

@@ -57,6 +57,7 @@ class BookingController extends Controller
                     'nama_konsumen' => $b->pelanggan ? $b->pelanggan->nama_pelanggan : 'Pelanggan Umum',
                     'telepon' => $b->pelanggan ? $b->pelanggan->no_telepon : '-',
                     'item' => $items ?: 'Busana Sewa',
+                    'total_item' => $b->details->sum('jumlah') ?: 1,
                     'pickup' => $b->tgl_ambil ? $b->tgl_ambil->format('d/m/Y') : '-',
                     'pakai' => $b->tgl_pakai ? $b->tgl_pakai->format('d/m/Y') : '-',
                     'pickin' => $b->tgl_kembali_rencana ? $b->tgl_kembali_rencana->format('d/m/Y') : '-',
@@ -165,7 +166,7 @@ class BookingController extends Controller
     public function show($id)
     {
         try {
-            $booking = Booking::with(['pelanggan', 'details.produk', 'pembayaran'])->findOrFail($id);
+            $booking = Booking::with(['pelanggan', 'details.produk.kategori', 'pembayaran'])->findOrFail($id);
 
             return response()->json([
                 'status' => 'success',

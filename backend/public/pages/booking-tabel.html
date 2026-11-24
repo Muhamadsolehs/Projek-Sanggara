@@ -168,7 +168,7 @@
                   <th>PICKIN</th>
                   <th>STATUS</th>
                   <th>DENDA</th>
-                  <th style="text-align: center; width: 140px;">AKSI</th>
+                  <th style="text-align: center; width: 175px;">AKSI</th>
                 </tr>
               </thead>
               <tbody id="bookingTableBody">
@@ -237,7 +237,13 @@
         </div>
         <div class="detail-row-item">
           <span class="detail-label">Item / Busana</span>
-          <span class="detail-value" id="modalBookingItem" style="max-width: 260px; line-height: 1.4;">-</span>
+          <div style="display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap;">
+            <span class="detail-value" id="modalBookingItem" style="max-width: 240px; line-height: 1.4;">-</span>
+            <button type="button" class="btn-item-link" id="btnLihatProdukInline" title="Lihat Rincian Semua Produk Sewa">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              Rincian Produk
+            </button>
+          </div>
         </div>
         <div class="detail-row-item">
           <span class="detail-label">Tanggal Ambil (Pickup)</span>
@@ -268,9 +274,15 @@
           <span class="detail-value" id="modalBookingDenda">Rp 0</span>
         </div>
       </div>
-      <div class="modal-card-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeModal('detailBookingModal')">Tutup</button>
-        <button type="button" class="btn btn-primary" id="btnEditFromDetailBooking" style="padding: 8px 20px;">Edit Booking</button>
+      <div class="modal-card-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <button type="button" class="btn" id="btnLihatProdukFromDetail" style="background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; font-size: 13px; font-weight: 600; padding: 8px 16px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          Lihat Semua Produk Sewa
+        </button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('detailBookingModal')">Tutup</button>
+          <button type="button" class="btn btn-primary" id="btnEditFromDetailBooking" style="padding: 8px 18px;">Edit Booking</button>
+        </div>
       </div>
     </div>
   </div>
@@ -385,6 +397,60 @@
           <button type="submit" class="btn btn-primary" id="btnSubmitEditBooking" style="padding: 8px 22px;">Simpan Perubahan</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal 4: Rincian Produk Sewa (Card Popup) -->
+  <div class="modal-overlay" id="produkSewaBookingModal">
+    <div class="modal-card-box" style="max-width: 580px;">
+      <div class="modal-card-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; border-radius: 8px; background: #f5f3ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          </div>
+          <div>
+            <h3 class="modal-card-title" style="margin: 0; font-size: 16px;">Rincian Produk Disewa</h3>
+            <span id="modalProdukSewaSubtitle" style="font-size: 12px; color: #64748b; font-weight: 500;">Booking #0000 &bull; Konsumen</span>
+          </div>
+        </div>
+        <button type="button" class="btn-close-x" onclick="closeModal('produkSewaBookingModal')" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-card-body" style="padding: 18px 20px;">
+        <!-- Booking Summary Box -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-size: 11.5px; color: #64748b; font-weight: 500;">Periode Sewa (Ambil ➔ Kembali)</div>
+            <div style="font-size: 13px; font-weight: 700; color: #1e293b;" id="modalProdukSewaPeriode">-</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 11.5px; color: #64748b; font-weight: 500;">Status Booking</div>
+            <div id="modalProdukSewaStatus">-</div>
+          </div>
+        </div>
+
+        <!-- List Container for Product Cards -->
+        <div class="produk-sewa-list" id="produkSewaListContainer">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Total Summary -->
+        <div style="margin-top: 16px; padding: 12px 16px; background: #e6faf2; border: 1px solid #a7f3d0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 12px; color: #065f46; font-weight: 600;">Total Produk Disewa</div>
+            <div style="font-size: 13.5px; color: #047857; font-weight: 700;" id="modalProdukSewaTotalItem">0 Item</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 12px; color: #065f46; font-weight: 600;">Total Biaya Sewa</div>
+            <div style="font-size: 16px; color: #00b87c; font-weight: 800;" id="modalProdukSewaTotalBiaya">Rp 0</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-card-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('produkSewaBookingModal')">Tutup</button>
+        <button type="button" class="btn btn-primary" id="btnEditBookingFromProdukModal" style="padding: 8px 20px;">Edit Booking</button>
+      </div>
     </div>
   </div>
 
@@ -547,6 +613,10 @@
                   <button type="button" class="btn-action-icon btn-action-view" onclick="viewBooking(${b.id_booking})" title="Lihat Detail Booking" aria-label="Lihat">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   </button>
+                  <!-- Tombol Lihat Rincian Produk Sewa -->
+                  <button type="button" class="btn-action-icon btn-action-products" onclick="openProdukSewaBookingModal(${b.id_booking})" title="Lihat Semua Produk Sewa (${b.total_item || 1} Item)" aria-label="Produk Sewa">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                  </button>
                   <!-- Tombol Edit Booking -->
                   <button type="button" class="btn-action-icon btn-action-edit" onclick="openEditBookingModal(${b.id_booking})" title="Edit Data Booking" aria-label="Edit">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -597,7 +667,136 @@
         };
       }
 
+      // Tombol Buka Rincian Produk Sewa dari Modal Detail
+      const btnProdukFooter = document.getElementById('btnLihatProdukFromDetail');
+      if (btnProdukFooter) {
+        btnProdukFooter.onclick = () => {
+          closeModal('detailBookingModal');
+          openProdukSewaBookingModal(id);
+        };
+      }
+
+      const btnProdukInline = document.getElementById('btnLihatProdukInline');
+      if (btnProdukInline) {
+        btnProdukInline.onclick = () => {
+          closeModal('detailBookingModal');
+          openProdukSewaBookingModal(id);
+        };
+      }
+
       document.getElementById('detailBookingModal').classList.add('active');
+    }
+
+    // Modal 4: Buka Popup Card Rincian Semua Produk Disewa
+    async function openProdukSewaBookingModal(id) {
+      const b = rawBookingList.find(item => item.id_booking === id);
+      const container = document.getElementById('produkSewaListContainer');
+      if (!container) return;
+
+      const noBookingStr = b ? `#${String(b.no_booking).padStart(4, '0')}` : `#${id}`;
+      const namaKonsumen = b ? b.nama_konsumen : 'Konsumen';
+
+      document.getElementById('modalProdukSewaSubtitle').textContent = `${noBookingStr} • ${namaKonsumen}`;
+      document.getElementById('modalProdukSewaPeriode').textContent = b ? `${b.pickup} s/d ${b.pickin}` : '-';
+      document.getElementById('modalProdukSewaStatus').innerHTML = b ? renderStatusBadge(b.status, b.id_booking, false) : '-';
+      document.getElementById('modalProdukSewaTotalBiaya').textContent = b ? (b.total_tagihan_formatted || 'Rp 0') : 'Rp 0';
+      document.getElementById('modalProdukSewaTotalItem').textContent = 'Memuat...';
+
+      const btnEdit = document.getElementById('btnEditBookingFromProdukModal');
+      if (btnEdit) {
+        btnEdit.onclick = () => {
+          closeModal('produkSewaBookingModal');
+          openEditBookingModal(id);
+        };
+      }
+
+      container.innerHTML = `
+        <div style="text-align: center; padding: 24px; color: #64748b; font-size: 13px;">
+          <svg style="animation: spin 1s linear infinite; display: inline-block; margin-bottom: 8px;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00b87c" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle><path d="M12 2a10 10 0 0 1 10 10"></path></svg>
+          <div>Memuat rincian produk pesanan sewa...</div>
+        </div>
+      `;
+      document.getElementById('produkSewaBookingModal').classList.add('active');
+
+      try {
+        const res = await SanggaraAPI.getBookingDetail(id);
+        if (res.status === 'success' && res.data) {
+          const booking = res.data;
+          const details = booking.details || [];
+
+          let totalQty = 0;
+          details.forEach(d => { totalQty += (parseInt(d.jumlah) || 1); });
+          document.getElementById('modalProdukSewaTotalItem').textContent = `${totalQty} Unit (${details.length} Jenis Produk)`;
+          if (booking.total_biaya_sewa) {
+            document.getElementById('modalProdukSewaTotalBiaya').textContent = 'Rp ' + Number(booking.total_biaya_sewa).toLocaleString('id-ID');
+          }
+
+          if (details.length === 0) {
+            container.innerHTML = `
+              <div style="text-align: center; padding: 24px 16px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; color: #64748b;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8" style="margin-bottom: 8px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg>
+                <div style="font-weight: 600; color: #475569;">Belum ada rincian produk sewa</div>
+                <div style="font-size: 12px; margin-top: 4px;">Produk sewa pada booking ini belum dicatat dalam rincian pesanan.</div>
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = details.map((d, index) => {
+            const prod = d.produk || {};
+            const kat = prod.kategori ? prod.kategori.nama_kategori : (prod.nama_kategori || 'Busana');
+            let foto = prod.foto;
+            if (foto && !foto.startsWith('http') && !foto.startsWith('/')) {
+              foto = '/' + foto;
+            }
+            const thumbHtml = foto 
+              ? `<img src="${foto}" alt="${prod.nama_produk || 'Produk'}" onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\\'font-weight:800; color:#00b87c; font-size:16px;\\'>S</span>';">`
+              : `<span style="font-weight: 800; color: #00b87c; font-size: 16px;">S</span>`;
+            const subtotal = d.subtotal ? ('Rp ' + Number(d.subtotal).toLocaleString('id-ID')) : (d.harga_satuan ? 'Rp ' + Number(d.harga_satuan * (d.jumlah || 1)).toLocaleString('id-ID') : '-');
+            const rate = d.harga_satuan ? ('@ Rp ' + Number(d.harga_satuan).toLocaleString('id-ID') + '/hari') : '';
+            const kondisiAmbil = d.kondisi_ambil ? `Ambil: <strong>${d.kondisi_ambil}</strong>` : '';
+            const kondisiKembali = d.kondisi_kembali ? `Kembali: <strong>${d.kondisi_kembali}</strong>` : '';
+            const kondisiText = [kondisiAmbil, kondisiKembali].filter(Boolean).join(' &bull; ');
+
+            return `
+              <div class="produk-sewa-item-card">
+                <div class="produk-sewa-thumb">
+                  ${thumbHtml}
+                </div>
+                <div class="produk-sewa-info">
+                  <h5 class="produk-sewa-name" title="${prod.nama_produk || d.catatan || 'Produk Sewa'}">
+                    ${prod.nama_produk || d.catatan || 'Busana / Produk Sewa'}
+                  </h5>
+                  <div class="produk-sewa-meta">
+                    <span class="badge badge-info" style="font-size: 10.5px; padding: 2px 7px;">${kat}</span>
+                    ${prod.kode_produk ? `<span style="color: #94a3b8; font-weight: 500;">#${prod.kode_produk}</span>` : ''}
+                    ${prod.kualitas ? `<span style="color: #64748b;">&bull; ${prod.kualitas}</span>` : ''}
+                  </div>
+                  ${kondisiText ? `<div class="produk-sewa-kondisi">${kondisiText}</div>` : ''}
+                </div>
+                <div class="produk-sewa-pricing">
+                  <div class="produk-sewa-qty">${d.jumlah || 1} Unit</div>
+                  <div class="produk-sewa-subtotal">${subtotal}</div>
+                  ${rate ? `<div class="produk-sewa-rate">${rate}</div>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 18px; color: #e11d48; font-size: 13px;">
+              Gagal memuat rincian produk: ${res.message || 'Data tidak ditemukan'}
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error('Gagal mengambil detail produk booking:', err);
+        container.innerHTML = `
+          <div style="text-align: center; padding: 18px; color: #e11d48; font-size: 13px;">
+            Terjadi kesalahan saat memuat data: ${err.message}
+          </div>
+        `;
+      }
     }
 
     // Helper Konversi Tanggal ke Format YYYY-MM-DD untuk Input Date
