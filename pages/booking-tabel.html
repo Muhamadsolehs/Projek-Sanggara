@@ -274,15 +274,9 @@
           <span class="detail-value" id="modalBookingDenda">Rp 0</span>
         </div>
       </div>
-      <div class="modal-card-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <button type="button" class="btn" id="btnLihatProdukFromDetail" style="background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; font-size: 13px; font-weight: 600; padding: 8px 16px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-          Lihat Semua Produk Sewa
-        </button>
-        <div style="display: flex; gap: 8px;">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('detailBookingModal')">Tutup</button>
-          <button type="button" class="btn btn-primary" id="btnEditFromDetailBooking" style="padding: 8px 18px;">Edit Booking</button>
-        </div>
+      <div class="modal-card-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('detailBookingModal')">Tutup</button>
+        <button type="button" class="btn btn-primary" id="btnEditFromDetailBooking" style="padding: 8px 20px;">Edit Booking</button>
       </div>
     </div>
   </div>
@@ -667,15 +661,7 @@
         };
       }
 
-      // Tombol Buka Rincian Produk Sewa dari Modal Detail
-      const btnProdukFooter = document.getElementById('btnLihatProdukFromDetail');
-      if (btnProdukFooter) {
-        btnProdukFooter.onclick = () => {
-          closeModal('detailBookingModal');
-          openProdukSewaBookingModal(id);
-        };
-      }
-
+      // Tombol Buka Rincian Produk Sewa dari Baris Item Busana
       const btnProdukInline = document.getElementById('btnLihatProdukInline');
       if (btnProdukInline) {
         btnProdukInline.onclick = () => {
