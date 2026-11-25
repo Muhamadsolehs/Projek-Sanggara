@@ -155,6 +155,10 @@
 
       <!-- Payment Breakdown -->
       <div class="receipt-calc-table">
+        <div class="receipt-calc-row" id="rowMetodeDp" style="display: none;">
+          <span id="paymentDpMethodLabel">Metode Bayar DP</span>
+          <span id="dpReceivedMethodVal">Tunai (Cash)</span>
+        </div>
         <div class="receipt-calc-row">
           <span id="paymentMethodLabel">Metode Pelunasan</span>
           <span id="tunaiReceivedVal">Tunai (Cash)</span>
@@ -329,9 +333,23 @@
         document.getElementById('sisaBayarVal').className = 'sisa-bayar-lunas';
         document.getElementById('sisaBayarNote').style.display = 'none';
 
-        document.getElementById('paymentMethodLabel').textContent = 'Metode Pembayaran';
-        const metodeStr = (data.metode_bayar || 'Tunai').toUpperCase();
-        document.getElementById('tunaiReceivedVal').textContent = metodeStr + (metodeStr === 'TUNAI' ? ' (Cash)' : '');
+        const rowDp = document.getElementById('rowMetodeDp');
+        if (data.is_dua_metode || (data.metode_bayar_dp && data.metode_bayar_pelunasan)) {
+          if (rowDp) {
+            rowDp.style.display = 'flex';
+            document.getElementById('paymentDpMethodLabel').textContent = 'Metode Bayar DP';
+            const mDp = (data.metode_bayar_dp || 'TUNAI').toUpperCase();
+            document.getElementById('dpReceivedMethodVal').textContent = mDp + (mDp === 'TUNAI' ? ' (Cash)' : '');
+          }
+          document.getElementById('paymentMethodLabel').textContent = 'Metode Pelunasan';
+          const mPel = (data.metode_bayar_pelunasan || data.metode_bayar || 'TUNAI').toUpperCase();
+          document.getElementById('tunaiReceivedVal').textContent = mPel + (mPel === 'TUNAI' ? ' (Cash)' : '');
+        } else {
+          if (rowDp) rowDp.style.display = 'none';
+          document.getElementById('paymentMethodLabel').textContent = 'Metode Pembayaran';
+          const metodeStr = (data.metode_bayar || 'Tunai').toUpperCase();
+          document.getElementById('tunaiReceivedVal').textContent = metodeStr + (metodeStr === 'TUNAI' ? ' (Cash)' : '');
+        }
         document.getElementById('totalReceivedVal').textContent = data.uang_diterima_formatted;
         document.getElementById('kembalianVal').textContent = data.kembalian_formatted;
         document.getElementById('totalBersihRow').style.display = 'flex';

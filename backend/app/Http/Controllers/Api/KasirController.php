@@ -152,7 +152,9 @@ class KasirController extends Controller
                 'total_dp' => $totalDp,
                 'total_bayar' => 0,
                 'sisa_tagihan' => $totalTagihan,
-                'metode_bayar_terakhir' => $metode,
+                'metode_bayar_dp' => ($opsi === 'dp' ? $metode : null),
+                'metode_bayar_pelunasan' => ($opsi === 'lunas' ? $metode : null),
+                'metode_bayar_terakhir' => ($opsi === 'dp' ? $metode . ' (DP)' : $metode),
                 'status_pembayaran' => $statusPembayaran,
                 'status_sewa' => 'booking',
             ]);

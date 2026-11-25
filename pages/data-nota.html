@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -171,48 +171,8 @@
                   <th>AKSI</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Row 1: LUNAS -->
-                <tr>
-                  <td class="cell-bold">CS/01/2</td>
-                  <td>1</td>
-                  <td>16 NOV 26 10:50</td>
-                  <td class="cell-bold">IVAN</td>
-                  <td class="cell-bold">CORDELIA</td>
-                  <td>RP 93.750</td>
-                  <td>RP 375.000</td>
-                  <td>RP 375.000</td>
-                  <td>0</td>
-                  <td>BANK</td>
-                  <td class="cell-bold">LUNAS</td>
-                  <td>
-                    <div class="actions-cell-pills">
-                      <span class="pill-action pill-lunas">LUNAS</span>
-                      <a href="nota.html?type=lunas" class="pill-action pill-detail">DETAIL</a>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- Row 2: DP -->
-                <tr id="rowBooking2">
-                  <td class="cell-bold">CS/01/2</td>
-                  <td>2</td>
-                  <td>16 NOV 26 10:50</td>
-                  <td class="cell-bold">IVAN</td>
-                  <td class="cell-bold">CORDELIA</td>
-                  <td>RP 93.750</td>
-                  <td>RP 375.000</td>
-                  <td id="row2BayarVal">RP 93.750</td>
-                  <td id="row2SisaVal">281.250</td>
-                  <td id="row2MetodeVal">QRIS</td>
-                  <td class="cell-bold" id="row2StatusVal">DP</td>
-                  <td>
-                    <div class="actions-cell-pills" id="row2ActionContainer">
-                      <button type="button" class="pill-action pill-bayar" id="btnBayarRow2" onclick="openBayarModal('CS/01/2', 2, 281250, 'CORDELIA')">BAYAR</button>
-                      <a href="nota.html?type=dp" id="linkDetailRow2" class="pill-action pill-detail">DETAIL</a>
-                    </div>
-                  </td>
-                </tr>
+              <tbody id="dataNotaTbody">
+                <tr><td colspan="12" style="text-align: center; padding: 28px; color: #94a3b8; font-weight: 500;">Memuat data nota transaksi...</td></tr>
               </tbody>
             </table>
           </div>
@@ -332,6 +292,32 @@
         tr.id = `rowBooking${row.id_booking}`;
         const isLunas = row.status === 'LUNAS';
 
+        let metodeCellHtml = `<span class="badge-metode-pill pill-single">${row.metode_bayar || 'TUNAI'}</span>`;
+        if (row.metode_bayar_dp && row.metode_bayar_pelunasan) {
+          if (row.metode_bayar_dp === row.metode_bayar_pelunasan) {
+            metodeCellHtml = `
+              <div class="metode-cell-wrapper">
+                <span class="badge-metode-pill pill-single">${row.metode_bayar_dp}</span>
+                <span style="font-size: 11px; color: #64748b; font-weight: 600;">(DP & Lunas)</span>
+              </div>
+            `;
+          } else {
+            metodeCellHtml = `
+              <div class="metode-cell-wrapper">
+                <span class="badge-metode-pill pill-dp" title="Metode Pembayaran DP">${row.metode_bayar_dp} <small>(DP)</small></span>
+                <span class="badge-metode-separator">+</span>
+                <span class="badge-metode-pill pill-pelunasan" title="Metode Pembayaran Pelunasan">${row.metode_bayar_pelunasan} <small>(Lunas)</small></span>
+              </div>
+            `;
+          }
+        } else if (row.metode_bayar_dp) {
+          metodeCellHtml = `
+            <div class="metode-cell-wrapper">
+              <span class="badge-metode-pill pill-dp" title="Metode Pembayaran DP">${row.metode_bayar_dp} <small>(DP)</small></span>
+            </div>
+          `;
+        }
+
         tr.innerHTML = `
           <td class="cell-bold">${row.no_nota}</td>
           <td>${row.no_booking}</td>
@@ -342,7 +328,7 @@
           <td>${row.total_tagihan_formatted}</td>
           <td id="row${row.id_booking}BayarVal">${row.bayar_formatted}</td>
           <td id="row${row.id_booking}SisaVal">${row.sisa_tagihan_formatted}</td>
-          <td id="row${row.id_booking}MetodeVal">${row.metode_bayar}</td>
+          <td id="row${row.id_booking}MetodeVal">${metodeCellHtml}</td>
           <td class="cell-bold" id="row${row.id_booking}StatusVal">${row.status}</td>
           <td>
             <div class="actions-cell-pills" id="row${row.id_booking}ActionContainer">

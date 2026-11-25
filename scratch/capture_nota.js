@@ -4,63 +4,63 @@ const fs = require('fs');
 async function test() {
   const browser = spawn('C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', [
     '--headless=new',
-    '--remote-debugging-port=9260',
-    '--user-data-dir=C:/Users/AdM/.gemini/antigravity/brain/b529fbe8-c810-4c8b-9355-a6d575a6922a/scratch/edge_prof_nota_real',
-    'http://127.0.0.1:8000/pages/nota.html?id=34'
+    '--remote-debugging-port=9278',
+    '--user-data-dir=C:/Users/AdM/.gemini/antigravity/brain/b529fbe8-c810-4c8b-9355-a6d575a6922a/scratch/edge_test_nota_clean4',
+    'about:blank'
   ]);
-  await new Promise(r => setTimeout(r, 2000));
-  const list = await (await fetch('http://127.0.0.1:9260/json')).json();
-  const tab = list.find(t => t.url.includes('nota'));
-  const ws = new WebSocket(tab.webSocketDebuggerUrl);
+  await new Promise(r => setTimeout(r, 1500));
+  const list = await (await fetch('http://127.0.0.1:9278/json')).json();
+  const ws = new WebSocket(list[0].webSocketDebuggerUrl);
   await new Promise(r => ws.onopen = r);
-
   let id = 1;
   function send(method, params = {}) {
-    return new Promise((resolve) => {
+    return new Promise(res => {
       const msgId = id++;
-      const handler = (evt) => {
-        const parsed = JSON.parse(evt.data);
-        if (parsed.id === msgId) {
-          ws.removeEventListener('message', handler);
-          resolve(parsed.result);
-        }
+      const h = evt => {
+        const p = JSON.parse(evt.data);
+        if (p.id === msgId) { ws.removeEventListener('message', h); res(p.result); }
       };
-      ws.addEventListener('message', handler);
+      ws.addEventListener('message', h);
       ws.send(JSON.stringify({ id: msgId, method, params }));
     });
   }
-
   await send('Page.enable');
   await send('Runtime.enable');
   await send('Emulation.setDeviceMetricsOverride', {
     width: 1200,
-    height: 1100,
+    height: 1800,
     deviceScaleFactor: 1,
     mobile: false
   });
 
-  // Wait until customerName is loaded from API
-  let loaded = false;
-  for (let i = 0; i < 20; i++) {
-    const check = await send('Runtime.evaluate', {
-      expression: `document.getElementById('customerName')?.textContent`,
-      returnByValue: true
-    });
-    if (check && check.result && check.result.value === 'Asep Saefuloh') {
-      loaded = true;
-      break;
-    }
-    await new Promise(r => setTimeout(r, 250));
-  }
+  await send('Page.navigate', { url: 'http://127.0.0.1:8000/pages/nota.html?id=36' });
+  await new Promise(r => setTimeout(r, 2000));
 
-  console.log('Customer loaded:', loaded);
-  await new Promise(r => setTimeout(r, 500));
+  // Get receipt element bounding box
+  const box = await send('Runtime.evaluate', {
+    expression: `
+      (() => {
+        const el = document.querySelector('.receipt-paper-card') || document.querySelector('.receipt-page-wrapper');
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return { x: window.scrollX + r.x, y: window.scrollY + r.y, width: r.width, height: r.height };
+      })()
+    `,
+    returnByValue: true
+  });
+  console.log('Receipt box:', box?.result?.value);
 
-  const ss = await send('Page.captureScreenshot', { format: 'png' });
-  const outPath = 'C:/Users/AdM/.gemini/antigravity/brain/b529fbe8-c810-4c8b-9355-a6d575a6922a/screenshot_nota_sesuai_kasir.png';
-  fs.writeFileSync(outPath, Buffer.from(ss.data, 'base64'));
-  console.log('Saved screenshot to:', outPath);
+  const clip = box?.result?.value ? {
+    x: Math.max(0, box.result.value.x - 20),
+    y: Math.max(0, box.result.value.y - 20),
+    width: box.result.value.width + 40,
+    height: box.result.value.height + 40,
+    scale: 1
+  } : undefined;
 
+  const ss = await send('Page.captureScreenshot', { format: 'png', clip, captureBeyondViewport: true });
+  fs.writeFileSync('C:/Users/AdM/.gemini/antigravity/brain/b529fbe8-c810-4c8b-9355-a6d575a6922a/screenshot_nota_dua_metode.png', Buffer.from(ss.data, 'base64'));
+  console.log('Captured screenshot_nota_dua_metode.png with clip!');
   ws.close();
   browser.kill();
 }

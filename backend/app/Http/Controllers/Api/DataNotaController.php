@@ -17,7 +17,7 @@ class DataNotaController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Booking::with(['pelanggan', 'user'])
+            $query = Booking::with(['pelanggan', 'user', 'pembayaran'])
                 ->orderByRaw('COALESCE(updated_at, created_at) DESC')
                 ->orderByDesc('id_booking');
 
@@ -51,6 +51,25 @@ class DataNotaController extends Controller
             $bookings = $query->get();
 
             $formatted = $bookings->map(function ($b) {
+                // Evaluasi 2 metode pembayaran jika transaksi awal adalah DP
+                $pembayaranDp = $b->pembayaran->firstWhere('jenis_pembayaran', 'DP');
+                $pembayaranPelunasan = $b->pembayaran->firstWhere('jenis_pembayaran', 'PELUNASAN');
+
+                $metodeDp = $pembayaranDp ? strtoupper($pembayaranDp->metode_bayar) : ($b->metode_bayar_dp ? strtoupper($b->metode_bayar_dp) : null);
+                $metodePelunasan = $pembayaranPelunasan ? strtoupper($pembayaranPelunasan->metode_bayar) : ($b->metode_bayar_pelunasan ? strtoupper($b->metode_bayar_pelunasan) : null);
+
+                if ($metodeDp && $metodePelunasan) {
+                    if ($metodeDp === $metodePelunasan) {
+                        $metodeBayarDisplay = "{$metodeDp} (DP & Pelunasan)";
+                    } else {
+                        $metodeBayarDisplay = "{$metodeDp} (DP) • {$metodePelunasan} (Pelunasan)";
+                    }
+                } elseif ($metodeDp) {
+                    $metodeBayarDisplay = "{$metodeDp} (DP)";
+                } else {
+                    $metodeBayarDisplay = strtoupper($b->metode_bayar_terakhir ?? ($b->pembayaran->first()?->metode_bayar ?? 'TUNAI'));
+                }
+
                 return [
                     'id_booking' => $b->id_booking,
                     'no_nota' => $b->no_nota,
@@ -66,7 +85,9 @@ class DataNotaController extends Controller
                     'bayar_formatted' => 'RP ' . number_format($b->total_bayar, 0, ',', '.'),
                     'sisa_tagihan' => (float)$b->sisa_tagihan,
                     'sisa_tagihan_formatted' => $b->sisa_tagihan > 0 ? number_format($b->sisa_tagihan, 0, ',', '.') : '0',
-                    'metode_bayar' => strtoupper($b->metode_bayar_terakhir ?? 'TUNAI'),
+                    'metode_bayar' => $metodeBayarDisplay,
+                    'metode_bayar_dp' => $metodeDp,
+                    'metode_bayar_pelunasan' => $metodePelunasan,
                     'status' => strtoupper($b->status_pembayaran),
                     'status_sewa' => $b->status_sewa,
                 ];
@@ -107,6 +128,11 @@ class DataNotaController extends Controller
             }
 
             $pembayaranTerakhir = $booking->pembayaran->sortByDesc('id_pembayaran')->first();
+            $pembayaranDp = $booking->pembayaran->firstWhere('jenis_pembayaran', 'DP');
+            $pembayaranPelunasan = $booking->pembayaran->firstWhere('jenis_pembayaran', 'PELUNASAN');
+
+            $metodeDp = $pembayaranDp ? strtoupper($pembayaranDp->metode_bayar) : ($booking->metode_bayar_dp ? strtoupper($booking->metode_bayar_dp) : null);
+            $metodePelunasan = $pembayaranPelunasan ? strtoupper($pembayaranPelunasan->metode_bayar) : ($booking->metode_bayar_pelunasan ? strtoupper($booking->metode_bayar_pelunasan) : null);
 
             $items = $booking->details->map(function ($d) {
                 return [
@@ -147,6 +173,29 @@ class DataNotaController extends Controller
                     'total_bersih_terbayar' => (float)$booking->total_bayar,
                     'total_bersih_terbayar_formatted' => number_format($booking->total_bayar, 0, ',', '.'),
                     'metode_bayar' => $booking->metode_bayar_terakhir,
+                    'metode_bayar_dp' => $metodeDp,
+                    'metode_bayar_pelunasan' => $metodePelunasan,
+                    'is_dua_metode' => (bool)($metodeDp && $metodePelunasan),
+                    'pembayaran_dp_detail' => $pembayaranDp ? [
+                        'metode' => strtoupper($pembayaranDp->metode_bayar),
+                        'nominal' => (float)$pembayaranDp->jumlah_bayar,
+                        'nominal_formatted' => number_format($pembayaranDp->jumlah_bayar, 0, ',', '.'),
+                        'uang_diterima' => (float)$pembayaranDp->uang_diterima,
+                        'uang_diterima_formatted' => number_format($pembayaranDp->uang_diterima, 0, ',', '.'),
+                        'kembalian' => (float)$pembayaranDp->kembalian,
+                        'kembalian_formatted' => number_format($pembayaranDp->kembalian, 0, ',', '.'),
+                        'waktu' => $pembayaranDp->tgl_bayar ? $pembayaranDp->tgl_bayar->format('d M y H:i') : '-',
+                    ] : null,
+                    'pembayaran_pelunasan_detail' => $pembayaranPelunasan ? [
+                        'metode' => strtoupper($pembayaranPelunasan->metode_bayar),
+                        'nominal' => (float)$pembayaranPelunasan->jumlah_bayar,
+                        'nominal_formatted' => number_format($pembayaranPelunasan->jumlah_bayar, 0, ',', '.'),
+                        'uang_diterima' => (float)$pembayaranPelunasan->uang_diterima,
+                        'uang_diterima_formatted' => number_format($pembayaranPelunasan->uang_diterima, 0, ',', '.'),
+                        'kembalian' => (float)$pembayaranPelunasan->kembalian,
+                        'kembalian_formatted' => number_format($pembayaranPelunasan->kembalian, 0, ',', '.'),
+                        'waktu' => $pembayaranPelunasan->tgl_bayar ? $pembayaranPelunasan->tgl_bayar->format('d M y H:i') : '-',
+                    ] : null,
                     'uang_diterima' => $pembayaranTerakhir ? (float)$pembayaranTerakhir->uang_diterima : $booking->total_bayar,
                     'uang_diterima_formatted' => number_format($pembayaranTerakhir ? $pembayaranTerakhir->uang_diterima : $booking->total_bayar, 0, ',', '.'),
                     'kembalian' => $pembayaranTerakhir ? (float)$pembayaranTerakhir->kembalian : 0,

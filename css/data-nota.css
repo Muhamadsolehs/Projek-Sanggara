@@ -367,3 +367,47 @@
   cursor: pointer;
   margin-left: 6px;
 }
+
+/* Badge Dual Payment Methods */
+.metode-cell-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.badge-metode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.badge-metode-pill.pill-dp {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.badge-metode-pill.pill-pelunasan {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-metode-pill.pill-single {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.badge-metode-separator {
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 11px;
+}

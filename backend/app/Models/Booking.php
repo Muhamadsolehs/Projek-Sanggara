@@ -30,6 +30,8 @@ class Booking extends Model
         'total_dp',
         'total_bayar',
         'sisa_tagihan',
+        'metode_bayar_dp',
+        'metode_bayar_pelunasan',
         'metode_bayar_terakhir',
         'status_pembayaran',
         'status_sewa',
