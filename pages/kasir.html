@@ -975,13 +975,27 @@
         return;
       }
 
+      const btnCheckout = document.getElementById('btnCheckout');
+      const btnCheckoutText = document.getElementById('btnCheckoutText');
+      if (btnCheckout) {
+        btnCheckout.disabled = true;
+        btnCheckout.classList.add('disabled');
+        if (btnCheckoutText) btnCheckoutText.textContent = 'Memproses Transaksi...';
+      }
+
       const customerId = parseInt(customerSelect.value) || 1;
-      const customerText = customerSelect.options[customerSelect.selectedIndex]?.text || "Pelanggan";
-      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      const dpAmount = paymentOption === 'dp' ? Math.round(subtotal * 0.25) : subtotal;
-      const sisaBayar = paymentOption === 'dp' ? subtotal - dpAmount : 0;
-      const cashReceived = Number(document.getElementById('cashReceivedInput').value.replace(/\D/g, '')) || dpAmount;
-      const kembalian = cashReceived - dpAmount;
+      const selectedOption = customerSelect.options[customerSelect.selectedIndex];
+      const customerText = selectedOption ? selectedOption.text : "Pelanggan";
+      const customerNameOnly = customerText.split('—')[0].split('-')[0].trim();
+
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.qty || 1)), 0);
+      const isDp = paymentOption === 'dp';
+      const dpAmount = isDp ? Math.round(subtotal * 0.25) : subtotal;
+      const sisaBayar = isDp ? (subtotal - dpAmount) : 0;
+      const cashReceivedInput = document.getElementById('cashReceivedInput');
+      const rawCash = cashReceivedInput ? Number(cashReceivedInput.value.replace(/\D/g, '')) : 0;
+      const cashReceived = rawCash > 0 ? rawCash : dpAmount;
+      const kembalian = Math.max(0, cashReceived - dpAmount);
 
       let activeMethod = 'TUNAI';
       const activeBtn = document.querySelector('.btn-method.active');
@@ -991,66 +1005,89 @@
         else if (text.includes('TRANSFER') || text.includes('BANK')) activeMethod = 'BANK';
       }
 
-      const bookingDateToSend = selectedBookingDate || new Date().toISOString().split('T')[0];
-      const dateDisplay = document.getElementById('bookingDateInput')?.value || new Date().toLocaleString('id-ID');
+      // Aturan Sewa: Baju dipakai maksimal 1 hari (Hari-H).
+      // Ambil (Pickup) = H-1, Pakai = Hari-H, Kembali (Pickin) = H+1
+      let pakaiDateObj = new Date();
+      if (selectedBookingDate) {
+        pakaiDateObj = new Date(selectedBookingDate + 'T00:00:00');
+      } else if (bookingDateInput && bookingDateInput.value) {
+        const matched = bookingDateInput.value.match(/(\d+)\s+([A-Za-z]+)\s+(\d{4})/);
+        if (matched) {
+          const mNames = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+          const mIdx = mNames.findIndex(m => m === matched[2].toLowerCase());
+          if (mIdx !== -1) {
+            pakaiDateObj = new Date(parseInt(matched[3]), mIdx, parseInt(matched[1]));
+          }
+        }
+      }
+
+      const dAmbil = new Date(pakaiDateObj);
+      dAmbil.setDate(dAmbil.getDate() - 1);
+      const dKembali = new Date(pakaiDateObj);
+      dKembali.setDate(dKembali.getDate() + 1);
+
+      const toYmd = dt => {
+        const y = dt.getFullYear();
+        const m = String(dt.getMonth() + 1).padStart(2, '0');
+        const d = String(dt.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      };
+
+      const dateDisplay = (bookingDateInput && bookingDateInput.value) ? bookingDateInput.value : `${pakaiDateObj.getDate()} Des 2026`;
 
       // Backup ke localStorage
       const orderData = {
         customer: customerText,
+        customerName: customerNameOnly,
         items: cart,
         subtotal: subtotal,
-        isDp: paymentOption === 'dp',
+        isDp: isDp,
         dpAmount: dpAmount,
         sisaBayar: sisaBayar,
         cashReceived: cashReceived,
         kembalian: kembalian >= 0 ? kembalian : 0,
+        metode: activeMethod,
         date: dateDisplay,
         noNota: "CS/01/" + Date.now().toString().slice(-6),
         noBooking: "1",
-        kasir: "Ahmad Rivaldy"
+        kasir: "Amanah Solusi"
       };
       localStorage.setItem('sanggara_current_order', JSON.stringify(orderData));
 
-      // Kirim transaksi ke backend database jika online
+      // Kirim transaksi ke backend database
       try {
-        const isOnline = await SanggaraAPI.isOnline();
-        if (isOnline) {
-          // Aturan Sewa: Baju dipakai maksimal 1 hari (Hari-H).
-          // Ambil (Pickup) = H-1, Pakai = Hari-H, Kembali (Pickin) = H+1
-          const pakaiDateObj = selectedBookingDate ? new Date(selectedBookingDate + 'T00:00:00') : new Date();
-          const dAmbil = new Date(pakaiDateObj);
-          dAmbil.setDate(dAmbil.getDate() - 1);
-          const dKembali = new Date(pakaiDateObj);
-          dKembali.setDate(dKembali.getDate() + 1);
-
-          const toYmd = dt => {
-            const y = dt.getFullYear();
-            const m = String(dt.getMonth() + 1).padStart(2, '0');
-            const d = String(dt.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
-          };
-
-          const payload = {
-            id_pelanggan: customerId,
-            tgl_ambil: toYmd(dAmbil),
-            tgl_pakai: toYmd(pakaiDateObj),
-            tgl_kembali_rencana: toYmd(dKembali),
-            opsi_pembayaran: paymentOption,
-            metode_bayar: activeMethod,
-            uang_diterima: cashReceived,
-            items: cart.map(item => ({ id_produk: item.id, jumlah: item.qty }))
-          };
-          const res = await SanggaraAPI.checkoutKasir(payload);
-          if (res.status === 'success' && res.data && res.data.id_booking) {
-            window.location.href = `nota.html?id=${res.data.id_booking}`;
-            return;
-          }
+        const payload = {
+          id_pelanggan: customerId,
+          tgl_ambil: toYmd(dAmbil),
+          tgl_pakai: toYmd(pakaiDateObj),
+          tgl_kembali_rencana: toYmd(dKembali),
+          opsi_pembayaran: paymentOption,
+          metode_bayar: activeMethod,
+          uang_diterima: cashReceived,
+          items: cart.map(item => ({ id_produk: item.id, jumlah: 1 }))
+        };
+        const res = await SanggaraAPI.checkoutKasir(payload);
+        if (res && res.status === 'success' && res.data && res.data.id_booking) {
+          orderData.noNota = res.data.no_nota;
+          orderData.noBooking = res.data.no_booking;
+          localStorage.setItem('sanggara_current_order', JSON.stringify(orderData));
+          window.location.href = `nota.html?id=${res.data.id_booking}`;
+          return;
+        } else {
+          throw new Error((res && res.message) || 'Gagal memproses pesanan kasir');
         }
       } catch (err) {
-        console.warn('Checkout API fallback to local:', err);
+        console.error('Checkout API error:', err);
+        SanggaraModal.alert('Gagal memproses transaksi kasir: ' + (err.message || 'Terjadi kesalahan sistem'), {
+          type: 'danger',
+          title: 'Transaksi Gagal'
+        });
+        if (btnCheckout) {
+          btnCheckout.disabled = false;
+          btnCheckout.classList.remove('disabled');
+          if (btnCheckoutText) btnCheckoutText.textContent = 'Proses & Cetak Struk';
+        }
       }
-
-      window.location.href = 'nota.html';
     }
 
     // =========================================================================

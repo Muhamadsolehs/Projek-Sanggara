@@ -210,23 +210,16 @@
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
+      const bookingId = urlParams.get('id');
       const viewType = urlParams.get('type');
 
-      const bookingId = urlParams.get('id');
-
-      // Jika ada parameter ?id=... coba muat langsung data real dari Laravel 13 API
+      // 1. Jika ada parameter ?id=... coba muat langsung data real dari Laravel API
       if (bookingId) {
         loadNotaFromApi(bookingId);
         return;
       }
 
-      // If user specifically requested 'dp' view
-      if (viewType === 'dp') {
-        renderDpReceipt();
-        return;
-      }
-
-      // If localStorage has an active checkout order and no explicit type
+      // 2. Jika ada data transaksi aktif di localStorage (setelah checkout dari kasir)
       const stored = localStorage.getItem('sanggara_current_order');
       if (stored && !viewType) {
         try {
@@ -238,15 +231,15 @@
         } catch (e) {}
       }
 
-      // Default: Coba muat ID 1 dari API atau fallback ke Lunas 100%
-      loadNotaFromApi(1);
+      // 3. Fallback: muat transaksi terbaru dari database API
+      loadNotaFromApi('latest');
     });
 
     async function loadNotaFromApi(id) {
       try {
         const isOnline = await SanggaraAPI.isOnline();
         if (!isOnline) {
-          renderLunasReceipt();
+          fallbackFromLocalStorageOrOrder();
           return;
         }
 
@@ -254,20 +247,33 @@
         if (res.status === 'success' && res.data) {
           renderReceiptFromApiData(res.data);
         } else {
-          renderLunasReceipt();
+          fallbackFromLocalStorageOrOrder();
         }
       } catch (err) {
         console.warn('API getNotaDetail fallback:', err);
-        renderLunasReceipt();
+        fallbackFromLocalStorageOrOrder();
+      }
+    }
+
+    function fallbackFromLocalStorageOrOrder() {
+      const stored = localStorage.getItem('sanggara_current_order');
+      if (stored) {
+        try {
+          const order = JSON.parse(stored);
+          if (order && order.items && order.items.length > 0) {
+            renderFromOrder(order);
+            return;
+          }
+        } catch (e) {}
       }
     }
 
     function renderReceiptFromApiData(data) {
-      document.getElementById('customerName').textContent = data.customer;
-      document.getElementById('notaNum').textContent = data.no_nota;
-      document.getElementById('notaTime').textContent = data.waktu;
-      document.getElementById('bookingNum').textContent = data.no_booking;
-      document.getElementById('kasirName').textContent = data.kasir;
+      document.getElementById('customerName').textContent = data.customer || 'Pelanggan';
+      document.getElementById('notaNum').textContent = data.no_nota || '-';
+      document.getElementById('notaTime').textContent = data.waktu || '-';
+      document.getElementById('bookingNum').textContent = data.no_booking || '1';
+      document.getElementById('kasirName').textContent = data.kasir || 'Amanah Solusi';
 
       const itemsContainer = document.getElementById('receiptItemsList');
       itemsContainer.innerHTML = '';
@@ -287,7 +293,7 @@
         });
       }
 
-      document.getElementById('subtotalLabel').textContent = `Subtotal ${data.total_items_count} Produk`;
+      document.getElementById('subtotalLabel').textContent = `Subtotal ${data.total_items_count || (data.items ? data.items.length : 1)} Produk`;
       document.getElementById('subtotalVal').textContent = data.subtotal_formatted;
       document.getElementById('totalSewaVal').textContent = data.total_harga_sewa_formatted;
 
@@ -295,31 +301,43 @@
 
       if (isLunas) {
         document.getElementById('statusPembayaranRow').style.display = 'flex';
-        document.getElementById('statusPembayaranRow').querySelector('.badge-lunas-receipt').textContent = 'LUNAS 100%';
-        document.getElementById('statusPembayaranRow').querySelector('.badge-lunas-receipt').className = 'badge-lunas-receipt';
+        const badgeLunas = document.getElementById('statusPembayaranRow').querySelector('.badge-lunas-receipt');
+        if (badgeLunas) {
+          badgeLunas.textContent = 'LUNAS 100%';
+          badgeLunas.className = 'badge-lunas-receipt';
+        }
 
-        document.getElementById('dpTerbayarRow').style.display = 'flex';
-        document.getElementById('dpTerbayarRow').querySelector('span:first-child').textContent = 'DP Terbayar Sebelumnya';
-        document.getElementById('dpTerbayarVal').textContent = data.total_dp_formatted;
+        // Tampilkan DP hanya jika sebelumnya ada pembayaran bertahap (DP)
+        const hasPriorDp = (data.riwayat_pembayaran && data.riwayat_pembayaran.length > 1) || (data.opsi_pembayaran === 'dp');
 
-        document.getElementById('pelunasanHariIniRow').style.display = 'flex';
-        document.getElementById('pelunasanHariIniRow').querySelector('span:first-child').textContent = 'Pelunasan Hari Ini';
-        const pelunasanVal = data.total_harga_sewa - data.total_dp;
-        document.getElementById('pelunasanHariIniVal').textContent = '+ Rp ' + Number(pelunasanVal).toLocaleString('id-ID');
+        if (hasPriorDp) {
+          document.getElementById('dpTerbayarRow').style.display = 'flex';
+          document.getElementById('dpTerbayarRow').querySelector('span:first-child').textContent = 'DP Terbayar Sebelumnya';
+          document.getElementById('dpTerbayarVal').textContent = data.total_dp_formatted;
+
+          document.getElementById('pelunasanHariIniRow').style.display = 'flex';
+          document.getElementById('pelunasanHariIniRow').querySelector('span:first-child').textContent = 'Pelunasan Hari Ini';
+          const pelunasanVal = data.total_harga_sewa - data.total_dp;
+          document.getElementById('pelunasanHariIniVal').textContent = '+ Rp ' + Number(pelunasanVal).toLocaleString('id-ID');
+        } else {
+          document.getElementById('dpTerbayarRow').style.display = 'none';
+          document.getElementById('pelunasanHariIniRow').style.display = 'none';
+        }
 
         document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (PELUNASAN)';
         document.getElementById('sisaBayarVal').textContent = 'Rp 0 (LUNAS)';
         document.getElementById('sisaBayarVal').className = 'sisa-bayar-lunas';
         document.getElementById('sisaBayarNote').style.display = 'none';
 
-        document.getElementById('paymentMethodLabel').textContent = 'Metode Pelunasan';
-        document.getElementById('tunaiReceivedVal').textContent = (data.metode_bayar || 'Tunai') + (data.metode_bayar === 'TUNAI' ? ' (Cash)' : '');
+        document.getElementById('paymentMethodLabel').textContent = 'Metode Pembayaran';
+        const metodeStr = (data.metode_bayar || 'Tunai').toUpperCase();
+        document.getElementById('tunaiReceivedVal').textContent = metodeStr + (metodeStr === 'TUNAI' ? ' (Cash)' : '');
         document.getElementById('totalReceivedVal').textContent = data.uang_diterima_formatted;
         document.getElementById('kembalianVal').textContent = data.kembalian_formatted;
         document.getElementById('totalBersihRow').style.display = 'flex';
         document.getElementById('totalBersihVal').textContent = data.total_bersih_terbayar_formatted;
 
-        document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai. Pembayaran telah Lunas 100%. Pengembalian sewa tepat waktu maksimal H+3 dari hari pemakaian acara.`;
+        document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai. Pembayaran telah Lunas 100%. Pengembalian sewa tepat waktu maksimal 1 hari setelah hari pemakaian acara (H+1).`;
         document.getElementById('footerPaymentStatus').textContent = `Terbayar (LUNAS) ${data.waktu}`;
       } else {
         // Tampilan DP
@@ -331,147 +349,122 @@
 
         document.getElementById('pelunasanHariIniRow').style.display = 'flex';
         document.getElementById('pelunasanHariIniRow').querySelector('span:first-child').textContent = 'Total Tagihan Saat Ini';
-        document.getElementById('pelunasanHariIniVal').textContent = data.total_harga_sewa_formatted;
+        document.getElementById('pelunasanHariIniVal').textContent = data.total_dp_formatted;
 
         document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (Pelunasan)';
         document.getElementById('sisaBayarVal').textContent = data.sisa_bayar_formatted;
         document.getElementById('sisaBayarVal').className = '';
         document.getElementById('sisaBayarNote').style.display = 'block';
 
-        document.getElementById('paymentMethodLabel').textContent = data.metode_bayar || 'QRIS';
-        document.getElementById('tunaiReceivedVal').textContent = data.metode_bayar || 'QRIS';
-        document.getElementById('totalReceivedVal').textContent = data.total_dp_formatted;
-        document.getElementById('kembalianVal').textContent = '0';
+        const metodeStr = (data.metode_bayar || 'Tunai').toUpperCase();
+        document.getElementById('paymentMethodLabel').textContent = metodeStr;
+        document.getElementById('tunaiReceivedVal').textContent = metodeStr + (metodeStr === 'TUNAI' ? ' (Cash)' : '');
+        document.getElementById('totalReceivedVal').textContent = data.uang_diterima_formatted;
+        document.getElementById('kembalianVal').textContent = data.kembalian_formatted;
         document.getElementById('totalBersihRow').style.display = 'none';
 
-        document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai &amp;<br>Untuk Dp 100% Tidak Dapat Dikembalikan<br>Apabila Pesanan dibatalkan. Sisa sewa<br>wajib dilunasi saat pengambilan barang.`;
+        document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai &amp;<br>Untuk DP 100% Tidak Dapat Dikembalikan<br>Apabila Pesanan dibatalkan. Sisa sewa<br>wajib dilunasi saat pengambilan barang.`;
         document.getElementById('footerPaymentStatus').textContent = `Terbayar (DP) ${data.waktu}`;
+      }
+
+      const footerPrinter = document.getElementById('footerPrinter');
+      if (footerPrinter) {
+        footerPrinter.textContent = `dicetak: ${data.kasir || 'Amanah Solusi'}`;
       }
     }
 
-    function renderLunasReceipt() {
-      document.getElementById('customerName').textContent = 'Cordelia';
-      document.getElementById('notaNum').textContent = 'CS/01/261116/0001';
-      document.getElementById('bookingNum').textContent = '1';
-      document.getElementById('kasirName').textContent = 'Ahmad Rivaldy';
-
-      const itemsContainer = document.getElementById('receiptItemsList');
-      itemsContainer.innerHTML = `
-        <div class="receipt-item-block">
-          <span class="receipt-item-name">Baju Tari Jaipong Daun Asih (Atasan)</span>
-          <div class="receipt-item-calc">
-            <span>1x @60.000</span>
-            <span>60.000</span>
-          </div>
-        </div>
-        <div class="receipt-item-block">
-          <span class="receipt-item-name">Kain Sinjang Jaipong Prada Emas</span>
-          <div class="receipt-item-calc">
-            <span>1x @30.000</span>
-            <span>30.000</span>
-          </div>
-        </div>
-        <div class="receipt-item-block">
-          <span class="receipt-item-name">Aksesoris Siger Sunda & Kembang Goyang</span>
-          <div class="receipt-item-calc">
-            <span>1x @20.000</span>
-            <span>20.000</span>
-          </div>
-        </div>
-        <div class="receipt-item-block">
-          <span class="receipt-item-name">Paket Kostum Tambahan & Selendang</span>
-          <div class="receipt-item-calc">
-            <span>1x @265.000</span>
-            <span>265.000</span>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('subtotalLabel').textContent = 'Subtotal 4 Produk';
-      document.getElementById('subtotalVal').textContent = '375.000';
-      document.getElementById('totalSewaVal').textContent = '375.000';
-
-      document.getElementById('statusPembayaranRow').style.display = 'flex';
-      document.getElementById('dpTerbayarRow').style.display = 'flex';
-      document.getElementById('dpTerbayarVal').textContent = 'Rp 93.750';
-      document.getElementById('pelunasanHariIniRow').style.display = 'flex';
-      document.getElementById('pelunasanHariIniVal').textContent = '+ Rp 281.250';
-
-      document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (PELUNASAN)';
-      document.getElementById('sisaBayarVal').textContent = 'Rp 0 (LUNAS)';
-      document.getElementById('sisaBayarVal').className = 'sisa-bayar-lunas';
-      document.getElementById('sisaBayarNote').style.display = 'none';
-
-      document.getElementById('paymentMethodLabel').textContent = 'Metode Pelunasan';
-      document.getElementById('tunaiReceivedVal').textContent = 'Tunai (Cash)';
-      document.getElementById('totalReceivedVal').textContent = '300.000';
-      document.getElementById('kembalianVal').textContent = '18.750';
-      document.getElementById('totalBersihRow').style.display = 'flex';
-      document.getElementById('totalBersihVal').textContent = '375.000';
-
-      document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai. Pembayaran telah Lunas 100%. Pengembalian sewa tepat waktu maksimal H+3 dari hari pemakaian acara.`;
-      document.getElementById('footerPaymentStatus').textContent = 'Terbayar (LUNAS) 16 Nov 26 14 13';
-    }
-
-    function renderDpReceipt() {
-      document.getElementById('customerName').textContent = 'Cordelia';
-      const itemsContainer = document.getElementById('receiptItemsList');
-      itemsContainer.innerHTML = `
-        <div class="receipt-item-block">
-          <span class="receipt-item-name">Baju Tari Jaipong Daun Asih (Atasan)</span>
-          <div class="receipt-item-calc">
-            <span>1x @50.000</span>
-            <span>50.000</span>
-          </div>
-        </div>
-        <div class="receipt-item-block">
-          <span class="receipt-item-name">Kain Sinjang Jaipong Prada Emas</span>
-          <div class="receipt-item-calc">
-            <span>1x @30.000</span>
-            <span>30.000</span>
-          </div>
-        </div>
-        <div class="receipt-item-block">
-          <span class="receipt-item-name">Aksesoris Siger Sunda & Kembang Goyang</span>
-          <div class="receipt-item-calc">
-            <span>1x @20.000</span>
-            <span>20.000</span>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('subtotalLabel').textContent = 'Subtotal 3 Produk';
-      document.getElementById('subtotalVal').textContent = '100.000';
-      document.getElementById('totalSewaVal').textContent = '100.000';
-
-      document.getElementById('statusPembayaranRow').style.display = 'none';
-      document.getElementById('dpTerbayarRow').style.display = 'flex';
-      document.getElementById('dpTerbayarRow').querySelector('span:first-child').textContent = 'DP Sewa (25%)';
-      document.getElementById('dpTerbayarVal').textContent = '25.000';
-      document.getElementById('pelunasanHariIniRow').style.display = 'flex';
-      document.getElementById('pelunasanHariIniRow').querySelector('span:first-child').textContent = 'Total Tagihan Saat Ini';
-      document.getElementById('pelunasanHariIniVal').textContent = '25.000';
-
-      document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (Pelunasan)';
-      document.getElementById('sisaBayarVal').textContent = 'Rp 75.000';
-      document.getElementById('sisaBayarVal').className = '';
-      document.getElementById('sisaBayarNote').style.display = 'block';
-
-      document.getElementById('paymentMethodLabel').textContent = 'Tunai';
-      document.getElementById('tunaiReceivedVal').textContent = '50.000';
-      document.getElementById('totalReceivedVal').textContent = '50.000';
-      document.getElementById('kembalianVal').textContent = '25.000';
-      document.getElementById('totalBersihRow').style.display = 'none';
-
-      document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai &amp;<br>Untuk Dp 100% Tidak Dapat Dikembalikan<br>Apabila Pesanan dibatalkan. Sisa sewa<br>wajib dilunasi saat pengambilan barang.`;
-      document.getElementById('footerPaymentStatus').textContent = 'Terbayar (DP) 16 Nov 26 14 13';
-    }
-
     function renderFromOrder(order) {
-      if (order.isDp) {
-        renderDpReceipt();
+      if (!order) return;
+      document.getElementById('customerName').textContent = order.customerName || order.customer || 'Pelanggan';
+      document.getElementById('notaNum').textContent = order.noNota || ('CS/01/' + Date.now().toString().slice(-6));
+      document.getElementById('notaTime').textContent = order.date || new Date().toLocaleString('id-ID');
+      document.getElementById('bookingNum').textContent = order.noBooking || '1';
+      document.getElementById('kasirName').textContent = order.kasir || 'Amanah Solusi';
+
+      const itemsContainer = document.getElementById('receiptItemsList');
+      itemsContainer.innerHTML = '';
+
+      if (order.items && order.items.length > 0) {
+        order.items.forEach(it => {
+          const block = document.createElement('div');
+          block.className = 'receipt-item-block';
+          const qty = it.qty || 1;
+          const price = Number(it.price) || 0;
+          const sub = price * qty;
+          block.innerHTML = `
+            <span class="receipt-item-name">${it.name || it.nama_produk}</span>
+            <div class="receipt-item-calc">
+              <span>${qty}x @${Number(price).toLocaleString('id-ID')}</span>
+              <span>${Number(sub).toLocaleString('id-ID')}</span>
+            </div>
+          `;
+          itemsContainer.appendChild(block);
+        });
+      }
+
+      const totalItems = (order.items || []).length;
+      const subtotal = Number(order.subtotal) || 0;
+      document.getElementById('subtotalLabel').textContent = `Subtotal ${totalItems} Produk`;
+      document.getElementById('subtotalVal').textContent = subtotal.toLocaleString('id-ID');
+      document.getElementById('totalSewaVal').textContent = subtotal.toLocaleString('id-ID');
+
+      const isLunas = !order.isDp;
+      const cashReceived = Number(order.cashReceived) || (order.isDp ? order.dpAmount : subtotal);
+      const kembalian = Number(order.kembalian) || Math.max(0, cashReceived - (order.isDp ? order.dpAmount : subtotal));
+      const metode = (order.metode || 'Tunai').toUpperCase();
+
+      if (isLunas) {
+        document.getElementById('statusPembayaranRow').style.display = 'flex';
+        const badgeLunas = document.getElementById('statusPembayaranRow').querySelector('.badge-lunas-receipt');
+        if (badgeLunas) {
+          badgeLunas.textContent = 'LUNAS 100%';
+          badgeLunas.className = 'badge-lunas-receipt';
+        }
+        document.getElementById('dpTerbayarRow').style.display = 'none';
+        document.getElementById('pelunasanHariIniRow').style.display = 'none';
+
+        document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (PELUNASAN)';
+        document.getElementById('sisaBayarVal').textContent = 'Rp 0 (LUNAS)';
+        document.getElementById('sisaBayarVal').className = 'sisa-bayar-lunas';
+        document.getElementById('sisaBayarNote').style.display = 'none';
+
+        document.getElementById('paymentMethodLabel').textContent = 'Metode Pembayaran';
+        document.getElementById('tunaiReceivedVal').textContent = metode + (metode === 'TUNAI' ? ' (Cash)' : '');
+        document.getElementById('totalReceivedVal').textContent = cashReceived.toLocaleString('id-ID');
+        document.getElementById('kembalianVal').textContent = kembalian.toLocaleString('id-ID');
+        document.getElementById('totalBersihRow').style.display = 'flex';
+        document.getElementById('totalBersihVal').textContent = subtotal.toLocaleString('id-ID');
+
+        document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai. Pembayaran telah Lunas 100%. Pengembalian sewa tepat waktu maksimal 1 hari setelah hari pemakaian acara (H+1).`;
+        document.getElementById('footerPaymentStatus').textContent = `Terbayar (LUNAS) ${order.date || ''}`;
       } else {
-        renderLunasReceipt();
+        document.getElementById('statusPembayaranRow').style.display = 'none';
+        document.getElementById('dpTerbayarRow').style.display = 'flex';
+        document.getElementById('dpTerbayarRow').querySelector('span:first-child').textContent = 'DP Sewa (25%)';
+        document.getElementById('dpTerbayarVal').textContent = Number(order.dpAmount).toLocaleString('id-ID');
+
+        document.getElementById('pelunasanHariIniRow').style.display = 'flex';
+        document.getElementById('pelunasanHariIniRow').querySelector('span:first-child').textContent = 'Total Tagihan Saat Ini';
+        document.getElementById('pelunasanHariIniVal').textContent = Number(order.dpAmount).toLocaleString('id-ID');
+
+        document.getElementById('sisaBayarLabel').textContent = 'SISA BAYAR (Pelunasan)';
+        document.getElementById('sisaBayarVal').textContent = 'Rp ' + Number(order.sisaBayar).toLocaleString('id-ID');
+        document.getElementById('sisaBayarVal').className = '';
+        document.getElementById('sisaBayarNote').style.display = 'block';
+
+        document.getElementById('paymentMethodLabel').textContent = metode;
+        document.getElementById('tunaiReceivedVal').textContent = metode + (metode === 'TUNAI' ? ' (Cash)' : '');
+        document.getElementById('totalReceivedVal').textContent = cashReceived.toLocaleString('id-ID');
+        document.getElementById('kembalianVal').textContent = kembalian.toLocaleString('id-ID');
+        document.getElementById('totalBersihRow').style.display = 'none';
+
+        document.getElementById('policyBox').innerHTML = `Pastikan Pesanan Anda Sudah Sesuai &amp;<br>Untuk DP 100% Tidak Dapat Dikembalikan<br>Apabila Pesanan dibatalkan. Sisa sewa<br>wajib dilunasi saat pengambilan barang.`;
+        document.getElementById('footerPaymentStatus').textContent = `Terbayar (DP) ${order.date || ''}`;
+      }
+
+      const footerPrinter = document.getElementById('footerPrinter');
+      if (footerPrinter) {
+        footerPrinter.textContent = `dicetak: ${order.kasir || 'Amanah Solusi'}`;
       }
     }
   </script>

@@ -91,14 +91,20 @@ class DataNotaController extends Controller
     public function show($id)
     {
         try {
-            $booking = Booking::with([
+            $query = Booking::with([
                 'pelanggan.kecamatan',
                 'user',
                 'details.produk',
                 'pembayaran.user',
-            ])->where('id_booking', $id)
-              ->orWhere('no_nota', $id)
-              ->firstOrFail();
+            ]);
+
+            if ($id === 'latest') {
+                $booking = $query->orderByDesc('id_booking')->firstOrFail();
+            } else {
+                $booking = $query->where('id_booking', $id)
+                    ->orWhere('no_nota', $id)
+                    ->firstOrFail();
+            }
 
             $pembayaranTerakhir = $booking->pembayaran->sortByDesc('id_pembayaran')->first();
 
@@ -131,6 +137,7 @@ class DataNotaController extends Controller
                     'subtotal_formatted' => number_format($booking->subtotal_produk, 0, ',', '.'),
                     'total_harga_sewa' => (float)$booking->total_tagihan,
                     'total_harga_sewa_formatted' => number_format($booking->total_tagihan, 0, ',', '.'),
+                    'opsi_pembayaran' => strtolower($booking->opsi_pembayaran ?? 'lunas'),
                     'status_pembayaran' => strtoupper($booking->status_pembayaran),
                     'total_dp' => (float)$booking->total_dp,
                     'total_dp_formatted' => 'Rp ' . number_format($booking->total_dp, 0, ',', '.'),
