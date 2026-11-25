@@ -43,8 +43,25 @@ class BookingController extends Controller
 
             $bookings = $query->get();
 
-            $data = $bookings->map(function ($b, $index) {
-                $totalDenda = (float)$b->denda_keterlambatan + (float)$b->denda_kerusakan;
+            $today = now()->startOfDay();
+
+            $data = $bookings->map(function ($b, $index) use ($today) {
+                $tglKembali = $b->tgl_kembali_rencana ? \Carbon\Carbon::parse($b->tgl_kembali_rencana)->startOfDay() : null;
+                $isReturned = in_array(strtolower($b->status_sewa), ['selesai', 'kembali']);
+
+                // Aturan Denda: jika lebih dari tgl kembali rencana dan status belum dikembalikan, denda otomatis 10% dari nominal bayar barang
+                $isOverdue = false;
+                if ($tglKembali && !$isReturned && $today->gt($tglKembali)) {
+                    $isOverdue = true;
+                }
+
+                $nominalBarang = (float)($b->subtotal_produk ?: $b->total_tagihan);
+                $dendaTelat = (float)$b->denda_keterlambatan;
+                if ($isOverdue && $dendaTelat <= 0) {
+                    $dendaTelat = round($nominalBarang * 0.10);
+                }
+                $totalDenda = $dendaTelat + (float)$b->denda_kerusakan;
+
                 $items = $b->details->map(function ($d) {
                     return $d->produk ? $d->produk->nama_produk : '-';
                 })->filter()->implode(', ');
@@ -61,6 +78,7 @@ class BookingController extends Controller
                     'pickup' => $b->tgl_ambil ? $b->tgl_ambil->format('d/m/Y') : '-',
                     'pakai' => $b->tgl_pakai ? $b->tgl_pakai->format('d/m/Y') : '-',
                     'pickin' => $b->tgl_kembali_rencana ? $b->tgl_kembali_rencana->format('d/m/Y') : '-',
+                    'is_overdue' => $isOverdue,
                     'status' => $b->status_sewa,
                     'status_label' => ucfirst($b->status_sewa),
                     'status_pembayaran' => $b->status_pembayaran,
@@ -168,6 +186,25 @@ class BookingController extends Controller
         try {
             $booking = Booking::with(['pelanggan', 'details.produk.kategori', 'pembayaran'])->findOrFail($id);
 
+            // Periksa keterlambatan pengembalian (otomatis denda 10% jika telat & belum dikembalikan)
+            $today = now()->startOfDay();
+            $tglKembali = $booking->tgl_kembali_rencana ? \Carbon\Carbon::parse($booking->tgl_kembali_rencana)->startOfDay() : null;
+            $isReturned = in_array(strtolower($booking->status_sewa), ['selesai', 'kembali']);
+
+            $isOverdue = false;
+            if ($tglKembali && !$isReturned && $today->gt($tglKembali)) {
+                $isOverdue = true;
+            }
+
+            $nominalBarang = (float)($booking->subtotal_produk ?: $booking->total_tagihan);
+            $dendaTelat = (float)$booking->denda_keterlambatan;
+            if ($isOverdue && $dendaTelat <= 0) {
+                $dendaTelat = round($nominalBarang * 0.10);
+            }
+            $booking->denda_keterlambatan = $dendaTelat;
+            $booking->total_denda = $dendaTelat + (float)$booking->denda_kerusakan;
+            $booking->is_overdue = $isOverdue;
+
             return response()->json([
                 'status' => 'success',
                 'data' => $booking,
@@ -200,6 +237,19 @@ class BookingController extends Controller
                 'catatan' => 'nullable|string',
             ]);
 
+            // Aturan Sewa: Baju dipakai maksimal 1 hari.
+            // Ambil (Pickup) = H-1, Pakai = Hari-H, Kembali (Pickin) = H+1
+            if (isset($validated['tgl_pakai'])) {
+                $pakaiDate = \Carbon\Carbon::parse($validated['tgl_pakai']);
+                if (empty($validated['tgl_ambil'])) {
+                    $validated['tgl_ambil'] = (clone $pakaiDate)->subDay()->toDateString();
+                }
+                if (empty($validated['tgl_kembali_rencana'])) {
+                    $validated['tgl_kembali_rencana'] = (clone $pakaiDate)->addDay()->toDateString();
+                }
+                $validated['durasi_sewa_hari'] = 1;
+            }
+
             // Jika status berubah menjadi selesai/kembali
             if (isset($validated['status_sewa']) && in_array(strtolower($validated['status_sewa']), ['selesai', 'kembali'])) {
                 if (empty($validated['tgl_kembali_aktual']) && empty($booking->tgl_kembali_aktual)) {
@@ -230,11 +280,21 @@ class BookingController extends Controller
                 }
             }
 
-            if (isset($validated['denda_keterlambatan']) || isset($validated['denda_kerusakan'])) {
-                $dendaTelat = isset($validated['denda_keterlambatan']) ? (float)$validated['denda_keterlambatan'] : (float)$booking->denda_keterlambatan;
-                $dendaRusak = isset($validated['denda_kerusakan']) ? (float)$validated['denda_kerusakan'] : (float)$booking->denda_kerusakan;
-                $validated['total_denda'] = $dendaTelat + $dendaRusak;
+            // Denda otomatis 10% dari nominal bayar barang jika lewat tanggal kembali & belum selesai
+            $statusToCheck = isset($validated['status_sewa']) ? strtolower($validated['status_sewa']) : strtolower($booking->status_sewa);
+            $kembaliTarget = isset($validated['tgl_kembali_rencana']) ? \Carbon\Carbon::parse($validated['tgl_kembali_rencana']) : ($booking->tgl_kembali_rencana ? \Carbon\Carbon::parse($booking->tgl_kembali_rencana) : null);
+
+            if (!isset($validated['denda_keterlambatan'])) {
+                if ($kembaliTarget && !in_array($statusToCheck, ['selesai', 'kembali']) && now()->startOfDay()->gt($kembaliTarget->startOfDay())) {
+                    $nominal = (float)($booking->subtotal_produk ?: $booking->total_tagihan);
+                    $validated['denda_keterlambatan'] = round($nominal * 0.10);
+                } elseif (in_array($statusToCheck, ['selesai', 'kembali']) && (float)$booking->denda_keterlambatan <= 0) {
+                    $validated['denda_keterlambatan'] = 0;
+                }
             }
+
+            // total_denda dihitung otomatis oleh MySQL generated column dari denda_keterlambatan + denda_kerusakan
+            unset($validated['total_denda']);
 
             // Hitung durasi sewa hari jika tanggal berubah
             $tglAmbil = $validated['tgl_ambil'] ?? $booking->tgl_ambil;

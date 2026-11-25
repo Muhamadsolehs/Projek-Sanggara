@@ -47,33 +47,18 @@
             <input type="tel" id="inputNoTelepon" class="form-control-input" placeholder="08xxxxxxxxxx" required oninput="updateCounter(this, 'telpPelangganCounter', 30)">
           </div>
 
-          <!-- Alamat (Kecamatan & Kelurahan) -->
+          <!-- Alamat (Kecamatan & Kelurahan via API Ogan) -->
           <div class="form-group">
             <div class="form-field-header">
               <label class="form-field-label" for="inputKecamatan">Wilayah (Purwakarta)<span class="required-asterisk">*</span></label>
             </div>
             <div class="alamat-dual-select">
-              <select class="form-control-select" id="inputKecamatan" required>
-                <option value="">Pilih Kecamatan</option>
-                <option value="Babakancikao">Kec. Babakancikao</option>
-                <option value="Bojong">Kec. Bojong</option>
-                <option value="Bungursari">Kec. Bungursari</option>
-                <option value="Campaka">Kec. Campaka</option>
-                <option value="Cibatu">Kec. Cibatu</option>
-                <option value="Darangdan">Kec. Darangdan</option>
-                <option value="Jatiluhur">Kec. Jatiluhur</option>
-                <option value="Kiarapedes">Kec. Kiarapedes</option>
-                <option value="Maniis">Kec. Maniis</option>
-                <option value="Pasawahan">Kec. Pasawahan</option>
-                <option value="Plered">Kec. Plered</option>
-                <option value="Pondoksalam">Kec. Pondoksalam</option>
-                <option value="Purwakarta">Kec. Purwakarta</option>
-                <option value="Sukasari">Kec. Sukasari</option>
-                <option value="Sukatani">Kec. Sukatani</option>
-                <option value="Tegalwaru">Kec. Tegalwaru</option>
-                <option value="Wanayasa">Kec. Wanayasa</option>
+              <select class="form-control-select" id="inputKecamatan" onchange="onKecamatanChange()" required>
+                <option value="" disabled selected>Memuat Kecamatan dari API Ogan...</option>
               </select>
-              <input type="text" id="inputKelurahan" class="form-control-input" placeholder="Kelurahan / Desa (Contoh: Nagri Kaler)">
+              <select class="form-control-select" id="inputKelurahan" required>
+                <option value="" disabled selected>Pilih Kelurahan / Desa...</option>
+              </select>
             </div>
           </div>
 
@@ -97,9 +82,113 @@
   </div>
 
   <script>
+    let oganDistrictsList = [];
+
     function updateCounter(input, counterId, max) {
       const counter = document.getElementById(counterId);
       if (counter) counter.textContent = `${input.value.length}/${max}`;
+    }
+
+    async function loadOganDistricts() {
+      const kecSelect = document.getElementById('inputKecamatan');
+      if (!kecSelect) return;
+
+      kecSelect.disabled = true;
+      kecSelect.innerHTML = '<option value="" disabled selected>Memuat Kecamatan dari API Ogan...</option>';
+
+      try {
+        const res = await SanggaraAPI.getDistricts('3214');
+        if (res.status === 'success' && res.data && res.data.length > 0) {
+          oganDistrictsList = res.data;
+          kecSelect.innerHTML = '<option value="" disabled>Pilih Kecamatan</option>' + res.data.map(d => `
+            <option value="${d.id}" data-name="${d.name}" ${d.name.toLowerCase() === 'purwakarta' ? 'selected' : ''}>
+              ${d.label || ('Kecamatan ' + d.name)}
+            </option>
+          `).join('');
+
+          kecSelect.disabled = false;
+          const selectedOption = kecSelect.options[kecSelect.selectedIndex];
+          const districtId = selectedOption ? selectedOption.value : (res.data[0] ? res.data[0].id : 3214100);
+          await loadOganVillages(districtId);
+        } else {
+          fallbackDistricts();
+        }
+      } catch (err) {
+        console.warn('Gagal memuat kecamatan dari API Ogan, fallback aktif:', err);
+        fallbackDistricts();
+      }
+    }
+
+    function fallbackDistricts() {
+      const kecSelect = document.getElementById('inputKecamatan');
+      if (!kecSelect) return;
+      kecSelect.disabled = false;
+      const list = [
+        { id: 3214101, name: 'Babakancikao', label: 'Kecamatan Babakancikao' },
+        { id: 3214070, name: 'Bojong', label: 'Kecamatan Bojong' },
+        { id: 3214112, name: 'Bungursari', label: 'Kecamatan Bungursari' },
+        { id: 3214110, name: 'Campaka', label: 'Kecamatan Campaka' },
+        { id: 3214111, name: 'Cibatu', label: 'Kecamatan Cibatu' },
+        { id: 3214060, name: 'Darangdan', label: 'Kecamatan Darangdan' },
+        { id: 3214010, name: 'Jatiluhur', label: 'Kecamatan Jatiluhur' },
+        { id: 3214081, name: 'Kiarapedes', label: 'Kecamatan Kiarapedes' },
+        { id: 3214020, name: 'Maniis', label: 'Kecamatan Maniis' },
+        { id: 3214090, name: 'Pasawahan', label: 'Kecamatan Pasawahan' },
+        { id: 3214040, name: 'Plered', label: 'Kecamatan Plered' },
+        { id: 3214091, name: 'Pondok Salam', label: 'Kecamatan Pondok Salam' },
+        { id: 3214100, name: 'Purwakarta', label: 'Kecamatan Purwakarta' },
+        { id: 3214011, name: 'Sukasari', label: 'Kecamatan Sukasari' },
+        { id: 3214050, name: 'Sukatani', label: 'Kecamatan Sukatani' },
+        { id: 3214030, name: 'Tegal Waru', label: 'Kecamatan Tegal Waru' },
+        { id: 3214080, name: 'Wanayasa', label: 'Kecamatan Wanayasa' }
+      ];
+      oganDistrictsList = list;
+      kecSelect.innerHTML = '<option value="" disabled>Pilih Kecamatan</option>' + list.map(d => `
+        <option value="${d.id}" data-name="${d.name}" ${d.name.toLowerCase() === 'purwakarta' ? 'selected' : ''}>
+          ${d.label}
+        </option>
+      `).join('');
+      loadOganVillages(3214100);
+    }
+
+    async function onKecamatanChange() {
+      const kecSelect = document.getElementById('inputKecamatan');
+      const districtId = kecSelect ? kecSelect.value : 3214100;
+      await loadOganVillages(districtId);
+    }
+
+    async function loadOganVillages(districtId, preSelectedName = null) {
+      const kelSelect = document.getElementById('inputKelurahan');
+      if (!kelSelect) return;
+
+      kelSelect.disabled = true;
+      kelSelect.innerHTML = '<option value="" disabled selected>Memuat kelurahan/desa dari API Ogan...</option>';
+
+      try {
+        const res = await SanggaraAPI.getVillages(districtId);
+        if (res.status === 'success' && res.data && res.data.length > 0) {
+          kelSelect.innerHTML = '<option value="" disabled ' + (!preSelectedName ? 'selected' : '') + '>Pilih Kelurahan / Desa</option>' + res.data.map(v => {
+            const isSelected = preSelectedName ? (v.name.toLowerCase() === preSelectedName.toLowerCase()) : false;
+            return `<option value="${v.name}" ${isSelected ? 'selected' : ''}>${v.label || v.name}</option>`;
+          }).join('');
+
+          if (!preSelectedName && res.data[0]) {
+            kelSelect.selectedIndex = 1; // default to first village
+          }
+        } else {
+          kelSelect.innerHTML = '<option value="Pusat Wilayah">Pusat Wilayah</option>';
+        }
+      } catch (err) {
+        console.warn('Gagal memuat kelurahan dari API Ogan, fallback aktif:', err);
+        kelSelect.innerHTML = `
+          <option value="Nagri Kaler" selected>Kelurahan Nagri Kaler</option>
+          <option value="Nagri Kidul">Kelurahan Nagri Kidul</option>
+          <option value="Cipaisan">Kelurahan Cipaisan</option>
+          <option value="Ciseureuh">Kelurahan Ciseureuh</option>
+        `;
+      } finally {
+        kelSelect.disabled = false;
+      }
     }
 
     async function submitTambahPelanggan(e) {
@@ -108,8 +197,11 @@
 
       const nama = document.getElementById('inputNamaPelanggan').value.trim();
       const telp = document.getElementById('inputNoTelepon').value.trim();
-      const kecamatan = document.getElementById('inputKecamatan').value;
-      const kelurahan = document.getElementById('inputKelurahan').value.trim();
+      const kecSelect = document.getElementById('inputKecamatan');
+      const selectedKecOpt = kecSelect ? kecSelect.options[kecSelect.selectedIndex] : null;
+      const kecName = selectedKecOpt ? (selectedKecOpt.getAttribute('data-name') || selectedKecOpt.text.replace(/^Kecamatan\s*/i, '').replace(/^Kec\.\s*/i, '')) : 'Purwakarta';
+      const kelSelect = document.getElementById('inputKelurahan');
+      const kelName = kelSelect ? kelSelect.value : '';
       const alamatLengkap = document.getElementById('inputAlamatLengkap').value.trim();
 
       if (!nama) {
@@ -120,7 +212,7 @@
         SanggaraModal.alert('Silakan masukkan nomor telepon konsumen', { type: 'warning', title: 'Data Belum Lengkap' });
         return;
       }
-      if (!kecamatan) {
+      if (!kecSelect || !kecSelect.value) {
         SanggaraModal.alert('Silakan pilih kecamatan wilayah Purwakarta', { type: 'warning', title: 'Pilih Wilayah' });
         return;
       }
@@ -128,9 +220,9 @@
       const payload = {
         nama_pelanggan: nama,
         no_telepon: telp,
-        nama_kecamatan: kecamatan,
-        kelurahan_desa: kelurahan || null,
-        alamat_lengkap: alamatLengkap || (kelurahan ? `${kelurahan}, Kec. ${kecamatan}` : `Kec. ${kecamatan}, Purwakarta`)
+        nama_kecamatan: 'Kec. ' + kecName,
+        kelurahan_desa: kelName || null,
+        alamat_lengkap: alamatLengkap || (kelName ? `${kelName}, Kec. ${kecName}` : `Kec. ${kecName}, Purwakarta`)
       };
 
       try {
@@ -159,6 +251,10 @@
         }
       }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadOganDistricts();
+    });
   </script>
 </body>
 </html>

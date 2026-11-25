@@ -365,6 +365,11 @@
             </div>
           </div>
 
+          <!-- Info Aturan Sewa 1 Hari & Denda 10% -->
+          <div style="font-size: 11.5px; color: #0369a1; background: #f0f9ff; border: 1px solid #bae6fd; padding: 7px 10px; border-radius: 6px; line-height: 1.4;">
+            💡 <strong>Aturan Sewa:</strong> Baju dipakai 1 hari (Hari-H). Diambil H-1 & dikembalikan H+1. Denda 10% otomatis jika lewat tanggal kembali & belum selesai.
+          </div>
+
           <!-- Status Pembayaran & Denda -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="form-group">
@@ -540,6 +545,30 @@
           const modalStatusEl = document.getElementById('modalBookingStatus');
           if (modalStatusEl && document.getElementById('modalBookingNo')?.textContent === `#${String(b.no_booking).padStart(4, '0')}`) {
             modalStatusEl.innerHTML = renderStatusBadge(nextStatus, idBooking, true);
+          }
+
+          // Perbarui juga nominal denda pada baris tabel (otomatis denda 10% jika telat & belum dikembalikan)
+          const tr = badgeEl ? badgeEl.closest('tr') : null;
+          if (tr) {
+            const dendaCell = tr.children[7]; // Index 7: kolom DENDA
+            if (dendaCell && res.data) {
+              const updatedDenda = (res.data.total_denda !== undefined) 
+                ? Number(res.data.total_denda) 
+                : (Number(res.data.denda_keterlambatan || 0) + Number(res.data.denda_kerusakan || 0));
+              b.denda = updatedDenda;
+              b.denda_formatted = 'Rp ' + updatedDenda.toLocaleString('id-ID');
+              dendaCell.style.color = updatedDenda > 0 ? '#e11d48' : '#64748b';
+              dendaCell.style.fontWeight = updatedDenda > 0 ? '700' : '500';
+              dendaCell.textContent = b.denda_formatted;
+            }
+          }
+
+          // Perbarui denda pada modal detail jika terbuka
+          const modalDendaEl = document.getElementById('modalBookingDenda');
+          if (modalDendaEl && document.getElementById('modalBookingNo')?.textContent === `#${String(b.no_booking).padStart(4, '0')}`) {
+            modalDendaEl.textContent = b.denda_formatted || 'Rp 0';
+            modalDendaEl.style.color = (b.denda > 0) ? '#e11d48' : '#64748b';
+            modalDendaEl.style.fontWeight = (b.denda > 0) ? '700' : '500';
           }
 
           const labelMap = {
@@ -837,13 +866,104 @@
         document.getElementById('editBookingStatusPembayaran').value = currentBayar === 'LUNAS' ? 'LUNAS' : 'DP';
 
         // Denda & Catatan
-        document.getElementById('editBookingDenda').value = fullDetail ? (fullDetail.denda_keterlambatan || 0) : (b ? (b.denda || 0) : 0);
+        let currentDenda = fullDetail ? (fullDetail.total_denda !== undefined ? fullDetail.total_denda : (fullDetail.denda_keterlambatan || 0)) : (b ? (b.denda || 0) : 0);
+        
+        // Denda otomatis 10% jika telat dan status belum selesai
+        if (currentDenda === 0 && currentStatus !== 'selesai' && rawPickin) {
+          const pickinDate = new Date(formatToInputDate(rawPickin) + 'T00:00:00');
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (today > pickinDate) {
+            const nominal = (fullDetail ? fullDetail.total_tagihan : (b ? b.total_tagihan : 0)) || 0;
+            currentDenda = Math.round(nominal * 0.10);
+          }
+        }
+        document.getElementById('editBookingDenda').value = currentDenda;
         document.getElementById('editBookingCatatan').value = fullDetail ? (fullDetail.catatan || '') : '';
+
+        // Setup listener perubahan tanggal pakai -> otomatis pickup = H-1, pickin = H+1
+        setupEditDateAutoCalc();
 
         document.getElementById('editBookingModal').classList.add('active');
       } catch (err) {
         console.error('Gagal membuka form edit booking:', err);
         alert('Gagal memuat formulir edit: ' + err.message);
+      }
+    }
+
+    // Listener Auto-Calculation Tanggal Sewa 1 Hari & Denda 10%
+    function setupEditDateAutoCalc() {
+      const pakaiInput = document.getElementById('editBookingPakai');
+      const pickupInput = document.getElementById('editBookingPickup');
+      const pickinInput = document.getElementById('editBookingPickin');
+
+      const onPakaiChanged = () => {
+        if (!pakaiInput) return;
+        const val = pakaiInput.value;
+        if (!val) return;
+        const d = new Date(val + 'T00:00:00');
+        if (isNaN(d.getTime())) return;
+
+        const dPickup = new Date(d);
+        dPickup.setDate(dPickup.getDate() - 1);
+        const dPickin = new Date(d);
+        dPickin.setDate(dPickin.getDate() + 1);
+
+        const toYmd = dt => {
+          const y = dt.getFullYear();
+          const m = String(dt.getMonth() + 1).padStart(2, '0');
+          const day = String(dt.getDate()).padStart(2, '0');
+          return `${y}-${m}-${day}`;
+        };
+
+        if (pickupInput) pickupInput.value = toYmd(dPickup);
+        if (pickinInput) pickinInput.value = toYmd(dPickin);
+
+        checkAutoDendaInModal();
+      };
+
+      if (pakaiInput && !pakaiInput.dataset.listenerBound) {
+        pakaiInput.dataset.listenerBound = 'true';
+        pakaiInput.addEventListener('change', onPakaiChanged);
+        pakaiInput.addEventListener('input', onPakaiChanged);
+      }
+
+      const statusSelect = document.getElementById('editBookingStatusSewa');
+      if (statusSelect && !statusSelect.dataset.listenerBound) {
+        statusSelect.dataset.listenerBound = 'true';
+        statusSelect.addEventListener('change', function() {
+          checkAutoDendaInModal();
+        });
+      }
+    }
+
+    function checkAutoDendaInModal() {
+      const status = (document.getElementById('editBookingStatusSewa')?.value || '').toLowerCase();
+      const pickinVal = document.getElementById('editBookingPickin')?.value;
+      const dendaInput = document.getElementById('editBookingDenda');
+      if (!dendaInput) return;
+
+      if (status === 'selesai') {
+        // Jika sudah dikembalikan tepat waktu
+        dendaInput.value = 0;
+        return;
+      }
+
+      if (pickinVal) {
+        const pickinDate = new Date(pickinVal + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (today > pickinDate) {
+          const bookingId = document.getElementById('editBookingId')?.value;
+          const b = rawBookingList.find(x => String(x.id_booking) === String(bookingId));
+          const nominal = b ? (b.total_tagihan || 0) : 0;
+          if (nominal > 0) {
+            dendaInput.value = Math.round(nominal * 0.10);
+          }
+        } else {
+          dendaInput.value = 0;
+        }
       }
     }
 
@@ -943,8 +1063,12 @@
 
     // Inisialisasi saat halaman selesai dimuat
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => loadBookingData());
+      document.addEventListener('DOMContentLoaded', () => {
+        setupEditDateAutoCalc();
+        loadBookingData();
+      });
     } else {
+      setupEditDateAutoCalc();
       loadBookingData();
     }
   </script>

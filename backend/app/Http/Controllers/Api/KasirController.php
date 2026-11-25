@@ -82,9 +82,14 @@ class KasirController extends Controller
             DB::beginTransaction();
 
             $idPelanggan = $request->id_pelanggan;
-            $tglAmbil = $request->tgl_ambil;
-            $tglPakai = $request->tgl_pakai;
-            $tglKembali = date('Y-m-d', strtotime($tglPakai . ' +3 days'));
+            // Aturan Sewa: Baju dipakai maksimal 1 hari (Hari-H).
+            // Ambil (Pickup) = H-1 (misal tgl 2)
+            // Pakai = Hari-H (misal tgl 3)
+            // Kembali (Pickin) = H+1 (misal tgl 4)
+            $cPakai = \Carbon\Carbon::parse($request->tgl_pakai ?: $request->tgl_ambil);
+            $tglPakai = $cPakai->toDateString();
+            $tglAmbil = (clone $cPakai)->subDay()->toDateString();
+            $tglKembali = (clone $cPakai)->addDay()->toDateString();
 
             // Hitung subtotal produk
             $subtotal = 0;
@@ -139,7 +144,7 @@ class KasirController extends Controller
                 'tgl_ambil' => $tglAmbil,
                 'tgl_pakai' => $tglPakai,
                 'tgl_kembali_rencana' => $tglKembali,
-                'durasi_sewa_hari' => 3,
+                'durasi_sewa_hari' => 1,
                 'subtotal_produk' => $subtotal,
                 'total_tagihan' => $totalTagihan,
                 'opsi_pembayaran' => $opsi,

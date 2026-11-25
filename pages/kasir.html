@@ -1025,10 +1025,26 @@
       try {
         const isOnline = await SanggaraAPI.isOnline();
         if (isOnline) {
+          // Aturan Sewa: Baju dipakai maksimal 1 hari (Hari-H).
+          // Ambil (Pickup) = H-1, Pakai = Hari-H, Kembali (Pickin) = H+1
+          const pakaiDateObj = selectedBookingDate ? new Date(selectedBookingDate + 'T00:00:00') : new Date();
+          const dAmbil = new Date(pakaiDateObj);
+          dAmbil.setDate(dAmbil.getDate() - 1);
+          const dKembali = new Date(pakaiDateObj);
+          dKembali.setDate(dKembali.getDate() + 1);
+
+          const toYmd = dt => {
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const d = String(dt.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+          };
+
           const payload = {
             id_pelanggan: customerId,
-            tgl_ambil: bookingDateToSend,
-            tgl_pakai: bookingDateToSend,
+            tgl_ambil: toYmd(dAmbil),
+            tgl_pakai: toYmd(pakaiDateObj),
+            tgl_kembali_rencana: toYmd(dKembali),
             opsi_pembayaran: paymentOption,
             metode_bayar: activeMethod,
             uang_diterima: cashReceived,
@@ -1212,7 +1228,11 @@
 
     function onAvailableDateClick(dateKey, day) {
       selectedBookingDate = dateKey;
-      const formattedDate = `${day} ${MONTH_NAMES_ID[calActiveMonth]} ${calActiveYear}`;
+      const baseDate = new Date(dateKey + 'T00:00:00');
+      const dAmbil = new Date(baseDate); dAmbil.setDate(dAmbil.getDate() - 1);
+      const dKembali = new Date(baseDate); dKembali.setDate(dKembali.getDate() + 1);
+
+      const formattedDate = `${day} ${MONTH_NAMES_ID[calActiveMonth]} ${calActiveYear} (Pakai 1 Hari)`;
 
       // Update date input display di Keranjang Sewa
       const input = document.getElementById('bookingDateInput');
@@ -1223,8 +1243,8 @@
       const subEl = document.getElementById('calInfoSub');
       const badgeEl = document.getElementById('calInfoBadge');
 
-      if (titleEl) titleEl.textContent = `${day} ${MONTH_SHORT_ID[calActiveMonth]} • Tanggal Dipilih`;
-      if (subEl) subEl.textContent = `Tersedia untuk transaksi kasir baru`;
+      if (titleEl) titleEl.textContent = `${day} ${MONTH_SHORT_ID[calActiveMonth]} • Hari Pakai (1 Hari)`;
+      if (subEl) subEl.textContent = `Ambil: ${dAmbil.getDate()} ${MONTH_SHORT_ID[dAmbil.getMonth()]} • Kembali: ${dKembali.getDate()} ${MONTH_SHORT_ID[dKembali.getMonth()]}`;
       if (badgeEl) badgeEl.textContent = 'Tersedia';
 
       const warning = document.getElementById('calBookedWarning');
