@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -176,15 +176,15 @@
 
           <div class="stat-card">
             <div class="stat-card-header">
-              <span class="stat-card-title">Kesiapan Stok Busana</span>
+              <span class="stat-card-title">Kesiapan Busana & Aksesoris</span>
               <div class="stat-icon-wrapper icon-green">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3c0 .77.29 1.48.77 2L2 14l3 3 7-5 7 5 3-3-7.77-7A3 3 0 0 0 15 5a3 3 0 0 0-3-3z"></path></svg>
               </div>
             </div>
-            <div class="stat-value" id="dashStokVal">194 / 245 Unit</div>
+            <div class="stat-value" id="dashStokVal">11 / 11 Item</div>
             <div class="stat-footer success" id="dashStokFooter">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-              <span>79,2% Siap Sewa • 38 Disewa</span>
+              <span>100% Siap Sewa • 0 Disewa</span>
             </div>
           </div>
         </div>
@@ -437,16 +437,16 @@
             }
           }
 
-          // 4. Kesiapan Stok
+          // 4. Kesiapan Busana (Single Item)
           if (cards.kesiapan_stok) {
-            document.getElementById('dashStokVal').textContent = `${cards.kesiapan_stok.siap_sewa} / ${cards.kesiapan_stok.total_unit} Unit`;
+            document.getElementById('dashStokVal').textContent = `${cards.kesiapan_stok.siap_sewa} / ${cards.kesiapan_stok.total_unit} Item`;
             const footerEl = document.getElementById('dashStokFooter');
             if (footerEl) {
               const span = footerEl.querySelector('span');
               if (span) span.textContent = `${cards.kesiapan_stok.persen_siap} Siap Sewa • ${cards.kesiapan_stok.disewa} Disewa`;
             }
             const badge = document.getElementById('inventoryTotalBadge');
-            if (badge) badge.textContent = `${cards.kesiapan_stok.total_unit} Unit`;
+            if (badge) badge.textContent = `${cards.kesiapan_stok.total_unit} Item`;
 
             const segSiap = document.getElementById('segmentSiap');
             if (segSiap) segSiap.style.width = cards.kesiapan_stok.persen_siap;

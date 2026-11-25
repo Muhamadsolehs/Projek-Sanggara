@@ -89,26 +89,19 @@
             </select>
           </div>
 
-          <!-- Stok & Harga Sewa -->
+          <!-- Harga Sewa & Status Awal -->
           <div class="form-grid-2cols">
-            <div class="form-group">
-              <label class="form-field-label" for="inputStokBarang">Stok Total<span class="required-asterisk">*</span></label>
-              <input type="number" id="inputStokBarang" class="form-control-input" placeholder="Contoh: 10" min="1" value="1" required>
-            </div>
             <div class="form-group">
               <label class="form-field-label" for="inputHargaSewaBarang">Harga Sewa / Hari (Rp)<span class="required-asterisk">*</span></label>
               <input type="number" id="inputHargaSewaBarang" class="form-control-input" placeholder="Contoh: 150000" min="0" step="5000" required>
             </div>
-          </div>
-
-          <!-- Status -->
-          <div class="form-group">
-            <label class="form-field-label" for="inputStatusBarang">Status Kesiapan</label>
-            <select class="form-control-select" id="inputStatusBarang">
-              <option value="tersedia" selected>Tersedia (Siap Sewa)</option>
-              <option value="habis">Habis</option>
-              <option value="maintenance">Maintenance / Perbaikan</option>
-            </select>
+            <div class="form-group">
+              <label class="form-field-label" for="inputStatusBarang">Status Awal</label>
+              <select class="form-control-select" id="inputStatusBarang">
+                <option value="tersedia" selected>Tersedia (Siap Sewa)</option>
+                <option value="maintenance">Maintenance / Perbaikan</option>
+              </select>
+            </div>
           </div>
 
           <!-- Deskripsi Produk -->
@@ -190,16 +183,8 @@
       const nama = document.getElementById('inputNamaBarang').value.trim();
       const idKat = parseInt(document.getElementById('inputKategoriBarang').value) || null;
       const kualitas = document.getElementById('inputKualitasBarang').value;
-      const stok = parseInt(document.getElementById('inputStokBarang').value) || 0;
       const harga = parseFloat(document.getElementById('inputHargaSewaBarang').value) || 0;
       let status = document.getElementById('inputStatusBarang').value || 'tersedia';
-      if (status !== 'maintenance') {
-        if (stok <= 0) {
-          status = 'habis';
-        } else if (status === 'habis' && stok > 0) {
-          status = 'tersedia';
-        }
-      }
       const deskripsi = document.getElementById('inputDeskripsiBarang').value.trim();
 
       if (!nama) {
@@ -215,8 +200,9 @@
       formData.append('nama_produk', nama);
       formData.append('id_kategori', idKat);
       formData.append('kualitas', kualitas);
-      formData.append('stok_total', stok);
-      formData.append('stok_siap', stok);
+      formData.append('stok_total', 1);
+      formData.append('stok_siap', status === 'tersedia' ? 1 : 0);
+      formData.append('stok_disewa', 0);
       formData.append('harga_sewa', harga);
       formData.append('status', status);
       if (deskripsi) formData.append('deskripsi', deskripsi);
@@ -254,21 +240,6 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       loadKategoriOptions();
-
-      const inputStok = document.getElementById('inputStokBarang');
-      const inputStatus = document.getElementById('inputStatusBarang');
-      if (inputStok && inputStatus) {
-        inputStok.addEventListener('input', () => {
-          const val = parseInt(inputStok.value);
-          if (inputStatus.value !== 'maintenance') {
-            if (isNaN(val) || val <= 0) {
-              inputStatus.value = 'habis';
-            } else if (inputStatus.value === 'habis' && val > 0) {
-              inputStatus.value = 'tersedia';
-            }
-          }
-        });
-      }
     });
   </script>
 </body>

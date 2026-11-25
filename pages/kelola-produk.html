@@ -157,7 +157,6 @@
                   <th>NAMA BARANG</th>
                   <th>KATEGORI</th>
                   <th>KUALITAS</th>
-                  <th>STOK</th>
                   <th>FOTO</th>
                   <th>HARGA SEWA</th>
                   <th>STATUS</th>
@@ -234,18 +233,6 @@
           <span class="detail-value" id="detailDenda">Rp 0 / hari</span>
         </div>
         <div class="detail-row-item">
-          <span class="detail-label">Kesiapan Stok Siap</span>
-          <span class="detail-value" id="detailStokSiap" style="color: #00b87c;">0 Unit</span>
-        </div>
-        <div class="detail-row-item">
-          <span class="detail-label">Sedang Disewa</span>
-          <span class="detail-value" id="detailStokDisewa">0 Unit</span>
-        </div>
-        <div class="detail-row-item">
-          <span class="detail-label">Total Stok Inventaris</span>
-          <span class="detail-value" id="detailStokTotal">0 Unit</span>
-        </div>
-        <div class="detail-row-item">
           <span class="detail-label">Status Produk</span>
           <span class="detail-value" id="detailStatusBadge">TERSEDIA</span>
         </div>
@@ -315,25 +302,14 @@
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="form-group">
-              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Stok Siap</label>
-              <input type="number" id="editStokSiapInput" min="0" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" required>
-            </div>
-            <div class="form-group">
-              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Total Stok</label>
-              <input type="number" id="editStokTotalInput" min="1" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" required>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="form-group">
               <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Harga Sewa (Rp) <span style="color:#ef4444;">*</span></label>
               <input type="number" id="editHargaSewaInput" min="0" step="1000" class="form-control-input" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" required>
             </div>
             <div class="form-group">
-              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Status</label>
+              <label class="form-field-label" style="font-weight: 600; font-size: 13px; color: #334155;">Status Produk</label>
               <select id="editStatusSelect" class="form-control-select" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;">
                 <option value="tersedia">Tersedia</option>
-                <option value="habis">Habis</option>
+                <option value="habis">Sedang Disewa</option>
                 <option value="maintenance">Maintenance</option>
               </select>
             </div>
@@ -362,7 +338,11 @@
         if (res.status === 'success' && res.data && res.data.length > 0) {
           rawProdukList = res.data;
           if (emptyState) emptyState.style.display = 'none';
-          tbody.innerHTML = res.data.map((p, idx) => `
+          tbody.innerHTML = res.data.map((p, idx) => {
+            const statusLabel = p.status === 'tersedia' ? 'TERSEDIA' : (p.status === 'maintenance' ? 'MAINTENANCE' : 'SEDANG DISEWA');
+            const statusBadgeClass = p.status === 'tersedia' ? 'badge-success' : (p.status === 'maintenance' ? 'badge-warning' : 'badge-danger');
+
+            return `
             <tr>
               <td style="font-weight: 600; color: #666; text-align: center;">${idx + 1}</td>
               <td>
@@ -371,18 +351,15 @@
               </td>
               <td><span class="badge badge-info" style="font-size: 11.5px;">${p.kategori}</span></td>
               <td style="font-size: 12.5px; color: #475569;">${p.kualitas}</td>
-              <td style="font-size: 13px;">
-                <strong style="color: ${Number(p.stok_siap) <= 0 ? '#ef4444' : '#00b87c'};">${p.stok_siap}</strong> / <span style="color:#64748b;">${p.stok_total} Unit</span>
-              </td>
               <td>
-                <div style="width: 36px; height: 36px; border-radius: 6px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #e2e8f0;">
+                <div style="width: 36px; height: 36px; border-radius: 6px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #e2e8f0; cursor: pointer;" onclick="viewProduk(${p.id_produk})">
                   <img src="${p.foto_url || '../image/logo.png'}" alt="Foto" style="width: 100%; height: 100%; object-fit: ${p.foto_url ? 'cover' : 'contain'};">
                 </div>
               </td>
               <td style="font-weight: 700; color: #00b87c; font-size: 13.5px;">${p.harga_formatted}</td>
               <td>
-                <span class="badge ${p.status === 'tersedia' ? 'badge-success' : (p.status === 'maintenance' ? 'badge-warning' : 'badge-danger')}">
-                  ${p.status.toUpperCase()}
+                <span class="badge ${statusBadgeClass}">
+                  ${statusLabel}
                 </span>
               </td>
               <td style="text-align: center;">
@@ -402,14 +379,15 @@
                 </div>
               </td>
             </tr>
-          `).join('');
+          `;
+          }).join('');
         } else {
           tbody.innerHTML = '';
           if (emptyState) emptyState.style.display = 'block';
         }
       } catch (e) {
         console.error('Gagal memuat produk:', e);
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 24px; color: #ef4444;">Gagal memuat data dari database. Silakan pastikan server backend berjalan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: #ef4444;">Gagal memuat data dari database. Silakan pastikan server backend berjalan.</td></tr>`;
       }
     }
 
@@ -479,20 +457,9 @@
         document.getElementById('detailHargaSewa').textContent = p.harga_formatted || ('Rp ' + Number(p.harga_sewa).toLocaleString('id-ID'));
         document.getElementById('detailDenda').textContent = (p.denda_formatted || 'Rp 15.000') + ' / hari';
         
-        const stokSiapNum = Number(p.stok_siap) || 0;
-        const detailStokSiapEl = document.getElementById('detailStokSiap');
-        detailStokSiapEl.textContent = `${stokSiapNum} Unit`;
-        detailStokSiapEl.style.color = stokSiapNum <= 0 ? '#ef4444' : '#00b87c';
-
-        document.getElementById('detailStokDisewa').textContent = `${p.stok_disewa || 0} Unit`;
-        document.getElementById('detailStokTotal').textContent = `${p.stok_total} Unit`;
-        
-        let effStatus = p.status;
-        if (effStatus !== 'maintenance' && stokSiapNum <= 0) {
-          effStatus = 'habis';
-        }
+        let effStatus = p.status || 'tersedia';
         const badge = document.getElementById('detailStatusBadge');
-        badge.textContent = effStatus.toUpperCase();
+        badge.textContent = effStatus === 'tersedia' ? 'TERSEDIA' : (effStatus === 'maintenance' ? 'MAINTENANCE' : 'SEDANG DISEWA');
         badge.className = effStatus === 'tersedia' ? 'badge badge-success' : (effStatus === 'maintenance' ? 'badge badge-warning' : 'badge badge-danger');
 
         const btnEdit = document.getElementById('btnEditFromDetail');
@@ -516,17 +483,11 @@
         document.getElementById('editProdukId').value = p.id_produk;
         document.getElementById('editNamaBarang').value = p.nama_produk;
         document.getElementById('editKualitasInput').value = p.kualitas || '';
-        document.getElementById('editStokSiapInput').value = p.stok_siap;
-        document.getElementById('editStokTotalInput').value = p.stok_total;
         document.getElementById('editHargaSewaInput').value = p.harga_sewa;
         
         const statusSelect = document.getElementById('editStatusSelect');
         if (statusSelect) {
-          let effStatus = p.status;
-          if (effStatus !== 'maintenance' && (parseInt(p.stok_siap) || 0) <= 0) {
-            effStatus = 'habis';
-          }
-          statusSelect.value = effStatus;
+          statusSelect.value = p.status || 'tersedia';
         }
 
         const katSelect = document.getElementById('editKategoriSelect');
@@ -567,22 +528,12 @@
       btn.textContent = 'Menyimpan...';
       btn.disabled = true;
 
-      const stokSiapInputVal = parseInt(document.getElementById('editStokSiapInput').value) || 0;
       let selectedStatus = document.getElementById('editStatusSelect').value;
-      if (selectedStatus !== 'maintenance') {
-        if (stokSiapInputVal <= 0) {
-          selectedStatus = 'habis';
-        } else if (selectedStatus === 'habis' && stokSiapInputVal > 0) {
-          selectedStatus = 'tersedia';
-        }
-      }
 
       const formData = new FormData();
       formData.append('nama_produk', document.getElementById('editNamaBarang').value.trim());
       formData.append('id_kategori', parseInt(document.getElementById('editKategoriSelect').value));
       formData.append('kualitas', document.getElementById('editKualitasInput').value.trim());
-      formData.append('stok_siap', stokSiapInputVal);
-      formData.append('stok_total', parseInt(document.getElementById('editStokTotalInput').value));
       formData.append('harga_sewa', parseFloat(document.getElementById('editHargaSewaInput').value));
       formData.append('status', selectedStatus);
 
@@ -652,22 +603,6 @@
         filterKategori.addEventListener('change', (e) => {
           const q = document.getElementById('searchProdukInput')?.value || '';
           loadProdukData({ q, kategori: e.target.value });
-        });
-      }
-
-      // Otomatis sinkronkan status saat stok siap diubah di form edit
-      const editStokSiapInput = document.getElementById('editStokSiapInput');
-      const editStatusSelect = document.getElementById('editStatusSelect');
-      if (editStokSiapInput && editStatusSelect) {
-        editStokSiapInput.addEventListener('input', () => {
-          const val = parseInt(editStokSiapInput.value);
-          if (editStatusSelect.value !== 'maintenance') {
-            if (isNaN(val) || val <= 0) {
-              editStatusSelect.value = 'habis';
-            } else if (editStatusSelect.value === 'habis' && val > 0) {
-              editStatusSelect.value = 'tersedia';
-            }
-          }
         });
       }
     });

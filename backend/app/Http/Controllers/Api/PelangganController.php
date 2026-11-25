@@ -11,8 +11,12 @@ class PelangganController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Pelanggan::with('kecamatan')
-                ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+            $hasKecTable = \Illuminate\Support\Facades\Schema::hasTable('kecamatan');
+            $query = Pelanggan::query();
+            if ($hasKecTable) {
+                $query->with('kecamatan');
+            }
+            $query->orderByRaw('COALESCE(updated_at, created_at) DESC')
                 ->orderByDesc('id_pelanggan');
 
             if ($request->has('q') && !empty($request->q)) {
@@ -26,14 +30,14 @@ class PelangganController extends Controller
                 });
             }
 
-            $pelanggan = $query->get()->map(function ($p) {
+            $pelanggan = $query->get()->map(function ($p) use ($hasKecTable) {
                 return [
                     'id_pelanggan' => $p->id_pelanggan,
                     'kode_pelanggan' => $p->kode_pelanggan,
                     'nama_pelanggan' => $p->nama_pelanggan,
                     'no_telepon' => $p->no_telepon,
-                    'id_kecamatan' => $p->id_kecamatan,
-                    'kecamatan' => $p->nama_kecamatan ?? ($p->kecamatan ? $p->kecamatan->nama_kecamatan : '-'),
+                    'id_kecamatan' => $p->id_kecamatan ?? null,
+                    'kecamatan' => $p->nama_kecamatan ?? (($hasKecTable && $p->kecamatan) ? $p->kecamatan->nama_kecamatan : '-'),
                     'kelurahan' => $p->kelurahan_desa,
                     'alamat_lengkap' => $p->alamat_lengkap,
                     'total_transaksi' => $p->total_transaksi,
@@ -55,7 +59,14 @@ class PelangganController extends Controller
     public function show($id)
     {
         try {
-            $p = Pelanggan::with(['kecamatan', 'bookings'])->findOrFail($id);
+            $hasKecTable = \Illuminate\Support\Facades\Schema::hasTable('kecamatan');
+            $query = Pelanggan::query();
+            if ($hasKecTable) {
+                $query->with(['kecamatan', 'bookings']);
+            } else {
+                $query->with('bookings');
+            }
+            $p = $query->findOrFail($id);
 
             return response()->json([
                 'status' => 'success',
@@ -64,8 +75,8 @@ class PelangganController extends Controller
                     'kode_pelanggan' => $p->kode_pelanggan,
                     'nama_pelanggan' => $p->nama_pelanggan,
                     'no_telepon' => $p->no_telepon,
-                    'id_kecamatan' => $p->id_kecamatan,
-                    'kecamatan' => $p->nama_kecamatan ?? ($p->kecamatan ? $p->kecamatan->nama_kecamatan : '-'),
+                    'id_kecamatan' => $p->id_kecamatan ?? null,
+                    'kecamatan' => $p->nama_kecamatan ?? (($hasKecTable && $p->kecamatan) ? $p->kecamatan->nama_kecamatan : '-'),
                     'kelurahan' => $p->kelurahan_desa,
                     'alamat_lengkap' => $p->alamat_lengkap,
                     'total_transaksi' => $p->total_transaksi,
@@ -102,13 +113,20 @@ class PelangganController extends Controller
                 }
             }
 
-            // Cari id_kecamatan jika hanya nama kecamatan yang dikirim
-            if (empty($validated['id_kecamatan']) && !empty($request->nama_kecamatan)) {
+            $hasIdKec = \Illuminate\Support\Facades\Schema::hasColumn('pelanggan', 'id_kecamatan');
+            $hasKecTable = \Illuminate\Support\Facades\Schema::hasTable('kecamatan');
+
+            // Cari id_kecamatan jika hanya nama kecamatan yang dikirim dan tabel kecamatan ada
+            if ($hasKecTable && $hasIdKec && empty($validated['id_kecamatan']) && !empty($request->nama_kecamatan)) {
                 $kecObj = \App\Models\Kecamatan::where('nama_kecamatan', 'like', "%{$request->nama_kecamatan}%")->first();
                 if ($kecObj) {
                     $validated['id_kecamatan'] = $kecObj->id_kecamatan;
                     $validated['nama_kecamatan'] = $kecObj->nama_kecamatan;
                 }
+            }
+
+            if (!$hasIdKec) {
+                unset($validated['id_kecamatan']);
             }
 
             if (empty($request->kode_pelanggan)) {
@@ -148,6 +166,11 @@ class PelangganController extends Controller
                 'id_kecamatan' => 'nullable|integer',
                 'kelurahan_desa' => 'nullable|string|max:100',
             ]);
+
+            $hasIdKec = \Illuminate\Support\Facades\Schema::hasColumn('pelanggan', 'id_kecamatan');
+            if (!$hasIdKec) {
+                unset($validated['id_kecamatan']);
+            }
 
             $p->update($validated);
 

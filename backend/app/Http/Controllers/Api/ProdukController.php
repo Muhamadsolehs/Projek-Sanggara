@@ -110,20 +110,14 @@ class ProdukController extends Controller
                 $validated['kode_produk'] = $request->kode_produk;
             }
 
-            // Atur default stok & status
-            $stok = isset($validated['stok_total']) ? (int)$validated['stok_total'] : 1;
-            $validated['stok_total'] = $stok;
-            $validated['stok_siap'] = isset($validated['stok_siap']) ? (int)$validated['stok_siap'] : $stok;
-            $validated['stok_disewa'] = 0;
-            $validated['stok_cuci'] = 0;
-            $validated['stok_rusak'] = 0;
-            $validated['denda_per_hari'] = isset($validated['denda_per_hari']) ? (float)$validated['denda_per_hari'] : round($validated['harga_sewa'] * 0.15);
+            // Sistem Single Item (Setiap produk adalah 1 item unik)
             $validated['status'] = !empty($validated['status']) ? strtolower($validated['status']) : 'tersedia';
-            if ($validated['status'] !== 'maintenance') {
-                if ((int)$validated['stok_siap'] <= 0) {
-                    $validated['status'] = 'habis';
-                }
-            }
+            $validated['stok_total'] = 1;
+            $validated['stok_siap'] = ($validated['status'] === 'tersedia') ? 1 : 0;
+            $validated['stok_disewa'] = ($validated['status'] === 'habis' || $validated['status'] === 'disewa') ? 1 : 0;
+            $validated['stok_cuci'] = 0;
+            $validated['stok_rusak'] = ($validated['status'] === 'maintenance') ? 1 : 0;
+            $validated['denda_per_hari'] = isset($validated['denda_per_hari']) ? (float)$validated['denda_per_hari'] : round($validated['harga_sewa'] * 0.15);
 
             if ($request->hasFile('foto_produk') || $request->filled('foto_produk')) {
                 $validated['foto_produk'] = $this->handleFotoUpload($request);
@@ -196,9 +190,7 @@ class ProdukController extends Controller
                 'id_kategori' => 'sometimes|nullable|integer',
                 'kualitas' => 'sometimes|nullable|string|max:60',
                 'harga_sewa' => 'sometimes|required|numeric|min:0',
-                'stok_total' => 'sometimes|nullable|integer|min:0',
-                'stok_siap' => 'sometimes|nullable|integer|min:0',
-                'status' => 'sometimes|required|string|in:tersedia,habis,maintenance',
+                'status' => 'sometimes|required|string|in:tersedia,habis,disewa,maintenance',
                 'foto_produk' => 'nullable',
                 'hapus_foto' => 'nullable',
             ]);
@@ -207,16 +199,12 @@ class ProdukController extends Controller
                 $validated['foto_produk'] = $this->handleFotoUpload($request, $p);
             }
 
-            if (isset($validated['stok_siap'])) {
-                $targetStatus = $validated['status'] ?? $p->status;
-                if ($targetStatus !== 'maintenance') {
-                    if ((int)$validated['stok_siap'] <= 0) {
-                        $validated['status'] = 'habis';
-                    } elseif ($targetStatus === 'habis' && (int)$validated['stok_siap'] > 0) {
-                        $validated['status'] = 'tersedia';
-                    }
-                }
-            }
+            // Sistem Single Item
+            $targetStatus = $validated['status'] ?? $p->status;
+            $validated['stok_total'] = 1;
+            $validated['stok_siap'] = ($targetStatus === 'tersedia') ? 1 : 0;
+            $validated['stok_disewa'] = ($targetStatus === 'habis' || $targetStatus === 'disewa') ? 1 : 0;
+            $validated['stok_rusak'] = ($targetStatus === 'maintenance') ? 1 : 0;
 
             $p->update($validated);
 

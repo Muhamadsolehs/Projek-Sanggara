@@ -811,7 +811,7 @@
   flex-shrink: 0;
 }
 
-.modal-form-input, .modal-form-select {
+.modal-form-input, .modal-form-select, .modal-form-textarea {
   flex: 1;
   width: 100%;
   min-width: 0;
@@ -823,11 +823,22 @@
   outline: none;
   background-color: var(--color-white);
   transition: all var(--transition-fast);
+}
+
+.modal-form-input, .modal-form-select {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.modal-form-input:focus, .modal-form-select:focus {
+.modal-form-textarea {
+  font-family: inherit;
+  resize: vertical;
+  min-height: 62px;
+  line-height: 1.45;
+  white-space: normal;
+}
+
+.modal-form-input:focus, .modal-form-select:focus, .modal-form-textarea:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.12);
 }

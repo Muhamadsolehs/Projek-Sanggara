@@ -97,14 +97,14 @@ class KasirController extends Controller
 
             foreach ($request->items as $item) {
                 $produk = Produk::findOrFail($item['id_produk']);
-                if ($produk->stok_siap < $item['jumlah']) {
-                    throw new \Exception("Stok siap untuk {$produk->nama_produk} tidak mencukupi (Tersedia: {$produk->stok_siap})");
+                if ($produk->status !== 'tersedia' || $produk->stok_siap < 1) {
+                    throw new \Exception("Item '{$produk->nama_produk}' sedang tidak tersedia / sedang disewa.");
                 }
-                $itemSubtotal = $produk->harga_sewa * $item['jumlah'];
+                $itemSubtotal = $produk->harga_sewa;
                 $subtotal += $itemSubtotal;
                 $itemsData[] = [
                     'produk' => $produk,
-                    'jumlah' => $item['jumlah'],
+                    'jumlah' => 1,
                     'harga_satuan' => $produk->harga_sewa,
                     'subtotal' => $itemSubtotal,
                 ];
