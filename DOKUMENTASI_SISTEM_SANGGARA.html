@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi Sistem Informasi Sanggara Management System (SBF)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --primary: #00b074;
+      --primary-dark: #00875a;
+      --primary-light: #e8f8f2;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --accent-amber: #d97706;
+      --accent-blue: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-page);
+      line-height: 1.65;
+      font-size: 14.5px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .doc-container {
+      max-width: 960px;
+      margin: 40px auto;
+      background: var(--bg-card);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    /* Top Action Bar */
+    .top-action-bar {
+      background: #0f172a;
+      color: white;
+      padding: 14px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .top-action-bar .brand-badge {
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-action-bar .brand-badge span {
+      color: var(--primary);
+    }
+
+    .btn-action-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-print {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-print:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    /* Header Cover */
+    .doc-header {
+      padding: 48px 48px 36px 48px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 70%, #ecfdf5 100%);
+      border-bottom: 2px solid var(--primary-light);
+    }
+
+    .doc-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    .doc-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .doc-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .doc-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .doc-meta-item .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+    }
+
+    .doc-meta-item .val {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-top: 2px;
+    }
+
+    /* Content Body */
+    .doc-body {
+      padding: 48px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2:first-of-type {
+      margin-top: 0;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 26px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: #334155;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 18px;
+      color: #334155;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Highlights / Callouts */
+    .callout {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 10px 10px 0;
+      margin: 20px 0;
+    }
+
+    .callout.amber {
+      border-left-color: var(--accent-amber);
+      background: #fffbeb;
+    }
+
+    .callout.blue {
+      border-left-color: var(--accent-blue);
+      background: #eff6ff;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      font-size: 13.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover td {
+      background: #fdfdfd;
+    }
+
+    /* Code & Badges */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 18px 22px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      line-height: 1.6;
+      margin: 20px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-pk { background: #fee2e2; color: #991b1b; }
+    .badge-fk { background: #e0e7ff; color: #3730a3; }
+    .badge-uk { background: #fef3c7; color: #92400e; }
+    .badge-success { background: #dcfce7; color: #166534; }
+
+    /* Footer */
+    .doc-footer {
+      padding: 28px 48px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      color: #94a3b8;
+    }
+
+    .doc-footer strong {
+      color: #475569;
+    }
+
+    /* Print Stylesheet */
+    @media print {
+      body {
+        background: white;
+        font-size: 12pt;
+      }
+      .top-action-bar {
+        display: none !important;
+      }
+      .doc-container {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        max-width: 100%;
+        border-radius: 0;
+      }
+      .doc-header {
+        padding: 24px 0;
+      }
+      .doc-body {
+        padding: 24px 0;
+      }
+      h2 {
+        page-break-after: avoid;
+        margin-top: 24px;
+      }
+      table {
+        page-break-inside: auto;
+      }
+      tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+      pre {
+        white-space: pre-wrap;
+        font-size: 10pt;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Action Bar -->
+  <div class="top-action-bar">
+    <div class="brand-badge">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00b074" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+      Sanggara<span>.</span> Technical Whitepaper
+    </div>
+    <div class="btn-action-group">
+      <button class="btn-print" onclick="window.print()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        Cetak / Unduh PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="doc-container">
+    <!-- Header -->
+    <header class="doc-header">
+      <div class="doc-tag">Dokumentasi Resmi Sistem Informasi</div>
+      <h1 class="doc-title">Sanggara Management System (SBF)</h1>
+      <p class="doc-subtitle">Sistem Informasi Terpadu Persewaan Busana Adat, Kebaya, Kostum Tari & Tata Rias</p>
+      
+      <div class="doc-meta-grid">
+        <div class="doc-meta-item">
+          <div class="label">Klien / Entitas Usaha</div>
+          <div class="val">Sanggar Bunda Febri (SBF)</div>
+        </div>
+        <div class="doc-meta-item">
+          <div class="label">Wilayah Operasional</div>
+          <div class="val">Purwakarta, Jawa Barat</div>
+        </div>
+        <div class="doc-meta-item">
+          <div class="label">Teknologi Backend</div>
+          <div class="val">Laravel 13 REST API (PHP 8.3)</div>
+        </div>
+        <div class="doc-meta-item">
+          <div class="label">Basis Data</div>
+          <div class="val">MySQL 8.0 (db_sanggara)</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <main class="doc-body">
+      <h2>1. Ringkasan Eksekutif & Karakteristik Sistem</h2>
+      <p>
+        <strong>Sanggara Management System</strong> dirancang khusus untuk memenuhi kebutuhan bisnis spesifik dari sanggar persewaan busana yang memiliki dinamika operasional yang berbeda dengan perdagangan ritel biasa. Terdapat 5 (lima) pilar arsitektur utama yang dibangun dalam sistem ini:
+      </p>
+
+      <div class="callout">
+        <div class="callout-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          Pilar Arsitektur Khusus Sanggar SBF:
+        </div>
+        <ul>
+          <li><strong>Model Non-Stok (Unique Asset)</strong>: Tiap busana/kebaya adalah barang fisik bernilai tinggi (1 item per model), tidak memiliki stok puluhan seperti barang e-commerce.</li>
+          <li><strong>Siklus Ketat 3 Hari Sewa (1 Hari Pakai)</strong>: Wajib Pickup H-1, Hari Pakai (1 hari saja), dan Wajib Pengembalian (Pickin) H+1.</li>
+          <li><strong>Penyimpanan 2 Metode Pembayaran Berbeda</strong>: Mendukung metode pembayaran saat DP dan saat Pelunasan berbeda (misal Tunai saat DP, Transfer saat Pelunasan) tanpa menambah tabel database.</li>
+          <li><strong>Otomasi Denda 10%</strong>: Denda penalti 10% dari total nilai barang sewa jika pengembalian melewati tanggal kembali (lewat dari H+1).</li>
+          <li><strong>Integrasi Geografis API Ogan</strong>: Sinkronisasi online dengan server Pemerintah Kabupaten Purwakarta untuk master data 17 kecamatan dan seluruh kelurahan.</li>
+        </ul>
+      </div>
+
+      <h2>2. Fitur dan Fungsi Sistem Secara Detail</h2>
+
+      <h3>2.1 Modul Katalog Busana (No-Stock Model)</h3>
+      <p>
+        Sistem mengeliminasi kolom stok manual pada antarmuka kasir dan manajemen produk. Setiap produk diperlakukan sebagai aset satuan eksklusif:
+      </p>
+      <ul>
+        <li><code>stok_total = 1</code>, <code>stok_siap = 1</code> saat ada di sanggar, dan otomatis menjadi <code>0</code> saat disewa.</li>
+        <li>Status ketersediaan busana: <code>tersedia</code>, <code>disewa</code>, <code>perawatan</code> (laundry/perbaikan payet), dan <code>nonaktif</code>.</li>
+        <li>Kategori terbagi menjadi: <em>Kostum Tari</em>, <em>Baju Pengantin Adat</em>, <em>Kebaya & Wisuda</em>, dan <em>Aksesoris</em>.</li>
+      </ul>
+
+      <h3>2.2 Modul Pelanggan & Integrasi API Ogan Purwakarta</h3>
+      <p>
+        Sistem terintegrasi secara real-time dengan API Wilayah Ogan Pemerintah Kabupaten Purwakarta (<code>https://api.ogan.purwakartakab.go.id</code>):
+      </p>
+      <ul>
+        <li>Dropdown Kecamatan memuat otomatis 17 Kecamatan resmi di Kabupaten Purwakarta.</li>
+        <li>Dropdown Kelurahan/Desa memuat daftar desa berdasarkan kecamatan yang dipilih secara dinamis (<em>cascading dropdown</em>).</li>
+        <li>Kolom <strong>Alamat Lengkap / Jalan</strong> untuk mencatat nama jalan, RT/RW, nomor rumah, dan patokan lokasi penyewa.</li>
+      </ul>
+
+      <h3>2.3 Modul Kasir Persewaan & Aturan Siklus Hari Sewa</h3>
+      <p>
+        Dirancang untuk kecepatan operasional kasir sanggar:
+      </p>
+      <ul>
+        <li><strong>Jadwal Pemakaian 1 Hari</strong>: Kasir memilih Tanggal Acara / Pemakaian (contoh: 3 Desember). Sistem langsung menetapkan jadwal resmi:
+          <ul>
+            <li><strong>Tanggal Ambil (Pickup)</strong>: 2 Desember (H-1).</li>
+            <li><strong>Tanggal Pakai</strong>: 3 Desember (Hari-H).</li>
+            <li><strong>Tanggal Kembali (Pickin)</strong>: 4 Desember (H+1).</li>
+          </ul>
+        </li>
+        <li><strong>Opsi Pembayaran</strong>:
+          <ul>
+            <li><em>Bayar Lunas (100%)</em>: Pembayaran penuh di awal.</li>
+            <li><em>Bayar DP (Uang Muka Min 25%)</em>: Pembayaran awal 25%, sistem otomatis menghitung sisa tagihan 75% yang wajib dilunasi saat pengambilan busana.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>2.4 Penyimpanan 2 Metode Pembayaran (DP & Pelunasan)</h3>
+      <div class="callout amber">
+        <div class="callout-title">Implementasi Tanpa Tambah Tabel Database:</div>
+        <p>Sistem memanfaatkan tabel yang sudah ada yaitu <code>booking</code> dan <code>pembayaran_transaksi</code>:</p>
+        <ul>
+          <li>Kolom <code>booking.metode_bayar_dp</code>: Menyimpan metode saat DP (contoh: <code>TUNAI</code>).</li>
+          <li>Kolom <code>booking.metode_bayar_pelunasan</code>: Menyimpan metode saat Pelunasan (contoh: <code>BANK</code>).</li>
+          <li>Kolom <code>booking.metode_bayar_terakhir</code>: Menyimpan ringkasan otomatis hasil trigger (contoh: <code>TUNAI (DP) • BANK (Pelunasan)</code>).</li>
+          <li>Tabel <code>data-nota.html</code> menampilkan badge pil ganda: <code>[TUNAI (DP)] + [BANK (LUNAS)]</code>.</li>
+        </ul>
+      </div>
+
+      <h3>2.5 Modul Cetak Struk Nota Termal (Thermal Receipt)</h3>
+      <p>
+        Menghasilkan cetakan struk kasir termal resmi (80mm/58mm) dengan identitas Sanggar Bunda Febri (SBF), nomor nota faktur, rincian produk, kotak highlight hijau status pembayaran, serta pemisahan baris <strong>Metode Bayar DP</strong> dan <strong>Metode Pelunasan</strong>.
+      </p>
+
+      <h3>2.6 Otomasi Denda Keterlambatan 10%</h3>
+      <p>
+        Apabila pakaian belum dikembalikan melewati batas tanggal rencana pengembalian (lewat dari H+1), sistem secara otomatis menambahkan denda keterlambatan sebesar <strong>10% dari total nilai sewa barang</strong> ke kolom <code>denda_keterlambatan</code> dan <code>total_denda</code>.
+      </p>
+
+      <h2>3. Analisis Use Case</h2>
+      <p>
+        Berikut adalah use case utama yang menghubungkan aktor Kasir dan Pemilik/Admin dengan sistem:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID Use Case</th>
+            <th>Nama Use Case</th>
+            <th>Aktor</th>
+            <th>Deskripsi Fungsional</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>UC-01</strong></td>
+            <td>Transaksi Kasir Persewaan</td>
+            <td>Kasir</td>
+            <td>Memilih pelanggan, memilih busana unik, dan memilih tanggal pakai.</td>
+          </tr>
+          <tr>
+            <td><strong>UC-02</strong></td>
+            <td>Penetapan Siklus Sewa</td>
+            <td>Kasir / Sistem</td>
+            <td>Otomatis menetapkan H-1 Pickup, Hari-H Pakai, dan H+1 Pengembalian.</td>
+          </tr>
+          <tr>
+            <td><strong>UC-03</strong></td>
+            <td>Pembayaran DP (Uang Muka)</td>
+            <td>Kasir</td>
+            <td>Menerima DP min 25%, mencatat metode bayar ke-1, mencetak struk DP.</td>
+          </tr>
+          <tr>
+            <td><strong>UC-04</strong></td>
+            <td>Pelunasan 2 Metode Bayar</td>
+            <td>Kasir</td>
+            <td>Menerima pelunasan sisa tagihan dengan metode bayar ke-2.</td>
+          </tr>
+          <tr>
+            <td><strong>UC-05</strong></td>
+            <td>Cetak Struk Nota Termal SBF</td>
+            <td>Kasir</td>
+            <td>Mencetak nota thermal fisik dengan rincian SBF yang presisi.</td>
+          </tr>
+          <tr>
+            <td><strong>UC-06</strong></td>
+            <td>Pengembalian & Denda 10%</td>
+            <td>Kasir / Sistem</td>
+            <td>Verifikasi fisik busana dan otomasi denda 10% jika terlambat.</td>
+          </tr>
+          <tr>
+            <td><strong>UC-07</strong></td>
+            <td>Sinkronisasi Wilayah Ogan</td>
+            <td>Kasir / Admin</td>
+            <td>Memilih kecamatan dan kelurahan Purwakarta langsung via API Ogan.</td>
+          </tr>
+          <tr>
+            <td><strong>UC-08</strong></td>
+            <td>Kelola Busana (No-Stock)</td>
+            <td>Admin</td>
+            <td>Manajemen data busana unik, foto, dan tarif sewa per acara.</td>
+          </tr>
+          <tr>
+            <td><strong>UC-09</strong></td>
+            <td>Laporan Kas & Omzet</td>
+            <td>Admin</td>
+            <td>Audit rekap pemasukan, pengeluaran, dan margin laba bersih sanggar.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>4. Alur Bisnis (Business Process Flow)</h2>
+      <ol>
+        <li><strong>Registrasi / Pemilihan Pelanggan</strong>: Kasir memilih pelanggan atau mendaftarkan pelanggan baru dengan validasi data wilayah dari API Ogan Purwakarta serta input alamat jalan/RT/RW.</li>
+        <li><strong>Pemilihan Busana</strong>: Kasir memilih busana dari katalog (status dipastikan <code>tersedia</code>).</li>
+        <li><strong>Penetapan Tanggal Acara</strong>: Kasir memasukkan tanggal pemakaian acara (1 hari pakai). Sistem otomatis mengunci tanggal ambil pada H-1 dan tanggal kembali pada H+1.</li>
+        <li><strong>Pembayaran Awal</strong>: Pelanggan memilih Bayar Lunas atau Bayar DP (minimal 25%). Kasir memilih instrumen pembayaran ke-1 (misal Tunai).</li>
+        <li><strong>Penerbitan Struk Nota</strong>: Nota fisik dicetak sebagai bukti pemesanan resmi.</li>
+        <li><strong>Pengambilan Busana (H-1)</strong>: Pelanggan datang mengambil busana. Jika status masih DP, kasir membuka modal pelunasan, menerima pembayaran pelunasan dengan instrumen pembayaran ke-2 (misal Transfer Bank), lalu menyerahkan busana.</li>
+        <li><strong>Pemakaian Busana (Hari-H)</strong>: Busana dipakai untuk acara pernikahan, tari, atau wisuda (durasi pakai 1 hari).</li>
+        <li><strong>Pengembalian Busana (H+1)</strong>: Busana dikembalikan ke sanggar. Jika pengembalian melewati H+1, sistem otomatis menerapkan denda penalti 10%. Kasir memeriksa kondisi pakaian dan menyelesaikan transaksi.</li>
+      </ol>
+
+      <h2>5. Skema Basis Data (MySQL: `db_sanggara`)</h2>
+      <p>
+        Struktur tabel dirancang dengan integritas data tinggi dan indeks performa optimal:
+      </p>
+
+      <h3>5.1 Tabel <code>booking</code> (Master Transaksi Persewaan)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Kolom</th>
+            <th>Tipe Data</th>
+            <th>Kunci</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>id_booking</code></td><td>INT UNSIGNED</td><td><span class="badge badge-pk">PK</span></td><td>Kunci utama booking</td></tr>
+          <tr><td><code>no_nota</code></td><td>VARCHAR(50)</td><td><span class="badge badge-uk">UK</span></td><td>Nomor nota unik (contoh: CS/01/251126/0002)</td></tr>
+          <tr><td><code>no_booking</code></td><td>INT UNSIGNED</td><td>-</td><td>Nomor antrean transaksi harian</td></tr>
+          <tr><td><code>id_pelanggan</code></td><td>INT UNSIGNED</td><td><span class="badge badge-fk">FK</span></td><td>Relasi ke tabel <code>pelanggan</code></td></tr>
+          <tr><td><code>id_user</code></td><td>INT UNSIGNED</td><td><span class="badge badge-fk">FK</span></td><td>Kasir pemroses transaksi</td></tr>
+          <tr><td><code>tgl_ambil</code></td><td>DATE</td><td>-</td><td>Tanggal pengambilan (H-1)</td></tr>
+          <tr><td><code>tgl_pakai</code></td><td>DATE</td><td>-</td><td>Tanggal pemakaian acara (Hari-H)</td></tr>
+          <tr><td><code>tgl_kembali_rencana</code></td><td>DATE</td><td>-</td><td>Batas akhir pengembalian (H+1)</td></tr>
+          <tr><td><code>total_tagihan</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Total tagihan sewa</td></tr>
+          <tr><td><code>total_dp</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Nomor DP yang telah dibayar</td></tr>
+          <tr><td><code>metode_bayar_dp</code></td><td>VARCHAR(30)</td><td>-</td><td>Metode transaksi saat DP (TUNAI/BANK/QRIS)</td></tr>
+          <tr><td><code>metode_bayar_pelunasan</code></td><td>VARCHAR(30)</td><td>-</td><td>Metode transaksi saat Pelunasan</td></tr>
+          <tr><td><code>total_bayar</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Total uang riil yang sudah diterima</td></tr>
+          <tr><td><code>sisa_tagihan</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Sisa tagihan yang belum lunas</td></tr>
+          <tr><td><code>metode_bayar_terakhir</code></td><td>VARCHAR(100)</td><td>-</td><td>Ringkasan gabungan (misal: TUNAI (DP) • BANK (Pelunasan))</td></tr>
+          <tr><td><code>status_pembayaran</code></td><td>ENUM('DP','LUNAS','BATAL')</td><td>-</td><td>Status pembayaran</td></tr>
+          <tr><td><code>status_sewa</code></td><td>ENUM(...)</td><td>-</td><td>booking, diambil, dipakai, dikembalikan, selesai, batal</td></tr>
+          <tr><td><code>denda_keterlambatan</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Nominal denda otomatis 10% jika terlambat</td></tr>
+          <tr><td><code>total_denda</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Akumulasi total denda</td></tr>
+        </tbody>
+      </table>
+
+      <h3>5.2 Tabel <code>detail_booking</code> (Rincian Busana yang Disewa)</h3>
+      <table>
+        <thead>
+          <tr><th>Kolom</th><th>Tipe Data</th><th>Kunci</th><th>Keterangan</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>id_detail</code></td><td>INT UNSIGNED</td><td><span class="badge badge-pk">PK</span></td><td>Kunci utama rincian sewa</td></tr>
+          <tr><td><code>id_booking</code></td><td>INT UNSIGNED</td><td><span class="badge badge-fk">FK</span></td><td>Relasi ke tabel <code>booking</code></td></tr>
+          <tr><td><code>id_produk</code></td><td>INT UNSIGNED</td><td><span class="badge badge-fk">FK</span></td><td>Relasi ke tabel <code>produk</code></td></tr>
+          <tr><td><code>jumlah</code></td><td>INT UNSIGNED</td><td>-</td><td>Kuantitas (default 1)</td></tr>
+          <tr><td><code>harga_satuan</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Tarif sewa busana</td></tr>
+          <tr><td><code>subtotal</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Subtotal harga per baris produk</td></tr>
+        </tbody>
+      </table>
+
+      <h3>5.3 Tabel <code>pembayaran_transaksi</code> (Buku Kas Transaksi)</h3>
+      <table>
+        <thead>
+          <tr><th>Kolom</th><th>Tipe Data</th><th>Kunci</th><th>Keterangan</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>id_pembayaran</code></td><td>INT UNSIGNED</td><td><span class="badge badge-pk">PK</span></td><td>Kunci utama pembayaran</td></tr>
+          <tr><td><code>no_bukti_bayar</code></td><td>VARCHAR(50)</td><td><span class="badge badge-uk">UK</span></td><td>Nomor bukti transaksi (contoh: PAY-261125-9639)</td></tr>
+          <tr><td><code>id_booking</code></td><td>INT UNSIGNED</td><td><span class="badge badge-fk">FK</span></td><td>Relasi ke tabel <code>booking</code></td></tr>
+          <tr><td><code>tgl_bayar</code></td><td>DATETIME</td><td>-</td><td>Waktu transaksi</td></tr>
+          <tr><td><code>jenis_pembayaran</code></td><td>ENUM(...)</td><td>-</td><td>DP, PELUNASAN, LUNAS_LANGSUNG, DENDA</td></tr>
+          <tr><td><code>jumlah_bayar</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Nominal tagihan yang dibayarkan</td></tr>
+          <tr><td><code>uang_diterima</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Nominal uang riil yang diserahkan penyewa</td></tr>
+          <tr><td><code>kembalian</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Uang kembalian yang diberikan</td></tr>
+          <tr><td><code>metode_bayar</code></td><td>ENUM('TUNAI','BANK','QRIS')</td><td>-</td><td>Instrumen pembayaran</td></tr>
+        </tbody>
+      </table>
+
+      <h3>5.4 Tabel <code>produk</code> (Master Kostum / Busana SBF)</h3>
+      <table>
+        <thead>
+          <tr><th>Kolom</th><th>Tipe Data</th><th>Kunci</th><th>Keterangan</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>id_produk</code></td><td>INT UNSIGNED</td><td><span class="badge badge-pk">PK</span></td><td>Kunci utama produk</td></tr>
+          <tr><td><code>kode_produk</code></td><td>VARCHAR(30)</td><td><span class="badge badge-uk">UK</span></td><td>Kode fisik unik busana</td></tr>
+          <tr><td><code>id_kategori</code></td><td>INT UNSIGNED</td><td><span class="badge badge-fk">FK</span></td><td>Relasi ke tabel <code>kategori</code></td></tr>
+          <tr><td><code>nama_produk</code></td><td>VARCHAR(150)</td><td>-</td><td>Nama busana / kebaya / aksesoris</td></tr>
+          <tr><td><code>harga_sewa</code></td><td>DECIMAL(12,2)</td><td>-</td><td>Tarif sewa per acara</td></tr>
+          <tr><td><code>stok_total</code></td><td>INT UNSIGNED</td><td>-</td><td>Kapasitas aset (selalu 1)</td></tr>
+          <tr><td><code>stok_siap</code></td><td>INT UNSIGNED</td><td>-</td><td>Kesiapan fisik di sanggar (1 atau 0)</td></tr>
+          <tr><td><code>status</code></td><td>ENUM(...)</td><td>-</td><td>tersedia, habis, perawatan, nonaktif</td></tr>
+        </tbody>
+      </table>
+
+      <h3>5.5 Tabel <code>pelanggan</code> (Master Penyewa)</h3>
+      <table>
+        <thead>
+          <tr><th>Kolom</th><th>Tipe Data</th><th>Kunci</th><th>Keterangan</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>id_pelanggan</code></td><td>INT UNSIGNED</td><td><span class="badge badge-pk">PK</span></td><td>Kunci utama pelanggan</td></tr>
+          <tr><td><code>kode_pelanggan</code></td><td>VARCHAR(30)</td><td><span class="badge badge-uk">UK</span></td><td>Kode pelanggan unik</td></tr>
+          <tr><td><code>nama_pelanggan</code></td><td>VARCHAR(100)</td><td>-</td><td>Nama lengkap penyewa</td></tr>
+          <tr><td><code>no_telepon</code></td><td>VARCHAR(25)</td><td>-</td><td>Nomor telepon / WhatsApp</td></tr>
+          <tr><td><code>nama_kecamatan</code></td><td>VARCHAR(50)</td><td>-</td><td>Kecamatan (dari API Ogan)</td></tr>
+          <tr><td><code>kelurahan_desa</code></td><td>VARCHAR(60)</td><td>-</td><td>Kelurahan/Desa (dari API Ogan)</td></tr>
+          <tr><td><code>alamat_lengkap</code></td><td>TEXT</td><td>-</td><td>Alamat jalan, RT/RW, nomor rumah</td></tr>
+        </tbody>
+      </table>
+
+      <h2>6. Otomasi Database Level Engine (MySQL Triggers)</h2>
+      <p>
+        Integritas data dijamin melalui 2 trigger yang berjalan otomatis di dalam MySQL server:
+      </p>
+      <ul>
+        <li>
+          <strong><code>trg_after_insert_pembayaran_transaksi</code></strong>:
+          Secara otomatis memperbarui status pembayaran di tabel <code>booking</code>, menghitung sisa tagihan, menyimpan metode DP dan Pelunasan, serta membentuk gabungan ringkasan <code>metode_bayar_terakhir</code>.
+        </li>
+        <li>
+          <strong><code>trg_after_insert_detail_booking</code></strong>:
+          Secara otomatis mengunci ketersediaan busana di tabel <code>produk</code> (menyetel <code>stok_siap = 0</code> dan <code>status = 'habis'</code>) saat busana masuk dalam pesanan sewa.
+        </li>
+      </ul>
+
+      <h2>7. Ringkasan Antarmuka & Rute URL Sistem</h2>
+      <table>
+        <thead>
+          <tr><th>Modul / Fitur</th><th>URL Halaman Web</th><th>Endpoint API Laravel</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Dashboard Utama</td><td><code>/pages/dashboard.html</code></td><td><code>GET /api/dashboard</code></td></tr>
+          <tr><td>Kasir Persewaan (POS)</td><td><code>/pages/kasir.html</code></td><td><code>POST /api/kasir/checkout</code></td></tr>
+          <tr><td>Data Nota & Pelunasan</td><td><code>/pages/data-nota.html</code></td><td><code>GET /api/nota</code> & <code>POST /api/nota/bayar</code></td></tr>
+          <tr><td>Cetak Struk Nota Termal</td><td><code>/pages/nota.html?id={id}</code></td><td><code>GET /api/nota/{id}</code></td></tr>
+          <tr><td>Kelola Produk Busana</td><td><code>/pages/kelola-produk.html</code></td><td><code>GET /api/produk</code></td></tr>
+          <tr><td>Kelola Pelanggan (API Ogan)</td><td><code>/pages/kelola-pelanggan.html</code></td><td><code>GET /api/pelanggan</code></td></tr>
+          <tr><td>Kelola Kategori</td><td><code>/pages/kelola-kategori.html</code></td><td><code>GET /api/kategori</code></td></tr>
+          <tr><td>Laporan Keuangan</td><td><code>/pages/laporan.html</code></td><td><code>GET /api/laporan</code></td></tr>
+        </tbody>
+      </table>
+    </main>
+
+    <!-- Footer -->
+    <footer class="doc-footer">
+      <div>&copy; 2026 <strong>Sanggar Bunda Febri (SBF)</strong> &bull; Sanggara Management System</div>
+      <div>Dokumen Resmi &bull; Powered by <strong>Pratama Solusi Teknologi</strong></div>
+    </footer>
+  </div>
+
+</body>
+</html>
