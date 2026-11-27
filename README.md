@@ -1,112 +1,165 @@
-# Sanggara Management System (Sanggar Bunda Febri) - UI & Modular CSS
+# Sanggara Management System (Sanggar Bunda Febri - SBF)
 
-Repositori ini berisi implementasi tampilan antarmuka (UI) dan **pemisahan file CSS modular per halaman** berdasarkan 15 desain antarmuka sistem manajemen sanggar busana/rias pengantin Sanggara (Sanggar Bunda Febri).
+[![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org)
+[![CSS3](https://img.shields.io/badge/CSS3-Modular-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org)
+
+**Sanggara Management System** adalah platform sistem informasi operasional berbasis web terpadu yang dikembangkan khusus untuk **Sanggar Bunda Febri (SBF)** di Kabupaten Purwakarta. Sistem ini mengelola seluruh rantai bisnis persewaan busana adat, kebaya wisuda, gaun modern, kostum tari daerah nusantara, hingga aksesoris pernikahan secara terintegrasi dengan backend **Laravel 13 REST API** dan basis data relasional **MySQL 8.0 (`db_sanggara`)**.
 
 ---
 
-## 📁 Struktur Direktori
+## 🌟 Fitur & Karakteristik Utama Sistem
+
+1. **Model Non-Stok (*Single Item / Unique Asset*)**
+   - Setiap pakaian adat dan kebaya di sanggar merupakan barang fisik bernilai tinggi satuan (`stok_total = 1`, `stok_siap = 1/0`).
+   - Sistem menghilangkan input kuantitas grosir dan berfokus pada pelacakan status ketersediaan busana (`tersedia`, `disewa`, `perawatan`, `nonaktif`).
+
+2. **Aturan Siklus Ketat 3 Hari Sewa (Maksimal 1 Hari Pakai)**
+   - **Tanggal Ambil (Pickup)**: Wajib H-1 dari acara (contoh: Tanggal 2).
+   - **Tanggal Pakai**: Hari-H acara (durasi pemakaian maksimal 1 hari, contoh: Tanggal 3).
+   - **Tanggal Kembali (Pickin/Kembali)**: Wajib H+1 dari acara (contoh: Tanggal 4).
+
+3. **Penyimpanan 2 Metode Pembayaran Berbeda (Tanpa Menambah Tabel Baru)**
+   - Mendukung pencatatan metode pembayaran berbeda antara DP (misal **Tunai**) dan Pelunasan (misal **Transfer Bank** / **QRIS**).
+   - Memanfaatkan relasi audit `pembayaran_transaksi` dan kolom cerdas pada tabel `booking`: `metode_bayar_dp`, `metode_bayar_pelunasan`, serta ringkasan otomatis `metode_bayar_terakhir`.
+   - Tabel Data Nota menampilkan badge pil ganda: `[TUNAI (DP)] + [BANK (LUNAS)]`.
+
+4. **Perhitungan Denda Keterlambatan Otomatis 10%**
+   - Apabila pakaian sewa belum dikembalikan melewati batas tanggal pengembalian rencana (lewat dari H+1), sistem secara otomatis menerapkan denda penalti sebesar **10% dari total nilai sewa barang**.
+
+5. **Integrasi Geografis Real-Time (API Wilayah Ogan Purwakarta)**
+   - Terkoneksi langsung dengan API resmi Pemkab Purwakarta (`https://api.ogan.purwakartakab.go.id`) untuk memuat 17 Kecamatan dan seluruh Kelurahan/Desa secara dinamis (*cascading dropdown*) serta kolom detail Alamat Lengkap/Jalan (RT/RW/No. Rumah).
+
+6. **Format Cetak Struk Nota Kasir Termal SBF (Thermal POS Receipt)**
+   - Format cetak standar kertas kasir 80mm/58mm resmi Sanggar Bunda Febri (SBF) lengkap dengan rincian produk sewa, highlight status pembayaran (LUNAS 100% / DP), rincian metode pembayaran ganda, serta klausul kebijakan sanggar.
+
+7. **Laporan Arus Kas & Analisa Finansial**
+   - Otomasi pencatatan buku kas masuk dari DP, Pelunasan, dan Denda.
+   - Pencatatan beban pengeluaran (laundry/dry cleaning, perawatan payet/jahit, utilitas, staf).
+   - Dashboard KPI pendapatan, tren grafik bulanan, dan ranking sewa per kecamatan.
+
+---
+
+## 📁 Struktur Direktori Proyek
 
 ```text
 sanggara_project/
-├── index.html                   # Portal navigasi & showcase untuk semua 15 halaman
-├── README.md                    # Dokumentasi lengkap arsitektur UI & CSS
-├── css/                         # Seluruh styling CSS (dipisahkan per halaman)
-│   ├── global.css               # Shared design system, sidebar, navbar, typography, empty state
-│   ├── login.css                # CSS Khusus: Halaman Login (Split Screen)
-│   ├── dashboard.css            # CSS Khusus: Dashboard Ringkasan Bisnis & Statistik
-│   ├── laporan-pemasukan.css    # CSS Khusus: Laporan Data Pemasukan Kas
-│   ├── laporan-pengeluaran.css  # CSS Khusus: Laporan Data Pengeluaran Beban
-│   ├── analisa-pelanggan.css    # CSS Khusus: Analisa Wilayah & Ranking 17 Kecamatan
-│   ├── analisa-keuangan.css     # CSS Khusus: Analisa Cashflow & Donut Kategori/Beban
-│   ├── kelola-produk.css        # CSS Khusus: Katalog Master Data Produk/Busana
-│   ├── tambah-produk.css        # CSS Khusus: Formulir Tambah Barang (Counter & Upload)
-│   ├── kelola-pelanggan.css     # CSS Khusus: Tabel Master Data Pelanggan/Konsumen
-│   ├── tambah-pelanggan.css     # CSS Khusus: Formulir Tambah Pelanggan
-│   ├── kelola-kategori.css      # CSS Khusus: Master Data Kategori
-│   ├── tambah-kategori.css      # CSS Khusus: Formulir Tambah Kategori
-│   ├── booking-kalender.css     # CSS Khusus: Kalender Agenda Sewa Bulanan
-│   ├── booking-tabel.css        # CSS Khusus: Tabel Rekap Data Booking
-│   ├── pesanan-tabel.css        # CSS Khusus: Tabel Rincian Data Pesanan
-│   ├── kasir.css                # CSS Khusus: Menu Kasir & Booking Interaktif (POS)
-│   ├── data-nota.css            # CSS Khusus: Tabel Rekapitulasi Data Nota & Pelunasan
-│   └── nota.css                 # CSS Khusus: Lembar Struk & Nota Thermal Pembayaran
-├── database/                    # Arsitektur Skema Basis Data Relasional (RDBMS)
-│   └── sanggara_database.sql    # DDL, Views, Triggers, & Data Seeder Lengkap
-├── js/                          # Script interaksi UI & logika sistem
-│   └── global.js                # Interaksi Global: Toggle Sidebar, Persist State, Dropdown Menu
-└── pages/                       # File HTML representasi setiap halaman
-    ├── login.html
-    ├── dashboard.html
-    ├── laporan-pemasukan.html
-    ├── laporan-pengeluaran.html
-    ├── analisa-pelanggan.html
-    ├── analisa-keuangan.html
-    ├── kelola-produk.html
-    ├── tambah-produk.html
-    ├── kelola-pelanggan.html
-    ├── tambah-pelanggan.html
-    ├── kelola-kategori.html
-    ├── tambah-kategori.html
-    ├── booking-kalender.html
-    ├── booking-tabel.html
-    ├── pesanan-tabel.html
-    ├── kasir.html
-    ├── data-nota.html
-    └── nota.html
+├── backend/                             # Backend Framework Laravel 13 (REST API)
+│   ├── app/
+│   │   ├── Http/Controllers/Api/        # API Controllers (Kasir, DataNota, Produk, Pelanggan, dll)
+│   │   └── Models/                      # Eloquent ORM Models (Booking, Produk, Pelanggan, dll)
+│   ├── routes/
+│   │   └── api.php                      # Endpoint RESTful API Sanggara
+│   ├── database/                        # Migrasi, Seeder, & Konfigurasi DB
+│   └── public/                          # Server Static Web Assets
+├── css/                                 # Styling CSS Modular Berbasis Desain Sanggara
+│   ├── global.css                       # Design System Tokens, Variables, Layout & Typography
+│   ├── kasir.css                        # UI Menu Kasir (POS) & Keranjang Interaktif
+│   ├── data-nota.css                    # UI Tabel Data Nota & Dual-Pill Metode Bayar
+│   ├── nota.css                         # UI & Print Styling Struk Termal Kasir SBF
+│   ├── dashboard.css                    # UI Dashboard Utama & Metrik KPI
+│   ├── kelola-produk.css                # UI Master Busana & Filter Kategori
+│   ├── kelola-pelanggan.css             # UI Master Pelanggan & Form API Ogan
+│   └── ...                              # CSS Modular Lainnya
+├── js/                                  # Logika Client-Side & API Adapter
+│   ├── api.js                           # SanggaraAPI Client (Fetch API ke Laravel Backend)
+│   └── global.js                        # Handler Navigasi, Sidebar, & State Persisten
+├── pages/                               # Antarmuka Pengguna (HTML5 Semantik)
+│   ├── dashboard.html                   # Dashboard Analisa & Metrik
+│   ├── kasir.html                       # Kasir Persewaan & Booking (POS)
+│   ├── data-nota.html                   # Rekapitulasi Nota & Modal Pelunasan
+│   ├── nota.html                        # Lembar Struk Nota Termal Siap Cetak
+│   ├── kelola-produk.html               # Manajemen Katalog Busana
+│   ├── kelola-pelanggan.html            # Manajemen Konsumen & Wilayah
+│   ├── kelola-kategori.html             # Manajemen Kategori Busana
+│   ├── laporan.html                     # Rekap Laporan Pemasukan & Pengeluaran
+│   └── login.html                       # Otentikasi Staf / Kasir
+├── database/                            # Backup Skema SQL
+│   └── sanggara_database.sql            # DDL, Trigger, & Seeder MySQL db_sanggara
+├── DOKUMENTASI_SISTEM_SANGGARA.pdf      # Dokumentasi Lengkap Sistem (Format PDF Cetak A4)
+├── DOKUMENTASI_SISTEM_SANGGARA.html     # Dokumentasi Lengkap Sistem (Format Dokumen Web)
+├── DOKUMENTASI_SISTEM_SANGGARA.md       # Dokumentasi Lengkap Sistem (Format Markdown)
+├── index.html                           # Portal Navigasi Halaman
+└── README.md                            # Panduan & Dokumentasi Proyek Ini
 ```
 
 ---
 
-## 🎨 Pemetaan 15 Halaman & CSS Masing-Masing
+## 🗄️ Arsitektur Skema Basis Data (`db_sanggara`)
 
-| No | Nama Halaman | File CSS Khusus | File HTML | Deskripsi Komponen Utama |
-|---|---|---|---|---|
-| **01** | **Login** | `css/login.css` | `pages/login.html` | Hero split gradient hijau SBF, login card, email & password dengan toggle visibility. |
-| **02** | **Dashboard** | `css/dashboard.css` | `pages/dashboard.html` | Banner sambutan PST, 4 Card KPI (Surplus, Booking, Pasar, Stok), Bar chart arus kas Jan-Nov, Top 5 ranking Kecamatan, Status inventaris. |
-| **03** | **Data Pemasukan** | `css/laporan-pemasukan.css` | `pages/laporan-pemasukan.html` | Filter range tanggal, pencarian transaksi, tombol ekspor laporan, tabel mutasi kasir. |
-| **04** | **Data Pengeluaran** | `css/laporan-pengeluaran.css` | `pages/laporan-pengeluaran.html` | Filter rentang tanggal, tabel pencatatan beban operasional, bukti struk kas tunai. |
-| **05** | **Analisa Pelanggan** | `css/analisa-pelanggan.css` | `pages/analisa-pelanggan.html` | Filter kecamatan & tanggal, progres bar perbandingan 17 kecamatan, Donut chart klaster zona wilayah, 3 Wilayah Teratas. |
-| **06** | **Analisa Keuangan** | `css/analisa-keuangan.css` | `pages/analisa-keuangan.html` | Bar chart komparasi pemasukan vs pengeluaran bulanan, Donut sumber pemasukan, Donut pos beban, tabel mutasi arus kas. |
-| **07** | **Kelola Produk** | `css/kelola-produk.css` | `pages/kelola-produk.html` | Header dengan tombol Template/Import/Tambah, dropdown filter kategori, tabel produk, empty state illustration. |
-| **08** | **Tambah Produk** | `css/tambah-produk.css` | `pages/tambah-produk.html` | Modal header dengan logo, input nama, kategori, kualitas, stok, harga sewa, dropzone upload foto dengan panduan dimensi. |
-| **09** | **Kelola Pelanggan** | `css/kelola-pelanggan.css` | `pages/kelola-pelanggan.html` | Tabel master konsumen, filter dropdown alamat, tombol tambah pelanggan, empty state. |
-| **10** | **Tambah Pelanggan** | `css/tambah-pelanggan.css` | `pages/tambah-pelanggan.html` | Formulir nama konsumen, nomor telepon, dual dropdown pilihan kecamatan dan kelurahan/desa. |
-| **11** | **Kelola Kategori** | `css/kelola-kategori.css` | `pages/kelola-kategori.html` | Tabel master kategori busana dan atribut rias, filter pencarian, status data kosong. |
-| **12** | **Tambah Kategori** | `css/tambah-kategori.css` | `pages/tambah-kategori.html` | Input nama kategori, nomor deskripsi dengan limit counter (0/50), tombol batal & simpan. |
-| **13** | **Booking (Kalender)** | `css/booking-kalender.css` | `pages/booking-kalender.html` | Kalender agenda bulanan (Minggu - Sabtu), badge Ambil (Hijau), Pakai (Biru), dan Kembali (Kuning/Oranye). |
-| **14** | **Booking (Tabel)** | `css/booking-tabel.css` | `pages/booking-tabel.html` | Tabel daftar booking pesanan konsumen, pickup, pakai, pickin, status denda, filter bulan & tahun. |
-| **15** | **Pesanan (Tabel)** | `css/pesanan-tabel.css` | `pages/pesanan-tabel.html` | Tabel detail barang/kostum per booking, jumlah kuantitas, aksi, filter periode. |
-| **16** | **Kasir (Interaktif)** | `css/kasir.css` | `pages/kasir.html` | Alur kasir lengkap: filter katalog, keranjang dinamis, kalkulasi DP 25%, modal pelanggan baru, dan checkout. |
-| **17** | **Nota / Struk SBF** | `css/nota.css` | `pages/nota.html` | Lembar struk fisik Sanggar Bunda Febri (SBF), rincian sewa, DP, sisa pelunasan, dan fungsi cetak thermal. |
-| **18** | **Data Nota** | `css/data-nota.css` | `pages/data-nota.html` | Rekapitulasi transaksi nota booking, status pelunasan Lunas/DP, tombol bayar cepat, dan link detail nota. |
+Sistem menggunakan basis data relasional **MySQL 8.0** dengan skema utama:
+
+* **`users`**: Akun pengguna sistem (Role: `admin`, `kasir`, `pemilik`).
+* **`kategori`**: Kategori busana (*Kostum Tari*, *Baju Pengantin Adat*, *Kebaya & Wisuda*, *Aksesoris*).
+* **`produk`**: Master aset pakaian (Model non-stok: `stok_total = 1`, `stok_siap = 1/0`, tarif sewa, denda/hari).
+* **`pelanggan`**: Master data penyewa (terintegrasi API Ogan Purwakarta: kecamatan, kelurahan, alamat jalan).
+* **`booking`**: Master transaksi sewa (`no_nota`, `tgl_ambil`, `tgl_pakai`, `tgl_kembali_rencana`, `total_tagihan`, `total_dp`, `metode_bayar_dp`, `metode_bayar_pelunasan`, `metode_bayar_terakhir`, `status_pembayaran`, `status_sewa`, `denda_keterlambatan`).
+* **`detail_booking`**: Rincian busana yang disewa dalam tiap faktur booking.
+* **`pembayaran_transaksi`**: Buku kas dan log audit pembayaran (`DP`, `PELUNASAN`, `LUNAS_LANGSUNG`, `DENDA`) beserta instrumen bayar (`TUNAI`, `BANK`, `QRIS`), uang diterima, dan kembalian.
+* **`laporan_pemasukan` & `laporan_pengeluaran`**: Pembukuan arus kas sanggar.
+
+### Otomasi Database Trigger (MySQL Engine)
+1. **`trg_after_insert_pembayaran_transaksi`**: Otomatis memperbarui `total_bayar`, menghitung `sisa_tagihan`, mengisi `metode_bayar_dp` / `metode_bayar_pelunasan`, memperbarui status menjadi `LUNAS` / `DP`, dan menyusun ringkasan `metode_bayar_terakhir` pada tabel `booking`.
+2. **`trg_after_insert_detail_booking`**: Otomatis mengunci busana pada tabel `produk` (`stok_siap = 0`, `stok_disewa = 1`, status = `habis`) agar tidak terjadi penyewaan ganda pada tanggal yang sama.
 
 ---
 
-## 🎨 Design System & Token Warna
+## 🚀 Panduan Instalasi & Menjalankan Sistem
 
-Sistem ini menggunakan CSS Variables yang didefinisikan di `css/global.css`:
+### 1. Prasyarat Sistem
+* **PHP** versi 8.2 atau 8.3
+* **Composer** (Dependency Manager PHP)
+* **MySQL** Server 8.0 (melalui Laragon, XAMPP, atau MySQL Standalone)
+* Web Browser modern (Google Chrome, Microsoft Edge, Mozilla Firefox)
 
-```css
-:root {
-  /* Brand Utama */
-  --color-primary: #00b87c;        /* Hijau Emerald Sanggara */
-  --color-primary-dark: #009e69;
-  --color-primary-light: #e6f8f2;
-  
-  /* Status Warna */
-  --color-blue: #0284c7;           /* Pakai / Status Biru */
-  --color-amber: #f59e0b;          /* Kembali / Warning Oranye */
-  --color-red: #ef4444;            /* Pengeluaran / Bahaya */
-  
-  /* Font Family */
-  --font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-}
+### 2. Konfigurasi Basis Data
+1. Pastikan servis MySQL aktif di port `3306`.
+2. Buat database baru bernama `db_sanggara` (atau import dari `database/sanggara_database.sql`).
+3. Sesuaikan konfigurasi pada file `backend/.env`:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=db_sanggara
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+### 3. Menjalankan Backend Laravel API
+Masuk ke direktori `backend` dan jalankan server lokal:
+```powershell
+cd backend
+composer install
+php artisan serve
 ```
+Backend API akan aktif dan siap menerima request di: **`http://127.0.0.1:8000`**
+
+### 4. Mengakses Aplikasi Web (Frontend)
+Setelah server Laravel aktif, Anda dapat membuka halaman web langsung melalui browser:
+* **Dashboard Utama**: [http://127.0.0.1:8000/pages/dashboard.html](http://127.0.0.1:8000/pages/dashboard.html)
+* **Menu Kasir Persewaan (POS)**: [http://127.0.0.1:8000/pages/kasir.html](http://127.0.0.1:8000/pages/kasir.html)
+* **Data Nota & Pembayaran**: [http://127.0.0.1:8000/pages/data-nota.html](http://127.0.0.1:8000/pages/data-nota.html)
+* **Cetak Struk Nota**: [http://127.0.0.1:8000/pages/nota.html](http://127.0.0.1:8000/pages/nota.html)
+* **Kelola Produk**: [http://127.0.0.1:8000/pages/kelola-produk.html](http://127.0.0.1:8000/pages/kelola-produk.html)
+* **Kelola Pelanggan (API Ogan)**: [http://127.0.0.1:8000/pages/kelola-pelanggan.html](http://127.0.0.1:8000/pages/kelola-pelanggan.html)
+* **Kelola Kategori**: [http://127.0.0.1:8000/pages/kelola-kategori.html](http://127.0.0.1:8000/pages/kelola-kategori.html)
+* **Laporan Keuangan**: [http://127.0.0.1:8000/pages/laporan.html](http://127.0.0.1:8000/pages/laporan.html)
 
 ---
 
-## 🚀 Cara Menjalankan & Membuka
+## 📚 Dokumen Spesifikasi Sistem Lengkap
 
-1. Buka file `index.html` langsung di browser untuk melihat portal navigasi dan daftar 15 halaman.
-2. Setiap halaman HTML di folder `pages/` dapat dibuka langsung tanpa konfigurasi server tambahan karena menggunakan pure HTML & CSS.
-3. Anda dapat mengimpor file CSS masing-masing ke framework yang Anda gunakan (seperti React, Vue, Laravel Blade, Next.js, atau PHP Native).
+Dokumentasi komprehensif mencakup *Software Requirements Specification (SRS)*, Use Case, Activity Flow, ERD, dan Kamus Data tersedia dalam:
+* 📄 **File PDF Resmi**: [DOKUMENTASI_SISTEM_SANGGARA.pdf](DOKUMENTASI_SISTEM_SANGGARA.pdf)
+* 🌐 **File Dokumen HTML**: [DOKUMENTASI_SISTEM_SANGGARA.html](DOKUMENTASI_SISTEM_SANGGARA.html)
+* 📝 **File Dokumen Markdown**: [DOKUMENTASI_SISTEM_SANGGARA.md](DOKUMENTASI_SISTEM_SANGGARA.md)
+
+---
+
+## 👥 Pengembang & Hak Cipta
+
+* **Klien / Mitra Usaha**: Sanggar Bunda Febri (SBF) — Purwakarta, Jawa Barat
+* **Sistem**: Sanggara Management System
+* **Hak Cipta**: &copy; 2026 **Sanggar Bunda Febri (SBF)** &bull; Powered by **Pratama Solusi Teknologi**
